@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { hasPermission, hasAnyPermission, hasAllPermissions } from '../../utils/rbac';
+import { hasPermission, hasAnyPermission, hasAllPermissions } from './rbacUtils';
 import { AlertCircle } from 'lucide-react';
 
 export default function PermissionGate({ 

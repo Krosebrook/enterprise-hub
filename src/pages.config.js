@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Observability from './pages/Observability';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
+import Users from './pages/Users';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +23,7 @@ export const PAGES = {
     "Observability": Observability,
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
+    "Users": Users,
 }
 
 export const pagesConfig = {

@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PermissionGate from '../components/rbac/PermissionGate';
+import { getRoleColor } from '../components/rbac/rbacUtils';
 import { format } from 'date-fns';
 
 const categoryConfig = {

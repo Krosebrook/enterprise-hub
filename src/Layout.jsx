@@ -17,7 +17,8 @@ import {
   ChevronDown,
   LogOut,
   Building2,
-  User
+  User,
+  Users as UsersIcon
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { getRoleName, getRoleColor } from './components/rbac/rbacUtils';
 import {
   Sheet,
   SheetContent,
@@ -44,6 +46,7 @@ const navigation = [
   { name: 'Cost Management', href: 'Costs', icon: DollarSign },
   { name: 'Observability', href: 'Observability', icon: Activity },
   { name: 'Policies', href: 'Policies', icon: Shield },
+  { name: 'Users', href: 'Users', icon: UsersIcon },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -283,6 +286,11 @@ export default function Layout({ children, currentPageName }) {
                 <div className="px-3 py-2">
                   <p className="text-sm font-medium">{user.full_name}</p>
                   <p className="text-xs text-slate-500">{user.email}</p>
+                  {user.role && (
+                    <Badge className={`${getRoleColor(user.role)} mt-2 text-xs`}>
+                      {getRoleName(user.role)}
+                    </Badge>
+                  )}
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
