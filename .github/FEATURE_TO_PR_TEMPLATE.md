@@ -445,7 +445,7 @@ npm run dev
 ### This Repository:  `Krosebrook/enterprise-hub`
 
 **Tech Stack**:
-- **Frontend**: React 18 + Vite 6 + Tailwind CSS + Radix UI
+- **Frontend**: React 18 + Vite 6+ + Tailwind CSS + Radix UI
 - **Backend**: Base44 SDK (1 serverless function: generateTerraform.ts)
 - **State**:  React hooks, context (@tanstack/react-query)
 - **Routing**: React Router

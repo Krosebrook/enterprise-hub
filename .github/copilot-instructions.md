@@ -6,7 +6,7 @@ This document provides specific guidance for GitHub Copilot agents working on th
 
 **Repository**: Krosebrook/enterprise-hub  
 **Purpose**: Enterprise AI governance, compliance, and architecture management platform  
-**Stack**: React 18 + Vite 6 + Tailwind CSS + Radix UI + Base44 SDK
+**Stack**: React 18 + Vite 6+ + Tailwind CSS + Radix UI + Base44 SDK
 
 ## Before Starting Any Task
 
