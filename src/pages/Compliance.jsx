@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from 'date-fns';
+import PermissionGate from '../components/rbac/PermissionGate';
 
 const frameworkInfo = {
   'SOC2': { name: 'SOC 2 Type II', color: 'blue' },
@@ -118,16 +119,18 @@ export default function Compliance() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">Compliance</h1>
           <p className="text-slate-500 mt-1">Monitor compliance across multiple frameworks</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Run Audit
-          </Button>
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export Report
-          </Button>
-        </div>
+        <PermissionGate permission="compliance.edit">
+          <div className="flex items-center gap-3">
+            <Button variant="outline">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Run Audit
+            </Button>
+            <Button variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Export Report
+            </Button>
+          </div>
+        </PermissionGate>
       </div>
 
       {/* Overview Cards */}

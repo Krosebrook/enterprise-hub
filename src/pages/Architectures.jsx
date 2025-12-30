@@ -44,6 +44,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { format } from 'date-fns';
+import PermissionGate from '../components/rbac/PermissionGate';
 
 const statusConfig = {
   draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700' },
@@ -127,12 +128,14 @@ export default function Architectures() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">Architectures</h1>
           <p className="text-slate-500 mt-1">Design and manage your microservices architectures</p>
         </div>
-        <Link to={createPageUrl('ArchitectureDesigner')}>
-          <Button className="bg-slate-900 hover:bg-slate-800">
-            <Plus className="w-4 h-4 mr-2" />
-            New Architecture
-          </Button>
-        </Link>
+        <PermissionGate permission="architecture.create">
+          <Link to={createPageUrl('ArchitectureDesigner')}>
+            <Button className="bg-slate-900 hover:bg-slate-800">
+              <Plus className="w-4 h-4 mr-2" />
+              New Architecture
+            </Button>
+          </Link>
+        </PermissionGate>
       </div>
 
       {/* Filters */}
@@ -242,24 +245,28 @@ export default function Architectures() {
                           View
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl(`ArchitectureDesigner?id=${arch.id}&edit=true`)}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => duplicateMutation.mutate(arch)}>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onClick={() => handleDelete(arch)}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
+                      <PermissionGate permission="architecture.edit">
+                        <DropdownMenuItem asChild>
+                          <Link to={createPageUrl(`ArchitectureDesigner?id=${arch.id}&edit=true`)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => duplicateMutation.mutate(arch)}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Duplicate
+                        </DropdownMenuItem>
+                      </PermissionGate>
+                      <PermissionGate permission="architecture.delete">
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(arch)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </PermissionGate>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

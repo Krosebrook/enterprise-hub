@@ -137,12 +137,14 @@ export default function Agents() {
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">AI Agents</h1>
           <p className="text-slate-500 mt-1">Create, train, and deploy intelligent AI agents</p>
         </div>
-        <Link to={createPageUrl('AgentCreate')}>
-          <Button className="bg-slate-900 hover:bg-slate-800">
-            <Plus className="w-4 h-4 mr-2" />
-            New Agent
-          </Button>
-        </Link>
+        <PermissionGate permission="agent.create">
+          <Link to={createPageUrl('AgentCreate')}>
+            <Button className="bg-slate-900 hover:bg-slate-800">
+              <Plus className="w-4 h-4 mr-2" />
+              New Agent
+            </Button>
+          </Link>
+        </PermissionGate>
       </div>
 
       {/* Filters */}
@@ -273,32 +275,38 @@ export default function Agents() {
                             Analytics
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to={createPageUrl(`AgentCreate?id=${agent.id}`)}>
-                            <Settings className="w-4 h-4 mr-2" />
-                            Configure
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => updateStatusMutation.mutate({ 
-                            id: agent.id, 
-                            status: agent.status === 'deployed' ? 'testing' : 'deployed' 
-                          })}
-                        >
-                          {agent.status === 'deployed' ? (
-                            <><Pause className="w-4 h-4 mr-2" /> Pause</>
-                          ) : (
-                            <><Play className="w-4 h-4 mr-2" /> Deploy</>
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(agent)}
-                          className="text-red-600"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
+                        <PermissionGate permission="agent.edit">
+                          <DropdownMenuItem asChild>
+                            <Link to={createPageUrl(`AgentCreate?id=${agent.id}`)}>
+                              <Settings className="w-4 h-4 mr-2" />
+                              Configure
+                            </Link>
+                          </DropdownMenuItem>
+                        </PermissionGate>
+                        <PermissionGate permission="agent.deploy">
+                          <DropdownMenuItem 
+                            onClick={() => updateStatusMutation.mutate({ 
+                              id: agent.id, 
+                              status: agent.status === 'deployed' ? 'testing' : 'deployed' 
+                            })}
+                          >
+                            {agent.status === 'deployed' ? (
+                              <><Pause className="w-4 h-4 mr-2" /> Pause</>
+                            ) : (
+                              <><Play className="w-4 h-4 mr-2" /> Deploy</>
+                            )}
+                          </DropdownMenuItem>
+                        </PermissionGate>
+                        <PermissionGate permission="agent.delete">
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => handleDelete(agent)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </PermissionGate>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

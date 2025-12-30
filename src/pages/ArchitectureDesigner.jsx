@@ -39,6 +39,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ServiceCard from '../components/architecture/ServiceCard';
 import ServicePropertiesPanel from '../components/architecture/ServicePropertiesPanel';
 import CodeGenerationDialog from '../components/architecture/CodeGenerationDialog';
+import PermissionGate from '../components/rbac/PermissionGate';
 
 const servicePalette = [
   { type: 'api', label: 'API Service', icon: Server, color: 'bg-blue-500' },
@@ -257,21 +258,25 @@ export default function ArchitectureDesigner() {
             {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
             Validate
           </Button>
-          <Button 
-            variant="outline"
-            onClick={handleGenerate}
-            disabled={isSaving || architecture?.status === 'draft'}
-          >
-            <Code className="w-4 h-4 mr-2" />
-            Generate Code
-          </Button>
-          <Button 
-            className="bg-slate-900 hover:bg-slate-800"
-            disabled={architecture?.status !== 'generated'}
-          >
-            <Rocket className="w-4 h-4 mr-2" />
-            Deploy
-          </Button>
+          <PermissionGate permission="architecture.generate_code">
+            <Button 
+              variant="outline"
+              onClick={handleGenerate}
+              disabled={isSaving || architecture?.status === 'draft'}
+            >
+              <Code className="w-4 h-4 mr-2" />
+              Generate Code
+            </Button>
+          </PermissionGate>
+          <PermissionGate permission="architecture.deploy">
+            <Button 
+              className="bg-slate-900 hover:bg-slate-800"
+              disabled={architecture?.status !== 'generated'}
+            >
+              <Rocket className="w-4 h-4 mr-2" />
+              Deploy
+            </Button>
+          </PermissionGate>
         </div>
       </div>
 

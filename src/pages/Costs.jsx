@@ -42,6 +42,7 @@ import {
   AreaChart
 } from 'recharts';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import PermissionGate from '../components/rbac/PermissionGate';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#06b6d4'];
 
@@ -157,10 +158,12 @@ export default function Costs() {
               <SelectItem value="ytd">Year to date</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
+          <PermissionGate permission="cost.export_reports">
+            <Button variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+          </PermissionGate>
         </div>
       </div>
 
