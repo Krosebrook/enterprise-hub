@@ -47,6 +47,7 @@ const navigation = [
   { name: 'Observability', href: 'Observability', icon: Activity },
   { name: 'Policies', href: 'Policies', icon: Shield },
   { name: 'Users', href: 'Users', icon: UsersIcon },
+  { name: 'Audit Log', href: 'AuditLog', icon: Activity },
 ];
 
 export default function Layout({ children, currentPageName }) {

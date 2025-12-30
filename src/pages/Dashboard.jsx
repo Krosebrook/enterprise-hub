@@ -17,6 +17,9 @@ import { createPageUrl } from '../utils';
 import MetricCard from '../components/dashboard/MetricCard';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
 import QuickActionCard from '../components/dashboard/QuickActionCard';
+import PermissionGate from '../components/rbac/PermissionGate';
+import { getRoleName, getRoleColor } from '../components/rbac/rbacUtils';
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -70,12 +73,21 @@ export default function Dashboard() {
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
-          Welcome back{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}! 👋
-        </h1>
-        <p className="text-slate-500 mt-1">
-          Here's what's happening with your organization
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
+              Welcome back{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}! 👋
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Here's what's happening with your organization
+            </p>
+          </div>
+          {user?.role && (
+            <Badge className={getRoleColor(user.role)}>
+              {getRoleName(user.role)}
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Metrics Grid */}
@@ -125,20 +137,24 @@ export default function Dashboard() {
         <div className="space-y-6">
           <h2 className="text-lg font-semibold text-slate-900">Quick Actions</h2>
           <div className="space-y-4">
-            <QuickActionCard
-              title="New Architecture"
-              description="Design a new microservices architecture"
-              icon={Plus}
-              href="ArchitectureDesigner"
-              color="blue"
-            />
-            <QuickActionCard
-              title="Train Agent"
-              description="Create or train an AI agent"
-              icon={Sparkles}
-              href="AgentCreate"
-              color="purple"
-            />
+            <PermissionGate permission="architecture.create">
+              <QuickActionCard
+                title="New Architecture"
+                description="Design a new microservices architecture"
+                icon={Plus}
+                href="ArchitectureDesigner"
+                color="blue"
+              />
+            </PermissionGate>
+            <PermissionGate permission="agent.create">
+              <QuickActionCard
+                title="Train Agent"
+                description="Create or train an AI agent"
+                icon={Sparkles}
+                href="AgentCreate"
+                color="purple"
+              />
+            </PermissionGate>
             <QuickActionCard
               title="View Reports"
               description="Generate compliance and cost reports"
