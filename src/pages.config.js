@@ -1,22 +1,22 @@
-import Dashboard from './pages/Dashboard';
-import Architectures from './pages/Architectures';
-import ArchitectureDesigner from './pages/ArchitectureDesigner';
-import Agents from './pages/Agents';
 import AgentCreate from './pages/AgentCreate';
+import Agents from './pages/Agents';
+import ArchitectureDesigner from './pages/ArchitectureDesigner';
+import Architectures from './pages/Architectures';
 import Compliance from './pages/Compliance';
 import Costs from './pages/Costs';
+import Dashboard from './pages/Dashboard';
 import Observability from './pages/Observability';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Dashboard": Dashboard,
-    "Architectures": Architectures,
-    "ArchitectureDesigner": ArchitectureDesigner,
-    "Agents": Agents,
     "AgentCreate": AgentCreate,
+    "Agents": Agents,
+    "ArchitectureDesigner": ArchitectureDesigner,
+    "Architectures": Architectures,
     "Compliance": Compliance,
     "Costs": Costs,
+    "Dashboard": Dashboard,
     "Observability": Observability,
 }
 

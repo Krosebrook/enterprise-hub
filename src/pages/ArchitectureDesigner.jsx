@@ -38,6 +38,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ServiceCard from '../components/architecture/ServiceCard';
 import ServicePropertiesPanel from '../components/architecture/ServicePropertiesPanel';
+import CodeGenerationDialog from '../components/architecture/CodeGenerationDialog';
 
 const servicePalette = [
   { type: 'api', label: 'API Service', icon: Server, color: 'bg-blue-500' },
@@ -59,6 +60,7 @@ export default function ArchitectureDesigner() {
   });
   const [selectedService, setSelectedService] = useState(null);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
+  const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -216,6 +218,7 @@ export default function ArchitectureDesigner() {
       data: { status: 'generated' }
     });
     setIsSaving(false);
+    setShowCodeDialog(true);
   };
 
   if (archLoading || servicesLoading) {
@@ -410,6 +413,14 @@ export default function ArchitectureDesigner() {
           }}
         />
       )}
+
+      {/* Code Generation Dialog */}
+      <CodeGenerationDialog
+        open={showCodeDialog}
+        onClose={() => setShowCodeDialog(false)}
+        architecture={architecture}
+        services={services}
+      />
 
       {/* Create Architecture Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
