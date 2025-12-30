@@ -43,6 +43,7 @@ const navigation = [
   { name: 'Compliance', href: 'Compliance', icon: Shield },
   { name: 'Cost Management', href: 'Costs', icon: DollarSign },
   { name: 'Observability', href: 'Observability', icon: Activity },
+  { name: 'Policies', href: 'Policies', icon: Shield },
 ];
 
 export default function Layout({ children, currentPageName }) {

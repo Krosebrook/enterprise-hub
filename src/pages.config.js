@@ -6,6 +6,8 @@ import Compliance from './pages/Compliance';
 import Costs from './pages/Costs';
 import Dashboard from './pages/Dashboard';
 import Observability from './pages/Observability';
+import Policies from './pages/Policies';
+import PolicyCreate from './pages/PolicyCreate';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +20,8 @@ export const PAGES = {
     "Costs": Costs,
     "Dashboard": Dashboard,
     "Observability": Observability,
+    "Policies": Policies,
+    "PolicyCreate": PolicyCreate,
 }
 
 export const pagesConfig = {
