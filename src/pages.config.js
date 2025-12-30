@@ -4,6 +4,8 @@ import ArchitectureDesigner from './pages/ArchitectureDesigner';
 import Agents from './pages/Agents';
 import AgentCreate from './pages/AgentCreate';
 import Compliance from './pages/Compliance';
+import Costs from './pages/Costs';
+import Observability from './pages/Observability';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +16,8 @@ export const PAGES = {
     "Agents": Agents,
     "AgentCreate": AgentCreate,
     "Compliance": Compliance,
+    "Costs": Costs,
+    "Observability": Observability,
 }
 
 export const pagesConfig = {
