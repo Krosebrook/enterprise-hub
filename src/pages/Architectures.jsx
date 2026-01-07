@@ -6,13 +6,11 @@ import { createPageUrl } from '../utils';
 import { 
   Plus, 
   Search, 
-  Filter, 
   MoreVertical, 
   GitBranch,
   Trash2,
   Edit,
   Copy,
-  Rocket,
   Eye
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";

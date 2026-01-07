@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Activity,
   Server,
   AlertTriangle,
   CheckCircle,
@@ -10,13 +9,9 @@ import {
   Cpu,
   HardDrive,
   Wifi,
-  RefreshCw,
-  Search,
-  Filter,
-  ChevronDown
+  RefreshCw
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";

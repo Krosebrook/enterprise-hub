@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Download,
   Calendar,
-  Filter,
   BarChart3,
   PieChart
 } from 'lucide-react';
@@ -36,12 +35,10 @@ import {
   Pie,
   Cell,
   Legend,
-  LineChart,
-  Line,
   Area,
   AreaChart
 } from 'recharts';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import PermissionGate from '../components/rbac/PermissionGate';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#06b6d4'];

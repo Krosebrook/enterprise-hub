@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Globe, Server, Circle } from 'lucide-react';
+import { Database, Globe, Server } from 'lucide-react';
 
 const languageColors = {
   go: 'bg-cyan-500',

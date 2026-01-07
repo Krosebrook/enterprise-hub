@@ -13,14 +13,13 @@ import {
   MoreVertical,
   Trash2,
   Edit,
-  Copy,
   History,
   AlertCircle,
   Eye
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -46,8 +45,6 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PermissionGate from '../components/rbac/PermissionGate';
-import { getRoleColor } from '../components/rbac/rbacUtils';
-import { format } from 'date-fns';
 
 const categoryConfig = {
   security: { label: 'Security', color: 'bg-red-100 text-red-700', icon: Shield },
