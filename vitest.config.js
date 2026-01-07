@@ -21,8 +21,6 @@ export default defineConfig({
         '**/*.config.ts',
         '**/dist/**',
         '**/build/**',
-        '**/*.test.{js,jsx,ts,tsx}',
-        '**/test-*.{js,jsx,ts,tsx}',
         '**/__tests__/**',
       ],
       // Target 80% coverage as specified in roadmap

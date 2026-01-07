@@ -5,8 +5,8 @@
  * Validates rendering, composition, and styling.
  */
 
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, userEvent } from '@/test-utils'
 import {
   Card,
   CardHeader,
@@ -181,8 +181,10 @@ describe('Card Component', () => {
   })
 
   describe('Custom Props', () => {
-    it('should accept onClick handler on card', () => {
+    it('should accept onClick handler on card', async () => {
       const handleClick = vi.fn()
+      const user = userEvent.setup()
+      
       render(
         <Card data-testid="card" onClick={handleClick}>
           Clickable card
@@ -190,7 +192,7 @@ describe('Card Component', () => {
       )
       
       const card = screen.getByTestId('card')
-      card.click()
+      await user.click(card)
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
 

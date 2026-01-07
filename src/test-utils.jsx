@@ -20,7 +20,7 @@ export function createTestQueryClient() {
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0, // Renamed from cacheTime in React Query v4+
         staleTime: 0,
       },
       mutations: {

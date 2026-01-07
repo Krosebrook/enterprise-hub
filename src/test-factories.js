@@ -5,13 +5,24 @@
  * Each factory corresponds to a Base44 entity in the system.
  */
 
+// Counter for deterministic ID generation
+let idCounter = 0
+
+/**
+ * Generate a deterministic test ID
+ */
+function generateTestId(prefix = 'test') {
+  idCounter++
+  return `${prefix}-${idCounter}`
+}
+
 /**
  * Create a mock User entity
  */
 export function createMockUser(overrides = {}) {
   return {
-    id: `user-${Date.now()}-${Math.random()}`,
-    email: `user-${Math.random().toString(36).substring(7)}@example.com`,
+    id: generateTestId('user'),
+    email: `user-${idCounter}@example.com`,
     full_name: 'Test User',
     role: 'developer',
     created_date: new Date().toISOString(),
@@ -26,7 +37,7 @@ export function createMockUser(overrides = {}) {
  */
 export function createMockAgent(overrides = {}) {
   return {
-    id: `agent-${Date.now()}-${Math.random()}`,
+    id: generateTestId('agent'),
     name: 'Test Agent',
     description: 'A test AI agent for unit testing',
     model: 'gpt-4',
@@ -47,7 +58,7 @@ export function createMockAgent(overrides = {}) {
  */
 export function createMockArchitecture(overrides = {}) {
   return {
-    id: `architecture-${Date.now()}-${Math.random()}`,
+    id: generateTestId('architecture'),
     name: 'Test Architecture',
     description: 'A test cloud architecture',
     cloud_provider: 'aws',
@@ -74,7 +85,7 @@ export function createMockArchitecture(overrides = {}) {
  */
 export function createMockPolicy(overrides = {}) {
   return {
-    id: `policy-${Date.now()}-${Math.random()}`,
+    id: generateTestId('policy'),
     name: 'Test Policy',
     description: 'A test governance policy',
     type: 'security',
@@ -101,7 +112,7 @@ export function createMockPolicy(overrides = {}) {
  */
 export function createMockComplianceFramework(overrides = {}) {
   return {
-    id: `framework-${Date.now()}-${Math.random()}`,
+    id: generateTestId('framework'),
     name: 'SOC2',
     version: '2017',
     description: 'SOC2 Type II compliance framework',
@@ -129,7 +140,7 @@ export function createMockComplianceFramework(overrides = {}) {
  */
 export function createMockActivity(overrides = {}) {
   return {
-    id: `activity-${Date.now()}-${Math.random()}`,
+    id: generateTestId('activity'),
     user_id: 'test-user-id',
     user_email: 'test@example.com',
     action: 'create',
@@ -150,7 +161,7 @@ export function createMockActivity(overrides = {}) {
  */
 export function createMockCost(overrides = {}) {
   return {
-    id: `cost-${Date.now()}-${Math.random()}`,
+    id: generateTestId('cost'),
     agent_id: 'agent-123',
     date: new Date().toISOString().split('T')[0],
     amount: 125.50,
@@ -170,7 +181,7 @@ export function createMockCost(overrides = {}) {
  */
 export function createMockMetric(overrides = {}) {
   return {
-    id: `metric-${Date.now()}-${Math.random()}`,
+    id: generateTestId('metric'),
     name: 'api_response_time',
     value: 245,
     unit: 'ms',
@@ -207,4 +218,11 @@ export function createMockUsersWithRoles() {
     createMockUser({ role: 'viewer', email: 'viewer@example.com', full_name: 'Viewer User' }),
     createMockUser({ role: 'auditor', email: 'auditor@example.com', full_name: 'Auditor User' }),
   ]
+}
+
+/**
+ * Reset the ID counter (call in beforeEach/afterEach)
+ */
+export function resetIdCounter() {
+  idCounter = 0
 }
