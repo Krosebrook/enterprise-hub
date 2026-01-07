@@ -14,9 +14,6 @@ import {
   Settings,
   Trash2,
   BarChart3,
-  Clock,
-  DollarSign,
-  Zap,
   Loader2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";

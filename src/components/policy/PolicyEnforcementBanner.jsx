@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, AlertTriangle, Info, XCircle } from 'lucide-react';
+import { AlertTriangle, Info, XCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 export default function PolicyEnforcementBanner({ 

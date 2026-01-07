@@ -5,13 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import {
   ArrowLeft,
-  Bot,
-  Sparkles,
   Settings,
-  Play,
   Save,
   Loader2,
-  FileText,
   MessageSquare,
   Code,
   BarChart3,

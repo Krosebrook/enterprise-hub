@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { createPageUrl } from '../utils';
 import {
   ArrowLeft,
   Plus,
-  Save,
   CheckCircle,
   Code,
   Rocket,
@@ -16,8 +15,7 @@ import {
   Database,
   Server,
   MessageSquare,
-  Loader2,
-  Trash2
+  Loader2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import ServiceCard from '../components/architecture/ServiceCard';
 import ServicePropertiesPanel from '../components/architecture/ServicePropertiesPanel';
 import CodeGenerationDialog from '../components/architecture/CodeGenerationDialog';

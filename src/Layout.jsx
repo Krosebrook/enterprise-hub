@@ -11,7 +11,6 @@ import {
   Activity,
   Settings,
   Menu,
-  X,
   Bell,
   Search,
   ChevronDown,
