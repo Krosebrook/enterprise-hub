@@ -116,6 +116,12 @@ npm run dev          # Start development server
 npm run build        # Production build
 npm run preview      # Preview production build
 
+# Testing
+npm test             # Run tests once
+npm run test:watch   # Run tests in watch mode
+npm run test:ui      # Open Vitest UI dashboard
+npm run test:coverage # Run tests with coverage report
+
 # Code Quality
 npm run lint         # Run ESLint (with --quiet flag)
 npm run lint:fix     # Auto-fix ESLint issues
@@ -199,6 +205,97 @@ Comprehensive documentation is available:
 - Add proper error handling and user feedback
 - Follow the RBAC pattern with `PermissionGate`
 
+## Testing
+
+The project uses **Vitest** for unit testing and **React Testing Library** for component testing.
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Open Vitest UI (interactive test dashboard)
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Writing Tests
+
+Tests are co-located with source files using the `.test.jsx` pattern:
+
+```
+src/
+├── components/
+│   └── ui/
+│       ├── button.jsx
+│       └── __tests__/
+│           └── button.test.jsx
+```
+
+#### Example Component Test
+
+```javascript
+import { describe, it, expect } from 'vitest'
+import { render, screen, userEvent } from '@/test-utils'
+import { Button } from './button'
+
+describe('Button', () => {
+  it('should call onClick when clicked', async () => {
+    const handleClick = vi.fn()
+    const user = userEvent.setup()
+    
+    render(<Button onClick={handleClick}>Click me</Button>)
+    await user.click(screen.getByRole('button'))
+    
+    expect(handleClick).toHaveBeenCalledOnce()
+  })
+})
+```
+
+### Test Utilities
+
+The project includes test utilities for common testing patterns:
+
+- **`test-utils.jsx`** - Custom render functions with providers
+- **`test-factories.js`** - Mock data factories for all entities
+- **`__tests__/setup.js`** - Global test setup and mocks
+
+#### Custom Render with Providers
+
+```javascript
+import { renderWithProviders } from '@/test-utils'
+import MyComponent from './MyComponent'
+
+const { getByText } = renderWithProviders(<MyComponent />)
+```
+
+#### Mock Data Factories
+
+```javascript
+import { createMockAgent, createMockUser } from '@/test-factories'
+
+const mockAgent = createMockAgent({ name: 'Test Agent' })
+const mockUsers = createMany(createMockUser, 5)
+```
+
+### Coverage Reports
+
+Coverage reports are generated in the `coverage/` directory (excluded from git).
+
+Current coverage target: **60%** (will be increased to 80% as more tests are added).
+
+View coverage in your browser:
+```bash
+npm run test:coverage
+open coverage/index.html
+```
+
 ## Known Issues & Security
 
 ### Security Vulnerabilities
@@ -211,7 +308,7 @@ See [SECURITY.md](./SECURITY.md) for details and mitigation status.
 
 ### Code Quality
 - 54 ESLint warnings (mostly unused imports) - Run `npm run lint:fix` to fix
-- Testing infrastructure not yet implemented (planned for Phase 3)
+- ✅ Testing infrastructure implemented with Vitest and React Testing Library (Phase 3)
 
 ## Contributing
 
