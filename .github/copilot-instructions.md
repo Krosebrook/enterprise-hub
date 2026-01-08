@@ -10,10 +10,11 @@ This document provides specific guidance for GitHub Copilot agents working on th
 
 ## Before Starting Any Task
 
-1. **Read** `.github/FEATURE_TO_PR_TEMPLATE.md` for the complete feature implementation workflow
-2. **Check** `README.md` for setup and environment configuration
-3. **Understand** the codebase structure (see below)
-4. **Run** `npm install` if dependencies are not yet installed
+1. **Review** `DOCS_INDEX_LLM.md` to find relevant documentation for your task
+2. **Read** `.github/FEATURE_TO_PR_TEMPLATE.md` for the complete feature implementation workflow
+3. **Check** `README.md` for setup and environment configuration
+4. **Understand** the codebase structure (see below)
+5. **Run** `npm install` if dependencies are not yet installed
 
 ## Repository Structure
 
@@ -270,6 +271,7 @@ VITE_BASE44_APP_BASE_URL=your_backend_url
 ## Questions or Issues?
 
 Refer to:
+- `DOCS_INDEX_LLM.md` - Quick reference to all documentation
 - `.github/FEATURE_TO_PR_TEMPLATE.md` - Complete workflow guide
 - `README.md` - Setup and getting started
 - Existing code - Look for similar implementations
