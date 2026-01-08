@@ -17,7 +17,8 @@ import {
   LogOut,
   Building2,
   User,
-  Users as UsersIcon
+  Users as UsersIcon,
+  BookOpen
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ const navigation = [
   { name: 'Policies', href: 'Policies', icon: Shield },
   { name: 'Users', href: 'Users', icon: UsersIcon },
   { name: 'Audit Log', href: 'AuditLog', icon: Activity },
+  { name: 'Documentation', href: 'Documentation', icon: BookOpen },
 ];
 
 export default function Layout({ children, currentPageName }) {
