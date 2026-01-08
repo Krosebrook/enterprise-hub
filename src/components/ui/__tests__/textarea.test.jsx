@@ -208,6 +208,7 @@ describe('Textarea Component', () => {
     it('should handle readonly attribute', () => {
       render(<Textarea aria-label="test textarea" readOnly value="Readonly text" />)
       const textarea = screen.getByRole('textbox')
+      // Check for the React prop 'readOnly'
       expect(textarea).toHaveAttribute('readonly')
     })
   })
