@@ -288,13 +288,22 @@ const mockUsers = createMany(createMockUser, 5)
 
 Coverage reports are generated in the `coverage/` directory (excluded from git).
 
-Current coverage target: **60%** (will be increased to 80% as more tests are added).
+Current coverage:
+- **UI Components**: 100% coverage on tested components (12/49 components)
+- **Overall Project**: 54% (progressing toward 60% threshold)
 
 View coverage in your browser:
 ```bash
 npm run test:coverage
 open coverage/index.html
 ```
+
+### Test Suite Status
+
+- **Total Tests**: 224 passing
+- **Test Files**: 12 component test files
+- **Execution Time**: ~8.5 seconds
+- **Coverage Target**: 60% (threshold), 80% (roadmap goal)
 
 ## Known Issues & Security
 

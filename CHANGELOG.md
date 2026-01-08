@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Sample component tests for Button and Card components (40 passing tests)
   - Code coverage reporting with v8 provider (60% threshold, target 80%)
   - Test scripts: `npm test`, `npm run test:watch`, `npm run test:ui`, `npm run test:coverage`
+- **Comprehensive unit test suite for UI components (224 tests)**
+  - Alert component tests (23 tests)
+  - Badge component tests (15 tests)
+  - Checkbox component tests (19 tests)
+  - Input component tests (27 tests)
+  - Label component tests (13 tests)
+  - Progress component tests (18 tests)
+  - Separator component tests (15 tests)
+  - Skeleton component tests (13 tests)
+  - Switch component tests (17 tests)
+  - Textarea component tests (24 tests)
+  - 100% code coverage on tested UI components
+  - All tests following RTL best practices
 
 ## [0.2.0] - 2025-01-07
 
