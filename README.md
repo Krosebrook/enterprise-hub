@@ -132,6 +132,7 @@ npm run typecheck    # TypeScript type checking
 
 Comprehensive documentation is available:
 
+- **[DOCS_INDEX_LLM.md](./DOCS_INDEX_LLM.md)** - 🤖 Documentation index for AI/LLM agents
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and design patterns
 - **[DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)** - Entity schemas and data relationships
 - **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - API reference and examples
