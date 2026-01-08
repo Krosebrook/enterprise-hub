@@ -413,43 +413,136 @@ git pull upstream main
 
 ## Testing Guidelines
 
-### Unit Tests (Coming Soon)
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Open Vitest UI (interactive dashboard)
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Writing Tests
+
+Tests should be co-located with source files:
+
+```
+src/
+├── components/
+│   └── MyComponent.jsx
+│   └── __tests__/
+│       └── MyComponent.test.jsx
+```
+
+### Unit Tests
 
 ```javascript
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import MyComponent from './MyComponent';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import MyComponent from './MyComponent'
 
 describe('MyComponent', () => {
   it('renders title correctly', () => {
-    render(<MyComponent title="Test Title" />);
-    expect(screen.getByText('Test Title')).toBeInTheDocument();
-  });
+    render(<MyComponent title="Test Title" />)
+    expect(screen.getByText('Test Title')).toBeInTheDocument()
+  })
 
-  it('calls onAction when button clicked', () => {
-    const mockAction = vi.fn();
-    render(<MyComponent title="Test" onAction={mockAction} />);
+  it('calls onAction when button clicked', async () => {
+    const mockAction = vi.fn()
+    const user = userEvent.setup()
     
-    const button = screen.getByRole('button');
-    fireEvent.click(button);
+    render(<MyComponent title="Test" onAction={mockAction} />)
     
-    expect(mockAction).toHaveBeenCalledOnce();
-  });
-});
+    const button = screen.getByRole('button')
+    await user.click(button)
+    
+    expect(mockAction).toHaveBeenCalledOnce()
+  })
+})
+```
+
+### Testing with Providers
+
+For components that need React Query, Router, or Auth context:
+
+```javascript
+import { renderWithProviders } from '@/test-utils'
+import MyComponent from './MyComponent'
+
+describe('MyComponent', () => {
+  it('should render with providers', () => {
+    const { getByText } = renderWithProviders(<MyComponent />)
+    expect(getByText('Hello')).toBeInTheDocument()
+  })
+})
+```
+
+### Mock Data Factories
+
+Use test factories for creating mock data:
+
+```javascript
+import { createMockAgent, createMockUser, createMany } from '@/test-factories'
+
+// Create single entity
+const agent = createMockAgent({ name: 'Custom Name' })
+
+// Create multiple entities
+const users = createMany(createMockUser, 5)
+```
+
+### Mocking Base44 API Calls
+
+```javascript
+import { vi } from 'vitest'
+import { base44 } from '@/api/base44Client'
+
+// Mock the API call
+vi.mock('@/api/base44Client', () => ({
+  base44: {
+    entities: {
+      Agent: {
+        list: vi.fn(() => Promise.resolve([createMockAgent()])),
+        create: vi.fn((data) => Promise.resolve({ id: 'new-id', ...data })),
+      },
+    },
+  },
+}))
 ```
 
 ### Integration Tests
 
+Integration tests validate complete user flows end-to-end:
+
 ```javascript
-// Test complete user flows
+import { renderWithProviders } from '@/test-utils'
+
 describe('Agent Creation Flow', () => {
   it('creates agent successfully', async () => {
-    // Navigate to create page
-    // Fill form
-    // Submit
-    // Verify agent appears in list
-  });
-});
+    const user = userEvent.setup()
+    
+    // Render the agent creation form
+    renderWithProviders(<AgentCreate />)
+    
+    // Fill in form fields
+    await user.type(screen.getByLabelText(/name/i), 'Test Agent')
+    await user.type(screen.getByLabelText(/description/i), 'Test description')
+    await user.selectOptions(screen.getByLabelText(/model/i), 'gpt-4')
+    
+    // Submit form
+    await user.click(screen.getByRole('button', { name: /create/i }))
+    
+    // Verify success message
+    expect(await screen.findByText(/agent created/i)).toBeInTheDocument()
+  })
+})
 ```
 
 ### Manual Testing Checklist

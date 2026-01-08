@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation suite (CHANGELOG.md, SECURITY.md, ARCHITECTURE.md)
 - Database schema documentation
 - API documentation for Base44 entities
+- **Testing infrastructure with Vitest and React Testing Library**
+  - Vitest configuration with jsdom environment
+  - React Testing Library setup for component testing
+  - Test utilities with custom render functions and provider wrappers
+  - Test data factories for all Base44 entities (User, Agent, Architecture, Policy, etc.)
+  - Sample component tests for Button and Card components (40 passing tests)
+  - Code coverage reporting with v8 provider (60% threshold, target 80%)
+  - Test scripts: `npm test`, `npm run test:watch`, `npm run test:ui`, `npm run test:coverage`
 
 ## [0.2.0] - 2025-01-07
 
