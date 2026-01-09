@@ -274,6 +274,12 @@ export default function Agents() {
                         </DropdownMenuItem>
                         <PermissionGate permission="agent.edit">
                           <DropdownMenuItem asChild>
+                            <Link to={createPageUrl(`AgentPlayground?id=${agent.id}`)}>
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Test in Playground
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
                             <Link to={createPageUrl(`AgentCreate?id=${agent.id}`)}>
                               <Settings className="w-4 h-4 mr-2" />
                               Configure
