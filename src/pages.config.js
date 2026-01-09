@@ -11,6 +11,7 @@ import Observability from './pages/Observability';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
+import AgentPlayground from './pages/AgentPlayground';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
     "Users": Users,
+    "AgentPlayground": AgentPlayground,
 }
 
 export const pagesConfig = {
