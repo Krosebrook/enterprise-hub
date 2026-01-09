@@ -15,7 +15,11 @@ import {
   Database,
   Server,
   MessageSquare,
-  Loader2
+  Loader2,
+  GitBranch,
+  Network,
+  Workflow,
+  Link2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +41,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import ServiceCard from '../components/architecture/ServiceCard';
 import ServicePropertiesPanel from '../components/architecture/ServicePropertiesPanel';
 import CodeGenerationDialog from '../components/architecture/CodeGenerationDialog';
+import DependencyGraph from '../components/architecture/DependencyGraph';
+import SequenceDiagram from '../components/architecture/SequenceDiagram';
+import VersionHistory from '../components/architecture/VersionHistory';
 import PermissionGate from '../components/rbac/PermissionGate';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const servicePalette = [
   { type: 'api', label: 'API Service', icon: Server, color: 'bg-blue-500' },
@@ -60,6 +68,9 @@ export default function ArchitectureDesigner() {
   const [selectedService, setSelectedService] = useState(null);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [showRightPanel, setShowRightPanel] = useState(true);
+  const [selectedConnection, setSelectedConnection] = useState({ source: null, target: null });
   const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -136,6 +147,14 @@ export default function ArchitectureDesigner() {
     }
   });
 
+  const createConnectionMutation = useMutation({
+    mutationFn: (data) => base44.entities.ServiceConnection.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['connections', architectureId] });
+      setSelectedConnection({ source: null, target: null });
+    }
+  });
+
   const handleCreateArchitecture = () => {
     if (!newArchitecture.name.trim()) return;
     createArchitectureMutation.mutate({
@@ -162,9 +181,27 @@ export default function ArchitectureDesigner() {
     createServiceMutation.mutate(newService);
   };
 
-  const handleServiceClick = (service) => {
-    setSelectedService(service);
-    setShowPropertiesPanel(true);
+  const handleServiceClick = (service, e) => {
+    // Handle connection mode
+    if (e?.ctrlKey || e?.metaKey) {
+      if (!selectedConnection.source) {
+        setSelectedConnection({ source: service, target: null });
+      } else if (selectedConnection.source.id !== service.id) {
+        createConnectionMutation.mutate({
+          architecture_id: architectureId,
+          source_service_id: selectedConnection.source.id,
+          target_service_id: service.id,
+          connection_type: 'sync',
+          protocol: 'http',
+          is_authenticated: true,
+          auth_method: 'jwt'
+        });
+      }
+    } else {
+      setSelectedService(service);
+      setShowPropertiesPanel(true);
+      setSelectedConnection({ source: null, target: null });
+    }
   };
 
   const handleServiceDragEnd = (service, e) => {
@@ -250,6 +287,20 @@ export default function ArchitectureDesigner() {
         <div className="flex items-center gap-3">
           <Button 
             variant="outline" 
+            onClick={() => setShowVersionHistory(true)}
+          >
+            <GitBranch className="w-4 h-4 mr-2" />
+            v{architecture?.version || 1}
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowRightPanel(!showRightPanel)}
+          >
+            <Network className="w-4 h-4 mr-2" />
+            {showRightPanel ? 'Hide' : 'Show'} Analysis
+          </Button>
+          <Button 
+            variant="outline" 
             onClick={handleValidate}
             disabled={isSaving || services.length === 0}
           >
@@ -308,7 +359,7 @@ export default function ArchitectureDesigner() {
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
               Tools
             </h3>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button 
                 variant="outline" 
                 size="icon"
@@ -331,6 +382,19 @@ export default function ArchitectureDesigner() {
                 <Maximize className="w-4 h-4" />
               </Button>
             </div>
+            
+            {selectedConnection.source && (
+              <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                <div className="flex items-center gap-1 mb-1">
+                  <Link2 className="w-3 h-3 text-blue-600" />
+                  <span className="font-medium text-blue-900">Connection Mode</span>
+                </div>
+                <div className="text-blue-700">
+                  From: <span className="font-medium">{selectedConnection.source.name}</span>
+                </div>
+                <div className="text-blue-600 mt-1">Click target service</div>
+              </div>
+            )}
           </div>
 
           {/* Stats */}
@@ -376,12 +440,56 @@ export default function ArchitectureDesigner() {
               minHeight: '1500px'
             }}
           >
+            {/* Draw connections */}
+            <svg className="absolute inset-0 pointer-events-none" style={{ width: '2000px', height: '1500px' }}>
+              {connections.map((conn) => {
+                const source = services.find(s => s.id === conn.source_service_id);
+                const target = services.find(s => s.id === conn.target_service_id);
+                if (!source || !target) return null;
+
+                const x1 = source.canvas_position_x + 100;
+                const y1 = source.canvas_position_y + 65;
+                const x2 = target.canvas_position_x + 100;
+                const y2 = target.canvas_position_y + 65;
+
+                const color = conn.connection_type === 'sync' ? '#3b82f6' : 
+                             conn.connection_type === 'async' ? '#a855f7' : '#10b981';
+
+                return (
+                  <g key={conn.id}>
+                    <line
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke={color}
+                      strokeWidth="2"
+                      strokeDasharray={conn.connection_type === 'async' ? '5,5' : '0'}
+                      markerEnd="url(#arrowhead)"
+                    />
+                  </g>
+                );
+              })}
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="9"
+                  refY="3"
+                  orient="auto"
+                >
+                  <polygon points="0 0, 10 3, 0 6" fill="#64748b" />
+                </marker>
+              </defs>
+            </svg>
+
             {services.map((service) => (
               <ServiceCard
                 key={service.id}
                 service={service}
-                isSelected={selectedService?.id === service.id}
-                onClick={() => handleServiceClick(service)}
+                isSelected={selectedService?.id === service.id || selectedConnection.source?.id === service.id}
+                onClick={(e) => handleServiceClick(service, e)}
                 onDragEnd={(e) => handleServiceDragEnd(service, e)}
               />
             ))}
@@ -401,8 +509,41 @@ export default function ArchitectureDesigner() {
                 </div>
               </div>
             )}
+
+            {services.length > 0 && (
+              <div className="absolute top-4 left-4 bg-white rounded-lg shadow-sm p-3 text-xs text-slate-600 max-w-xs">
+                <div className="font-medium mb-1">💡 Quick Tip</div>
+                <div>Hold <kbd className="px-1 py-0.5 bg-slate-100 rounded">Ctrl</kbd> / <kbd className="px-1 py-0.5 bg-slate-100 rounded">⌘</kbd> and click services to create connections</div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Right Panel - Analysis */}
+        {showRightPanel && (
+          <div className="w-80 bg-white border-l border-slate-200 flex flex-col">
+            <Tabs defaultValue="dependencies" className="flex-1 flex flex-col">
+              <TabsList className="w-full grid grid-cols-2 m-4 mb-0">
+                <TabsTrigger value="dependencies">
+                  <Network className="w-4 h-4 mr-2" />
+                  Dependencies
+                </TabsTrigger>
+                <TabsTrigger value="sequence">
+                  <Workflow className="w-4 h-4 mr-2" />
+                  Flows
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="dependencies" className="flex-1 m-4 mt-4">
+                <DependencyGraph services={services} connections={connections} />
+              </TabsContent>
+              
+              <TabsContent value="sequence" className="flex-1 m-4 mt-4">
+                <SequenceDiagram services={services} connections={connections} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
       </div>
 
       {/* Properties Panel */}
@@ -424,6 +565,15 @@ export default function ArchitectureDesigner() {
         architecture={architecture}
         services={services}
       />
+
+      {/* Version History */}
+      {architecture && (
+        <VersionHistory
+          architecture={architecture}
+          open={showVersionHistory}
+          onClose={() => setShowVersionHistory(false)}
+        />
+      )}
 
       {/* Create Architecture Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>

@@ -6,11 +6,11 @@ import AuditLog from './pages/AuditLog';
 import Compliance from './pages/Compliance';
 import Costs from './pages/Costs';
 import Dashboard from './pages/Dashboard';
+import Documentation from './pages/Documentation';
 import Observability from './pages/Observability';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
-import Documentation from './pages/Documentation';
 import __Layout from './Layout.jsx';
 
 
@@ -23,11 +23,11 @@ export const PAGES = {
     "Compliance": Compliance,
     "Costs": Costs,
     "Dashboard": Dashboard,
+    "Documentation": Documentation,
     "Observability": Observability,
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
     "Users": Users,
-    "Documentation": Documentation,
 }
 
 export const pagesConfig = {
