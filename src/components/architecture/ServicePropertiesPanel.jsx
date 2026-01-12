@@ -80,7 +80,9 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto">
+    <div 
+      data-b44-sync="true"
+      className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto">
       <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">
           {service?.id ? 'Edit Service' : 'New Service'}

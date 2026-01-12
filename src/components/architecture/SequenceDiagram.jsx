@@ -93,7 +93,7 @@ export default function SequenceDiagram({ services, connections }) {
   };
 
   return (
-    <Card className="h-full">
+    <Card data-b44-sync="true" className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">Sequence Diagram</CardTitle>

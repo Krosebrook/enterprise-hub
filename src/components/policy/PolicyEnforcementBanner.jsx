@@ -39,7 +39,9 @@ export default function PolicyEnforcementBanner({
   const Icon = config.icon;
 
   return (
-    <div className={`${config.bgColor} border ${config.borderColor} rounded-lg p-4 mb-6`}>
+    <div 
+      data-b44-sync="true"
+      className={`${config.bgColor} border ${config.borderColor} rounded-lg p-4 mb-6`}>
       <div className="flex items-start gap-4">
         <div className={`p-2 rounded-lg bg-white`}>
           <Icon className={`w-5 h-5 ${config.iconColor}`} />

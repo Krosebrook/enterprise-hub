@@ -4,14 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { 
   Loader2, 
   CheckCircle, 
   XCircle, 
   Clock, 
-  TrendingUp,
-  AlertCircle
+  TrendingUp
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -111,7 +109,7 @@ export default function TrainingMonitor({ agentId, onComplete }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div data-b44-sync="true" className="space-y-4">
       {/* Active Training Job */}
       {activeJob && (
         <Card className="border-2 border-blue-200 bg-blue-50">
