@@ -1,0 +1,234 @@
+{
+  "platform": {
+    "name": "Enterprise Hub",
+    "version": "0.2.0",
+    "appId": "${VITE_BASE44_APP_ID}",
+    "appBaseUrl": "${VITE_BASE44_APP_BASE_URL}",
+    "functionsVersion": "1"
+  },
+  "sync": {
+    "enabled": true,
+    "githubRepository": "Krosebrook/enterprise-hub",
+    "manifestPath": ".github/sync-manifest.json",
+    "schemaPath": "src/models/schema.json",
+    "autoSync": true,
+    "syncInterval": 300000,
+    "syncOnBuild": true
+  },
+  "visualEditor": {
+    "enabled": true,
+    "canvasMode": "visual-render",
+    "attributePrefix": "data-b44-sync",
+    "elementsTreeSync": true,
+    "previewRefreshOnSync": true,
+    "componentsPath": "src/components",
+    "pagesPath": "src/pages",
+    "showSyncedStatus": false,
+    "autoDetectChanges": true
+  },
+  "entities": {
+    "definitions": [
+      {
+        "name": "User",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "email", "type": "string", "unique": true },
+          { "name": "full_name", "type": "string" },
+          { "name": "role", "type": "string", "enum": ["admin", "developer", "viewer", "auditor"] },
+          { "name": "created_date", "type": "timestamp" },
+          { "name": "last_login", "type": "timestamp", "optional": true },
+          { "name": "avatar_url", "type": "string", "optional": true },
+          { "name": "preferences", "type": "object", "optional": true }
+        ]
+      },
+      {
+        "name": "Agent",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "name", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "model", "type": "string" },
+          { "name": "status", "type": "string", "enum": ["draft", "deployed", "suspended", "archived"] },
+          { "name": "cost_per_request", "type": "number" },
+          { "name": "total_requests", "type": "number" },
+          { "name": "created_by", "type": "string", "reference": "User" },
+          { "name": "created_date", "type": "timestamp" },
+          { "name": "updated_date", "type": "timestamp" },
+          { "name": "deployment_date", "type": "timestamp", "optional": true },
+          { "name": "configuration", "type": "object" },
+          { "name": "tags", "type": "array", "items": "string" },
+          { "name": "capabilities", "type": "array", "items": "string" },
+          { "name": "limitations", "type": "array", "items": "string" },
+          { "name": "compliance_status", "type": "string", "enum": ["compliant", "non_compliant", "pending_review"] }
+        ]
+      },
+      {
+        "name": "Architecture",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "name", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "cloud_provider", "type": "string", "enum": ["aws", "gcp", "azure", "multi-cloud"] },
+          { "name": "region", "type": "string" },
+          { "name": "environment", "type": "string", "enum": ["dev", "staging", "production"] },
+          { "name": "status", "type": "string", "enum": ["draft", "active", "archived"] },
+          { "name": "components", "type": "object" },
+          { "name": "services", "type": "array", "items": "object" },
+          { "name": "created_by", "type": "string", "reference": "User" },
+          { "name": "created_date", "type": "timestamp" },
+          { "name": "updated_date", "type": "timestamp" },
+          { "name": "tags", "type": "array", "items": "string" },
+          { "name": "estimated_cost", "type": "number" },
+          { "name": "terraform_generated", "type": "boolean" },
+          { "name": "last_terraform_gen", "type": "timestamp", "optional": true }
+        ]
+      },
+      {
+        "name": "Policy",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "name", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "type", "type": "string", "enum": ["agent", "architecture", "data", "security"] },
+          { "name": "category", "type": "string" },
+          { "name": "severity", "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          { "name": "rules", "type": "array", "items": "object" },
+          { "name": "is_active", "type": "boolean" },
+          { "name": "applies_to", "type": "array", "items": "string" },
+          { "name": "created_by", "type": "string", "reference": "User" },
+          { "name": "created_date", "type": "timestamp" },
+          { "name": "updated_date", "type": "timestamp" },
+          { "name": "last_evaluated", "type": "timestamp", "optional": true },
+          { "name": "violations", "type": "number" },
+          { "name": "enforcement_mode", "type": "string", "enum": ["audit", "warn", "block"] }
+        ]
+      },
+      {
+        "name": "ComplianceFramework",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "name", "type": "string" },
+          { "name": "version", "type": "string" },
+          { "name": "description", "type": "string" },
+          { "name": "requirements", "type": "array", "items": "object" },
+          { "name": "is_enabled", "type": "boolean" },
+          { "name": "compliance_score", "type": "number" },
+          { "name": "last_assessed", "type": "timestamp", "optional": true },
+          { "name": "certification_date", "type": "timestamp", "optional": true },
+          { "name": "expiry_date", "type": "timestamp", "optional": true },
+          { "name": "auditor", "type": "string", "optional": true },
+          { "name": "controls", "type": "array", "items": "object" },
+          { "name": "evidence", "type": "array", "items": "object" }
+        ]
+      },
+      {
+        "name": "Activity",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "user_id", "type": "string", "reference": "User" },
+          { "name": "user_name", "type": "string" },
+          { "name": "action", "type": "string" },
+          { "name": "entity_type", "type": "string" },
+          { "name": "entity_id", "type": "string" },
+          { "name": "entity_name", "type": "string" },
+          { "name": "timestamp", "type": "timestamp" },
+          { "name": "ip_address", "type": "string" },
+          { "name": "user_agent", "type": "string" },
+          { "name": "metadata", "type": "object" },
+          { "name": "changes", "type": "object" },
+          { "name": "status", "type": "string", "enum": ["success", "failure"] },
+          { "name": "error_message", "type": "string", "optional": true }
+        ]
+      },
+      {
+        "name": "Cost",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "agent_id", "type": "string", "reference": "Agent", "optional": true },
+          { "name": "architecture_id", "type": "string", "reference": "Architecture", "optional": true },
+          { "name": "date", "type": "date" },
+          { "name": "amount", "type": "number" },
+          { "name": "cloud_provider", "type": "string" },
+          { "name": "service", "type": "string" },
+          { "name": "region", "type": "string" },
+          { "name": "category", "type": "string", "enum": ["compute", "storage", "network", "ai", "other"] },
+          { "name": "quantity", "type": "number" },
+          { "name": "unit", "type": "string" },
+          { "name": "currency", "type": "string", "default": "USD" },
+          { "name": "tags", "type": "object" },
+          { "name": "created_date", "type": "timestamp" }
+        ]
+      },
+      {
+        "name": "Metric",
+        "type": "base44_entity",
+        "fields": [
+          { "name": "id", "type": "string", "primary": true },
+          { "name": "agent_id", "type": "string", "reference": "Agent", "optional": true },
+          { "name": "architecture_id", "type": "string", "reference": "Architecture", "optional": true },
+          { "name": "metric_name", "type": "string" },
+          { "name": "value", "type": "number" },
+          { "name": "unit", "type": "string" },
+          { "name": "timestamp", "type": "timestamp" },
+          { "name": "tags", "type": "object" },
+          { "name": "metadata", "type": "object" }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "framework": "tailwind",
+    "configPath": "tailwind.config.js",
+    "cssPath": "src/index.css",
+    "theme": {
+      "cssVariables": true,
+      "baseColor": "neutral",
+      "radius": "0.5rem"
+    },
+    "componentLibrary": {
+      "name": "shadcn/ui",
+      "variant": "new-york",
+      "primitives": "radix-ui"
+    }
+  },
+  "routing": {
+    "library": "react-router-dom",
+    "version": "6.26.0",
+    "configPath": "src/pages.config.js"
+  },
+  "stateManagement": {
+    "serverState": {
+      "library": "@tanstack/react-query",
+      "version": "5.84.1"
+    },
+    "localState": "react-hooks",
+    "globalState": "react-context"
+  },
+  "authentication": {
+    "provider": "base44",
+    "contextPath": "src/lib/AuthContext.jsx",
+    "requiresAuth": false
+  },
+  "build": {
+    "tool": "vite",
+    "version": "6.1.0",
+    "outDir": "dist",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "preview": "vite preview"
+    }
+  },
+  "deployment": {
+    "platform": "base44",
+    "serverlessFunctions": true,
+    "functionsPath": "functions/"
+  }
+}
