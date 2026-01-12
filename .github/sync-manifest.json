@@ -1,0 +1,349 @@
+{
+  "version": "1.0.0",
+  "repository": "Krosebrook/enterprise-hub",
+  "last_sync": "2026-01-12T05:21:28.016Z",
+  "metadata": {
+    "framework": "React 18.2.0",
+    "build_tool": "Vite 6.1.0",
+    "styling": "Tailwind CSS 3.4.17",
+    "component_library": "Radix UI",
+    "backend": "Base44 SDK 0.8.3"
+  },
+  "pages": [
+    {
+      "id": "dashboard",
+      "path": "src/pages/Dashboard.jsx",
+      "name": "Dashboard",
+      "route": "/",
+      "data_bindings": ["User", "Agent", "Architecture", "ComplianceFramework", "Activity"],
+      "components_used": ["MetricCard", "ActivityFeed", "QuickActionCard", "PermissionGate"],
+      "data_b44_sync": "page-dashboard"
+    },
+    {
+      "id": "agents",
+      "path": "src/pages/Agents.jsx",
+      "name": "Agents",
+      "route": "/agents",
+      "data_bindings": ["Agent", "User"],
+      "components_used": ["Card", "Button", "Badge", "Dialog"],
+      "data_b44_sync": "page-agents"
+    },
+    {
+      "id": "agent-create",
+      "path": "src/pages/AgentCreate.jsx",
+      "name": "Agent Create",
+      "route": "/agents/create",
+      "data_bindings": ["Agent", "User"],
+      "components_used": ["Card", "Input", "Select", "Button", "TrainingMonitor"],
+      "data_b44_sync": "page-agent-create"
+    },
+    {
+      "id": "agent-playground",
+      "path": "src/pages/AgentPlayground.jsx",
+      "name": "Agent Playground",
+      "route": "/agents/playground",
+      "data_bindings": ["Agent"],
+      "components_used": ["Card", "Button", "Textarea"],
+      "data_b44_sync": "page-agent-playground"
+    },
+    {
+      "id": "architectures",
+      "path": "src/pages/Architectures.jsx",
+      "name": "Architectures",
+      "route": "/architectures",
+      "data_bindings": ["Architecture", "User"],
+      "components_used": ["Card", "Button", "Badge"],
+      "data_b44_sync": "page-architectures"
+    },
+    {
+      "id": "architecture-designer",
+      "path": "src/pages/ArchitectureDesigner.jsx",
+      "name": "Architecture Designer",
+      "route": "/architectures/:id",
+      "data_bindings": ["Architecture", "User"],
+      "components_used": ["ServiceCard", "ServicePropertiesPanel", "CodeGenerationDialog", "DependencyGraph", "SequenceDiagram", "VersionHistory"],
+      "data_b44_sync": "page-architecture-designer"
+    },
+    {
+      "id": "policies",
+      "path": "src/pages/Policies.jsx",
+      "name": "Policies",
+      "route": "/policies",
+      "data_bindings": ["Policy", "User"],
+      "components_used": ["Card", "Button", "Badge", "PolicyEnforcementBanner"],
+      "data_b44_sync": "page-policies"
+    },
+    {
+      "id": "policy-create",
+      "path": "src/pages/PolicyCreate.jsx",
+      "name": "Policy Create",
+      "route": "/policies/create",
+      "data_bindings": ["Policy", "User"],
+      "components_used": ["Card", "Input", "Select", "Textarea", "Button"],
+      "data_b44_sync": "page-policy-create"
+    },
+    {
+      "id": "compliance",
+      "path": "src/pages/Compliance.jsx",
+      "name": "Compliance",
+      "route": "/compliance",
+      "data_bindings": ["ComplianceFramework", "Policy", "User"],
+      "components_used": ["Card", "Badge", "Progress", "Tabs"],
+      "data_b44_sync": "page-compliance"
+    },
+    {
+      "id": "costs",
+      "path": "src/pages/Costs.jsx",
+      "name": "Costs",
+      "route": "/costs",
+      "data_bindings": ["Cost", "Agent", "Architecture"],
+      "components_used": ["Card", "Chart", "Select", "DatePicker"],
+      "data_b44_sync": "page-costs"
+    },
+    {
+      "id": "observability",
+      "path": "src/pages/Observability.jsx",
+      "name": "Observability",
+      "route": "/observability",
+      "data_bindings": ["Metric", "Agent", "Architecture"],
+      "components_used": ["Card", "Chart", "Badge", "Tabs"],
+      "data_b44_sync": "page-observability"
+    },
+    {
+      "id": "audit-log",
+      "path": "src/pages/AuditLog.jsx",
+      "name": "Audit Log",
+      "route": "/audit-log",
+      "data_bindings": ["Activity", "User"],
+      "components_used": ["Card", "Table", "Badge", "Select"],
+      "data_b44_sync": "page-audit-log"
+    },
+    {
+      "id": "users",
+      "path": "src/pages/Users.jsx",
+      "name": "Users",
+      "route": "/users",
+      "data_bindings": ["User"],
+      "components_used": ["Card", "Table", "Badge", "Button"],
+      "data_b44_sync": "page-users"
+    },
+    {
+      "id": "documentation",
+      "path": "src/pages/Documentation.jsx",
+      "name": "Documentation",
+      "route": "/documentation",
+      "data_bindings": [],
+      "components_used": ["Card", "Tabs"],
+      "data_b44_sync": "page-documentation"
+    }
+  ],
+  "components": {
+    "dashboard": [
+      {
+        "name": "MetricCard",
+        "path": "src/components/dashboard/MetricCard.jsx",
+        "type": "presentational",
+        "props": ["title", "value", "unit", "trend", "icon", "color"],
+        "data_b44_sync": "component-metric-card",
+        "tailwind_classes": ["bg-white", "rounded-xl", "border-slate-200", "hover:shadow-lg", "text-slate-900", "text-slate-500"]
+      },
+      {
+        "name": "ActivityFeed",
+        "path": "src/components/dashboard/ActivityFeed.jsx",
+        "type": "data-driven",
+        "props": ["activities", "limit"],
+        "data_bindings": ["Activity"],
+        "data_b44_sync": "component-activity-feed"
+      },
+      {
+        "name": "QuickActionCard",
+        "path": "src/components/dashboard/QuickActionCard.jsx",
+        "type": "interactive",
+        "props": ["title", "description", "icon", "onClick", "color"],
+        "data_b44_sync": "component-quick-action-card"
+      }
+    ],
+    "agent": [
+      {
+        "name": "TrainingMonitor",
+        "path": "src/components/agent/TrainingMonitor.jsx",
+        "type": "data-driven",
+        "props": ["agentId", "trainingData"],
+        "data_bindings": ["Agent"],
+        "data_b44_sync": "component-training-monitor"
+      }
+    ],
+    "architecture": [
+      {
+        "name": "ServiceCard",
+        "path": "src/components/architecture/ServiceCard.jsx",
+        "type": "presentational",
+        "props": ["service", "onSelect", "onDelete"],
+        "data_b44_sync": "component-service-card"
+      },
+      {
+        "name": "ServicePropertiesPanel",
+        "path": "src/components/architecture/ServicePropertiesPanel.jsx",
+        "type": "interactive",
+        "props": ["service", "onChange"],
+        "data_b44_sync": "component-service-properties-panel"
+      },
+      {
+        "name": "CodeGenerationDialog",
+        "path": "src/components/architecture/CodeGenerationDialog.jsx",
+        "type": "interactive",
+        "props": ["architecture", "open", "onClose"],
+        "data_bindings": ["Architecture"],
+        "data_b44_sync": "component-code-generation-dialog"
+      },
+      {
+        "name": "DependencyGraph",
+        "path": "src/components/architecture/DependencyGraph.jsx",
+        "type": "visualization",
+        "props": ["services", "dependencies"],
+        "data_b44_sync": "component-dependency-graph"
+      },
+      {
+        "name": "SequenceDiagram",
+        "path": "src/components/architecture/SequenceDiagram.jsx",
+        "type": "visualization",
+        "props": ["services", "interactions"],
+        "data_b44_sync": "component-sequence-diagram"
+      },
+      {
+        "name": "VersionHistory",
+        "path": "src/components/architecture/VersionHistory.jsx",
+        "type": "data-driven",
+        "props": ["architectureId"],
+        "data_bindings": ["Architecture"],
+        "data_b44_sync": "component-version-history"
+      }
+    ],
+    "policy": [
+      {
+        "name": "PolicyEnforcementBanner",
+        "path": "src/components/policy/PolicyEnforcementBanner.jsx",
+        "type": "presentational",
+        "props": ["policy", "violations"],
+        "data_bindings": ["Policy"],
+        "data_b44_sync": "component-policy-enforcement-banner"
+      }
+    ],
+    "rbac": [
+      {
+        "name": "PermissionGate",
+        "path": "src/components/rbac/PermissionGate.jsx",
+        "type": "logic",
+        "props": ["permission", "children", "fallback"],
+        "data_bindings": ["User"],
+        "data_b44_sync": "component-permission-gate"
+      }
+    ],
+    "ui": [
+      {
+        "name": "Button",
+        "path": "src/components/ui/button.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "variants": ["default", "destructive", "outline", "secondary", "ghost", "link"],
+        "sizes": ["default", "sm", "lg", "icon"],
+        "data_b44_sync": "ui-button"
+      },
+      {
+        "name": "Card",
+        "path": "src/components/ui/card.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "subcomponents": ["CardHeader", "CardTitle", "CardDescription", "CardContent", "CardFooter"],
+        "data_b44_sync": "ui-card"
+      },
+      {
+        "name": "Badge",
+        "path": "src/components/ui/badge.jsx",
+        "type": "primitive",
+        "variants": ["default", "secondary", "destructive", "outline"],
+        "data_b44_sync": "ui-badge"
+      },
+      {
+        "name": "Input",
+        "path": "src/components/ui/input.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-input"
+      },
+      {
+        "name": "Select",
+        "path": "src/components/ui/select.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-select"
+      },
+      {
+        "name": "Dialog",
+        "path": "src/components/ui/dialog.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-dialog"
+      },
+      {
+        "name": "Tabs",
+        "path": "src/components/ui/tabs.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-tabs"
+      },
+      {
+        "name": "Table",
+        "path": "src/components/ui/table.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-table"
+      },
+      {
+        "name": "Chart",
+        "path": "src/components/ui/chart.jsx",
+        "type": "visualization",
+        "library": "Recharts",
+        "data_b44_sync": "ui-chart"
+      },
+      {
+        "name": "Progress",
+        "path": "src/components/ui/progress.jsx",
+        "type": "primitive",
+        "library": "Radix UI",
+        "data_b44_sync": "ui-progress"
+      }
+    ]
+  },
+  "tailwind_theme": {
+    "colors": {
+      "primary": ["background", "foreground"],
+      "semantic": ["card", "popover", "primary", "secondary", "muted", "accent", "destructive"],
+      "utility": ["border", "input", "ring"],
+      "charts": ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"],
+      "sidebar": ["sidebar-background", "sidebar-foreground", "sidebar-primary", "sidebar-accent"]
+    },
+    "utilities": {
+      "spacing": ["p-6", "p-8", "gap-6", "mb-8", "mt-4"],
+      "typography": ["text-3xl", "text-2xl", "text-lg", "font-bold", "font-medium"],
+      "layout": ["grid", "grid-cols-1", "md:grid-cols-3", "flex", "items-center"],
+      "borders": ["rounded-xl", "border", "border-slate-200"],
+      "effects": ["shadow-lg", "hover:shadow-lg", "transition-all"]
+    }
+  },
+  "entity_models": [
+    "User",
+    "Agent",
+    "Architecture",
+    "Policy",
+    "ComplianceFramework",
+    "Activity",
+    "Cost",
+    "Metric"
+  ],
+  "sync_attributes": {
+    "enabled": true,
+    "attribute_prefix": "data-b44-sync",
+    "auto_generate_on_build": true
+  }
+}

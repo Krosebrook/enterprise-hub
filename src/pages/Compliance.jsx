@@ -108,7 +108,10 @@ export default function Compliance() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div 
+      className="p-6 lg:p-8 max-w-7xl mx-auto"
+      data-b44-sync="page-compliance"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
