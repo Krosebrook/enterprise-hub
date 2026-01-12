@@ -1,0 +1,331 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Enterprise Hub Data Models",
+  "description": "Base44 entity schemas for Enterprise Hub platform",
+  "version": "0.2.0",
+  "entities": {
+    "User": {
+      "type": "object",
+      "description": "System users with role-based access control",
+      "properties": {
+        "id": { "type": "string", "description": "Auto-generated unique identifier" },
+        "email": { "type": "string", "format": "email", "description": "User's email (unique)" },
+        "full_name": { "type": "string", "description": "User's display name" },
+        "role": { 
+          "type": "string", 
+          "enum": ["admin", "developer", "viewer", "auditor"],
+          "description": "RBAC role"
+        },
+        "created_date": { "type": "string", "format": "date-time" },
+        "last_login": { "type": "string", "format": "date-time" },
+        "avatar_url": { "type": "string", "format": "uri" },
+        "preferences": { "type": "object" }
+      },
+      "required": ["email", "full_name", "role"]
+    },
+    "Agent": {
+      "type": "object",
+      "description": "AI agents managed within the system",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "model": { "type": "string", "description": "AI model identifier" },
+        "status": { 
+          "type": "string", 
+          "enum": ["draft", "deployed", "suspended", "archived"]
+        },
+        "cost_per_request": { "type": "number", "minimum": 0 },
+        "total_requests": { "type": "number", "minimum": 0 },
+        "created_by": { "type": "string", "description": "User ID" },
+        "created_date": { "type": "string", "format": "date-time" },
+        "updated_date": { "type": "string", "format": "date-time" },
+        "deployment_date": { "type": "string", "format": "date-time" },
+        "configuration": { "type": "object" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "limitations": { "type": "array", "items": { "type": "string" } },
+        "compliance_status": {
+          "type": "string",
+          "enum": ["compliant", "non_compliant", "pending_review"]
+        }
+      },
+      "required": ["name", "model", "status"]
+    },
+    "Architecture": {
+      "type": "object",
+      "description": "Cloud architecture designs",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "cloud_provider": { 
+          "type": "string",
+          "enum": ["aws", "gcp", "azure", "multi-cloud"]
+        },
+        "region": { "type": "string" },
+        "environment": { 
+          "type": "string",
+          "enum": ["dev", "staging", "production"]
+        },
+        "status": { 
+          "type": "string",
+          "enum": ["draft", "active", "archived"]
+        },
+        "components": { "type": "object" },
+        "services": { "type": "array", "items": { "type": "object" } },
+        "created_by": { "type": "string" },
+        "created_date": { "type": "string", "format": "date-time" },
+        "updated_date": { "type": "string", "format": "date-time" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "estimated_cost": { "type": "number", "minimum": 0 },
+        "terraform_generated": { "type": "boolean" },
+        "last_terraform_gen": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "cloud_provider", "environment", "status"]
+    },
+    "Policy": {
+      "type": "object",
+      "description": "Governance policies for AI agents and architectures",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { 
+          "type": "string",
+          "enum": ["agent", "architecture", "data", "security"]
+        },
+        "category": { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "rules": { "type": "array", "items": { "type": "object" } },
+        "is_active": { "type": "boolean" },
+        "applies_to": { "type": "array", "items": { "type": "string" } },
+        "created_by": { "type": "string" },
+        "created_date": { "type": "string", "format": "date-time" },
+        "updated_date": { "type": "string", "format": "date-time" },
+        "last_evaluated": { "type": "string", "format": "date-time" },
+        "violations": { "type": "number", "minimum": 0 },
+        "enforcement_mode": {
+          "type": "string",
+          "enum": ["audit", "warn", "block"]
+        }
+      },
+      "required": ["name", "type", "severity", "is_active", "enforcement_mode"]
+    },
+    "Service": {
+      "type": "object",
+      "description": "Visual architecture services on canvas",
+      "properties": {
+        "id": { "type": "string" },
+        "architecture_id": { "type": "string" },
+        "name": { "type": "string" },
+        "language": { 
+          "type": "string",
+          "enum": ["go", "nodejs", "python", "java", "rust", "csharp"]
+        },
+        "framework": { "type": "string" },
+        "database_type": { 
+          "type": "string",
+          "enum": ["postgresql", "mysql", "mongodb", "redis", "elasticsearch", "none"]
+        },
+        "health_status": {
+          "type": "string",
+          "enum": ["healthy", "degraded", "unhealthy", "unknown"]
+        },
+        "canvas_position_x": { "type": "number" },
+        "canvas_position_y": { "type": "number" },
+        "created_date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["architecture_id", "name", "language"]
+    },
+    "CostRecord": {
+      "type": "object",
+      "description": "Cost tracking records",
+      "properties": {
+        "id": { "type": "string" },
+        "entity_type": { "type": "string" },
+        "entity_id": { "type": "string" },
+        "cloud_provider": { "type": "string" },
+        "service_name": { "type": "string" },
+        "cost": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "default": "USD" },
+        "billing_period": { "type": "string" },
+        "recorded_date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["entity_type", "entity_id", "cost", "billing_period"]
+    },
+    "ComplianceFramework": {
+      "type": "object",
+      "description": "Compliance framework definitions",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "framework_type": {
+          "type": "string",
+          "enum": ["SOC2", "HIPAA", "GDPR", "ISO27001", "PCI_DSS"]
+        },
+        "controls": { "type": "array", "items": { "type": "object" } },
+        "is_active": { "type": "boolean" }
+      },
+      "required": ["name", "framework_type", "is_active"]
+    },
+    "AuditLog": {
+      "type": "object",
+      "description": "System audit log entries",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "action": { "type": "string" },
+        "entity_type": { "type": "string" },
+        "entity_id": { "type": "string" },
+        "changes": { "type": "object" },
+        "ip_address": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "action", "entity_type", "timestamp"]
+    },
+    "Activity": {
+      "type": "object",
+      "description": "User activity feed entries",
+      "properties": {
+        "id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "action": { "type": "string" },
+        "description": { "type": "string" },
+        "entity_type": { "type": "string" },
+        "entity_id": { "type": "string" },
+        "created_date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "action", "description"]
+    }
+  },
+  "components": {
+    "dashboard": {
+      "MetricCard": {
+        "props": {
+          "title": { "type": "string", "required": true },
+          "value": { "type": ["string", "number"], "required": true },
+          "unit": { "type": "string", "required": false },
+          "trend": { "type": "object", "required": false },
+          "icon": { "type": "component", "required": false },
+          "color": { 
+            "type": "string", 
+            "enum": ["blue", "green", "yellow", "red", "purple", "slate"],
+            "default": "blue"
+          }
+        },
+        "description": "Dashboard metric display card with trend indicators"
+      },
+      "ActivityFeed": {
+        "props": {
+          "activities": { "type": "array", "required": true },
+          "limit": { "type": "number", "default": 10 }
+        },
+        "description": "Activity feed component showing recent user actions"
+      },
+      "QuickActionCard": {
+        "props": {
+          "title": { "type": "string", "required": true },
+          "description": { "type": "string", "required": true },
+          "icon": { "type": "component", "required": true },
+          "onClick": { "type": "function", "required": true },
+          "color": { "type": "string", "default": "blue" }
+        },
+        "description": "Quick action card for common tasks"
+      }
+    },
+    "agent": {
+      "TrainingMonitor": {
+        "props": {
+          "agentId": { "type": "string", "required": true },
+          "onComplete": { "type": "function", "required": false }
+        },
+        "description": "Real-time training progress monitor for AI agents"
+      }
+    },
+    "architecture": {
+      "ServiceCard": {
+        "props": {
+          "service": { "type": "object", "required": true },
+          "isSelected": { "type": "boolean", "default": false },
+          "onClick": { "type": "function", "required": false },
+          "onDragStart": { "type": "function", "required": false },
+          "onDragEnd": { "type": "function", "required": false },
+          "style": { "type": "object", "required": false }
+        },
+        "description": "Draggable service card for architecture canvas"
+      },
+      "DependencyGraph": {
+        "props": {
+          "services": { "type": "array", "required": true },
+          "connections": { "type": "array", "required": true }
+        },
+        "description": "Visual dependency graph for architecture services"
+      },
+      "SequenceDiagram": {
+        "props": {
+          "services": { "type": "array", "required": true },
+          "interactions": { "type": "array", "required": true }
+        },
+        "description": "Sequence diagram for service interactions"
+      },
+      "VersionHistory": {
+        "props": {
+          "architectureId": { "type": "string", "required": true }
+        },
+        "description": "Version history for architecture changes"
+      },
+      "ServicePropertiesPanel": {
+        "props": {
+          "service": { "type": "object", "required": true },
+          "onUpdate": { "type": "function", "required": true },
+          "onClose": { "type": "function", "required": true }
+        },
+        "description": "Properties panel for editing service details"
+      },
+      "CodeGenerationDialog": {
+        "props": {
+          "architecture": { "type": "object", "required": true },
+          "onGenerate": { "type": "function", "required": true },
+          "onClose": { "type": "function", "required": true }
+        },
+        "description": "Dialog for generating Terraform code"
+      }
+    },
+    "policy": {
+      "PolicyEnforcementBanner": {
+        "props": {
+          "violations": { "type": "array", "required": true },
+          "onDismiss": { "type": "function", "required": false }
+        },
+        "description": "Banner displaying policy violations"
+      }
+    },
+    "rbac": {
+      "PermissionGate": {
+        "props": {
+          "permission": { "type": "string", "required": true },
+          "children": { "type": "component", "required": true },
+          "fallback": { "type": "component", "required": false }
+        },
+        "description": "Role-based access control gate component"
+      }
+    }
+  },
+  "functions": {
+    "generateTerraform": {
+      "description": "Serverless function to generate Terraform code from architecture",
+      "input": {
+        "architectureId": { "type": "string", "required": true }
+      },
+      "output": {
+        "terraform_code": { "type": "string" },
+        "files": { "type": "array" }
+      }
+    }
+  }
+}

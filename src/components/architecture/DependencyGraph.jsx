@@ -52,7 +52,7 @@ export default function DependencyGraph({ services, connections }) {
   };
 
   return (
-    <Card className="h-full">
+    <Card data-b44-sync="true" className="h-full">
       <CardHeader>
         <CardTitle className="text-sm">Dependency Graph</CardTitle>
       </CardHeader>

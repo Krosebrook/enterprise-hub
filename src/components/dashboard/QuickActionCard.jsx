@@ -21,6 +21,7 @@ export default function QuickActionCard({
 
   return (
     <Link 
+      data-b44-sync="true"
       to={createPageUrl(href)}
       className="group block p-5 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200"
     >

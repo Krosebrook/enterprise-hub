@@ -47,6 +47,7 @@ export default function ServiceCard({
 
   return (
     <div
+      data-b44-sync="true"
       className={`
         absolute cursor-move bg-white rounded-lg shadow-md border-2 transition-all duration-200
         ${isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-slate-200 hover:border-blue-400'}

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://base44.app/schemas/config.json",
+  "version": "0.2.0",
+  "projectName": "enterprise-hub",
+  "plan": "builder",
+  "features": {
+    "twoWaySync": {
+      "enabled": true,
+      "generation": "2nd-gen"
+    },
+    "visualEditAgent": true,
+    "hmrNotifier": true,
+    "navigationNotifier": true
+  },
+  "entities": [
+    "User",
+    "Agent",
+    "AgentTrainingJob",
+    "Architecture",
+    "Service",
+    "ServiceConnection",
+    "Policy",
+    "PolicyViolation",
+    "PolicyException",
+    "CostRecord",
+    "Budget",
+    "ComplianceFramework",
+    "ComplianceViolation",
+    "Activity",
+    "AuditLog"
+  ],
+  "components": {
+    "ui": {
+      "path": "src/components/ui",
+      "type": "library",
+      "framework": "radix-ui",
+      "syncEnabled": false,
+      "description": "Radix UI wrapper components - managed externally"
+    },
+    "dashboard": {
+      "path": "src/components/dashboard",
+      "type": "feature",
+      "syncEnabled": true,
+      "components": [
+        "MetricCard",
+        "ActivityFeed",
+        "QuickActionCard"
+      ]
+    },
+    "agent": {
+      "path": "src/components/agent",
+      "type": "feature",
+      "syncEnabled": true,
+      "components": [
+        "TrainingMonitor"
+      ]
+    },
+    "architecture": {
+      "path": "src/components/architecture",
+      "type": "feature",
+      "syncEnabled": true,
+      "components": [
+        "ServiceCard",
+        "DependencyGraph",
+        "SequenceDiagram",
+        "VersionHistory",
+        "ServicePropertiesPanel",
+        "CodeGenerationDialog"
+      ]
+    },
+    "policy": {
+      "path": "src/components/policy",
+      "type": "feature",
+      "syncEnabled": true,
+      "components": [
+        "PolicyEnforcementBanner"
+      ]
+    },
+    "rbac": {
+      "path": "src/components/rbac",
+      "type": "feature",
+      "syncEnabled": true,
+      "components": [
+        "PermissionGate"
+      ]
+    }
+  },
+  "pages": {
+    "path": "src/pages",
+    "configFile": "src/pages.config.js",
+    "routes": [
+      { "path": "/", "component": "Dashboard" },
+      { "path": "/agents", "component": "Agents" },
+      { "path": "/agents/new", "component": "AgentCreate" },
+      { "path": "/agents/:id/playground", "component": "AgentPlayground" },
+      { "path": "/architectures", "component": "Architectures" },
+      { "path": "/architectures/:id", "component": "ArchitectureDesigner" },
+      { "path": "/policies", "component": "Policies" },
+      { "path": "/policies/new", "component": "PolicyCreate" },
+      { "path": "/compliance", "component": "Compliance" },
+      { "path": "/costs", "component": "Costs" },
+      { "path": "/observability", "component": "Observability" },
+      { "path": "/audit", "component": "AuditLog" },
+      { "path": "/users", "component": "Users" },
+      { "path": "/docs", "component": "Documentation" }
+    ]
+  },
+  "functions": {
+    "path": "functions",
+    "runtime": "base44-typescript",
+    "functions": [
+      {
+        "name": "generateTerraform",
+        "file": "generateTerraform.ts",
+        "description": "Generate Terraform code from architecture design"
+      }
+    ]
+  },
+  "auth": {
+    "enabled": true,
+    "provider": "base44"
+  },
+  "rbac": {
+    "enabled": true,
+    "roles": ["admin", "developer", "viewer", "auditor"]
+  },
+  "sync": {
+    "manifestPath": ".github/sync-manifest.json",
+    "schemaPath": "src/models/schema.json",
+    "autoDetect": true,
+    "componentAttributes": {
+      "required": ["data-b44-sync"],
+      "defaultExport": true
+    }
+  }
+}

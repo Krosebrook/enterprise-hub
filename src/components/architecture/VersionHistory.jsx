@@ -98,7 +98,7 @@ export default function VersionHistory({ architecture, open, onClose }) {
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onClose}>
+      <Dialog data-b44-sync="true" open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Version History</DialogTitle>
