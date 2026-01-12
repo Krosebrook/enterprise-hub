@@ -47,7 +47,10 @@ export default function ActivityFeed({ activities = [], maxItems = 5 }) {
   }
 
   return (
-    <div className="space-y-1">
+    <div 
+      className="space-y-1"
+      data-b44-sync="component-activity-feed"
+    >
       {displayActivities.map((activity, index) => {
         const Icon = activityIcons[activity.activity_type] || GitBranch;
         const colorClass = activityColors[activity.color] || activityColors.blue;

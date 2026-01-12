@@ -33,7 +33,10 @@ export default function MetricCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300">
+    <div 
+      className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300"
+      data-b44-sync="component-metric-card"
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
