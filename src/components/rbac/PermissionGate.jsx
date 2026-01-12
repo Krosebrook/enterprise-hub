@@ -126,5 +126,5 @@ export default function PermissionGate({
     }
   }
 
-  return <div data-b44-sync="true">{children}</div>;
+  return <div data-b44-sync="component-permission-gate">{children}</div>;
 }

@@ -70,7 +70,10 @@ export default function Dashboard() {
     : 0;
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div 
+      className="p-6 lg:p-8 max-w-7xl mx-auto"
+      data-b44-sync="page-dashboard"
+    >
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -91,7 +94,10 @@ export default function Dashboard() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div 
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        data-b44-sync="metrics-grid"
+      >
         <MetricCard
           title="Active Architectures"
           value={activeArchitectures}
