@@ -205,7 +205,13 @@ export default function PRDGenerator() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `prd-${generatedPRD.title.toLowerCase().replace(/\s+/g, "-")}.md`;
+    // Sanitize filename by removing invalid characters
+    const sanitizedTitle = generatedPRD.title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .substring(0, 50);
+    a.download = `prd-${sanitizedTitle}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -280,7 +286,13 @@ export default function PRDGenerator() {
                     Describe Your Feature Idea
                   </label>
                   <Textarea
-                    placeholder="Enter your feature or product idea here...&#10;&#10;Example:&#10;- A real-time collaboration feature for the architecture designer&#10;- Multi-user editing with presence indicators&#10;- Live cursor tracking and selections&#10;- Comment threads on architecture components"
+                    placeholder={`Enter your feature or product idea here...
+
+Example:
+- A real-time collaboration feature for the architecture designer
+- Multi-user editing with presence indicators
+- Live cursor tracking and selections
+- Comment threads on architecture components`}
                     value={featureIdea}
                     onChange={(e) => setFeatureIdea(e.target.value)}
                     rows={12}
@@ -402,17 +414,52 @@ export default function PRDGenerator() {
                 </CardHeader>
                 <CardContent>
                   <Tabs defaultValue="executive-summary" className="w-full">
-                    <TabsList className="grid grid-cols-3 lg:grid-cols-4 mb-4 h-auto">
-                      {PRD_TEMPLATE.sections.slice(0, 4).map((section) => (
-                        <TabsTrigger
-                          key={section.id}
-                          value={section.id}
-                          className="text-xs px-2 py-2"
-                        >
-                          {section.title.split(":")[0]}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+                    <div className="mb-4">
+                      <TabsList className="grid grid-cols-3 lg:grid-cols-4 h-auto">
+                        {PRD_TEMPLATE.sections.slice(0, 8).map((section) => (
+                          <TabsTrigger
+                            key={section.id}
+                            value={section.id}
+                            className="text-xs px-2 py-2"
+                          >
+                            {section.id === "executive-summary"
+                              ? "1. Summary"
+                              : section.id === "problem-statement"
+                                ? "2. Problem"
+                                : section.id === "target-audience"
+                                  ? "3. Audience"
+                                  : section.id === "functional-requirements"
+                                    ? "4. Features"
+                                    : section.id === "non-functional-requirements"
+                                      ? "5. NFRs"
+                                      : section.id === "user-stories"
+                                        ? "6. Stories"
+                                        : section.id === "technical-architecture"
+                                          ? "7. Tech"
+                                          : "8. API"}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                      <TabsList className="grid grid-cols-3 lg:grid-cols-5 h-auto mt-2">
+                        {PRD_TEMPLATE.sections.slice(8, 13).map((section) => (
+                          <TabsTrigger
+                            key={section.id}
+                            value={section.id}
+                            className="text-xs px-2 py-2"
+                          >
+                            {section.id === "ui-ux"
+                              ? "9. UI/UX"
+                              : section.id === "security-compliance"
+                                ? "10. Security"
+                                : section.id === "testing-strategy"
+                                  ? "11. Testing"
+                                  : section.id === "deployment-devops"
+                                    ? "12. DevOps"
+                                    : "13. Risks"}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                    </div>
                     {PRD_TEMPLATE.sections.map((section) => (
                       <TabsContent
                         key={section.id}
@@ -431,8 +478,7 @@ export default function PRDGenerator() {
                   <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
                     <AlertCircle className="w-4 h-4" />
                     <span>
-                      Use the tabs above to preview different sections. All 13 sections are included
-                      in the full document.
+                      All 13 sections are included in the full document. Use tabs above to navigate.
                     </span>
                   </div>
                 </CardContent>
