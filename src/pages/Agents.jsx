@@ -74,6 +74,8 @@ export default function Agents() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState(null);
+  const [deployDialogOpen, setDeployDialogOpen] = useState(false);
+  const [agentToDeploy, setAgentToDeploy] = useState(null);
 
   const queryClient = useQueryClient();
 
@@ -282,6 +284,15 @@ export default function Agents() {
                               Test in Playground
                             </Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setAgentToDeploy(agent);
+                              setDeployDialogOpen(true);
+                            }}
+                          >
+                            <Rocket className="w-4 h-4 mr-2" />
+                            Deploy
+                          </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link to={createPageUrl(`AgentCreate?id=${agent.id}`)}>
                               <Settings className="w-4 h-4 mr-2" />
@@ -385,6 +396,18 @@ export default function Agents() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Deployment Dialog */}
+      {agentToDeploy && (
+        <DeploymentWorkflow
+          agent={agentToDeploy}
+          open={deployDialogOpen}
+          onClose={() => {
+            setDeployDialogOpen(false);
+            setAgentToDeploy(null);
+          }}
+        />
+      )}
     </div>
   );
 }
