@@ -69,8 +69,7 @@ export default function ArchitectureDesigner() {
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [showRightPanel, setShowRightPanel] = useState(true);
-  const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [showPanel, setShowPanel] = useState(true);
   const [selectedConnection, setSelectedConnection] = useState({ source: null, target: null });
   const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
@@ -295,10 +294,10 @@ export default function ArchitectureDesigner() {
           </Button>
           <Button 
             variant="outline" 
-            onClick={() => setShowRightPanel(!showRightPanel)}
+            onClick={() => setShowPanel(!showPanel)}
           >
             <Network className="w-4 h-4 mr-2" />
-            {showRightPanel ? 'Hide' : 'Show'} Analysis
+            {showPanel ? 'Hide' : 'Show'} Panel
           </Button>
           <Button 
             variant="outline" 
@@ -332,118 +331,146 @@ export default function ArchitectureDesigner() {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Palette */}
-        {showLeftPanel && (
-          <div className="w-56 bg-white border-r border-slate-200 p-4 flex flex-col gap-6 relative">
-          {/* Services Palette */}
-          <div>
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-              Services
-            </h3>
-            <div className="space-y-2">
-              {servicePalette.map((item) => (
-                <button
-                  key={item.type}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-left"
-                  onClick={handleAddService}
-                >
-                  <div className={`${item.color} text-white p-2 rounded`}>
-                    <item.icon className="w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-700">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tools */}
-          <div>
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-              Tools
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setZoom(prev => Math.min(prev + 0.1, 2))}
-              >
-                <ZoomIn className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setZoom(prev => Math.max(prev - 0.1, 0.5))}
-              >
-                <ZoomOut className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setZoom(1)}
-              >
-                <Maximize className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            {selectedConnection.source && (
-              <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-                <div className="flex items-center gap-1 mb-1">
-                  <Link2 className="w-3 h-3 text-blue-600" />
-                  <span className="font-medium text-blue-900">Connection Mode</span>
-                </div>
-                <div className="text-blue-700">
-                  From: <span className="font-medium">{selectedConnection.source.name}</span>
-                </div>
-                <div className="text-blue-600 mt-1">Click target service</div>
-              </div>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="mt-auto">
-            <Card>
-              <CardContent className="p-4">
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Services</span>
-                    <span className="font-medium">{services.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Connections</span>
-                    <span className="font-medium">{connections.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Status</span>
-                    <span className="font-medium capitalize">{architecture?.status || 'draft'}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            </div>
+        {/* Unified Sidebar Panel */}
+        {showPanel && (
+          <div className="w-80 bg-white border-r border-slate-200 flex flex-col relative">
             <button
-            onClick={() => setShowLeftPanel(false)}
-            className="absolute -right-6 top-4 bg-white border border-slate-200 rounded-r-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
-            title="Hide palette"
+              onClick={() => setShowPanel(false)}
+              className="absolute -right-6 top-4 bg-white border border-slate-200 rounded-r-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
+              title="Hide panel"
             >
-            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+              <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
-            </div>
-            )}
+            
+            <Tabs defaultValue="palette" className="flex-1 flex flex-col">
+              <TabsList className="w-full grid grid-cols-3 m-4 mb-0">
+                <TabsTrigger value="palette">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Palette
+                </TabsTrigger>
+                <TabsTrigger value="dependencies">
+                  <Network className="w-4 h-4 mr-2" />
+                  Graph
+                </TabsTrigger>
+                <TabsTrigger value="sequence">
+                  <Workflow className="w-4 h-4 mr-2" />
+                  Flows
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Expand Palette Button */}
-            {!showLeftPanel && (
-            <button
-            onClick={() => setShowLeftPanel(true)}
+              <TabsContent value="palette" className="flex-1 m-4 mt-4 space-y-4 overflow-y-auto">
+                {/* Services Palette */}
+                <div>
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                    Services
+                  </h3>
+                  <div className="space-y-2">
+                    {servicePalette.map((item) => (
+                      <button
+                        key={item.type}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors text-left"
+                        onClick={handleAddService}
+                      >
+                        <div className={`${item.color} text-white p-2 rounded`}>
+                          <item.icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tools */}
+                <div>
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                    Tools
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setZoom(prev => Math.min(prev + 0.1, 2))}
+                    >
+                      <ZoomIn className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setZoom(prev => Math.max(prev - 0.1, 0.5))}
+                    >
+                      <ZoomOut className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setZoom(1)}
+                    >
+                      <Maximize className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                  {selectedConnection.source && (
+                    <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Link2 className="w-3 h-3 text-blue-600" />
+                        <span className="font-medium text-blue-900">Connection Mode</span>
+                      </div>
+                      <div className="text-blue-700">
+                        From: <span className="font-medium">{selectedConnection.source.name}</span>
+                      </div>
+                      <div className="text-blue-600 mt-1">Click target service</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Stats */}
+                <div>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Services</span>
+                          <span className="font-medium">{services.length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Connections</span>
+                          <span className="font-medium">{connections.length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Status</span>
+                          <span className="font-medium capitalize">{architecture?.status || 'draft'}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="dependencies" className="flex-1 m-4 mt-4">
+                <DependencyGraph services={services} connections={connections} />
+              </TabsContent>
+
+              <TabsContent value="sequence" className="flex-1 m-4 mt-4">
+                <SequenceDiagram services={services} connections={connections} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+
+        {/* Expand Panel Button */}
+        {!showPanel && (
+          <button
+            onClick={() => setShowPanel(true)}
             className="fixed left-0 top-32 bg-white border border-slate-200 rounded-r-lg p-2 hover:bg-slate-50 transition-colors shadow-sm z-10"
-            title="Show palette"
-            >
+            title="Show panel"
+          >
             <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-            </button>
-            )}
+          </button>
+        )}
 
             {/* Canvas */}
         <div 
@@ -544,53 +571,7 @@ export default function ArchitectureDesigner() {
           </div>
         </div>
 
-        {/* Right Panel - Analysis */}
-        {showRightPanel && (
-          <div className="w-80 bg-white border-l border-slate-200 flex flex-col relative">
-            <button
-              onClick={() => setShowRightPanel(false)}
-              className="absolute -left-6 top-4 bg-white border border-slate-200 rounded-l-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
-              title="Hide panel"
-            >
-              <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <Tabs defaultValue="dependencies" className="flex-1 flex flex-col">
-              <TabsList className="w-full grid grid-cols-2 m-4 mb-0">
-                <TabsTrigger value="dependencies">
-                  <Network className="w-4 h-4 mr-2" />
-                  Dependencies
-                </TabsTrigger>
-                <TabsTrigger value="sequence">
-                  <Workflow className="w-4 h-4 mr-2" />
-                  Flows
-                </TabsTrigger>
-              </TabsList>
 
-              <TabsContent value="dependencies" className="flex-1 m-4 mt-4">
-                <DependencyGraph services={services} connections={connections} />
-              </TabsContent>
-
-              <TabsContent value="sequence" className="flex-1 m-4 mt-4">
-                <SequenceDiagram services={services} connections={connections} />
-              </TabsContent>
-            </Tabs>
-          </div>
-        )}
-
-        {/* Expand Panel Button */}
-        {!showRightPanel && (
-          <button
-            onClick={() => setShowRightPanel(true)}
-            className="fixed right-0 top-32 bg-white border border-slate-200 rounded-l-lg p-2 hover:bg-slate-50 transition-colors shadow-sm"
-            title="Show analysis panel"
-          >
-            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* Properties Panel */}
