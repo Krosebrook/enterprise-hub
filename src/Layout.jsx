@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { createPageUrl } from './utils';
-import { base44 } from '@/api/base44Client';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { createPageUrl } from "./utils";
+import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard,
   GitBranch,
@@ -18,8 +18,8 @@ import {
   Building2,
   User,
   Users as UsersIcon,
-  BookOpen
-} from 'lucide-react';
+  BookOpen,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -31,24 +31,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { getRoleName, getRoleColor } from './components/rbac/rbacUtils';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { getRoleName, getRoleColor } from "./components/rbac/rbacUtils";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navigation = [
-  { name: 'Dashboard', href: 'Dashboard', icon: LayoutDashboard },
-  { name: 'Architectures', href: 'Architectures', icon: GitBranch },
-  { name: 'AI Agents', href: 'Agents', icon: Bot },
-  { name: 'Compliance', href: 'Compliance', icon: Shield },
-  { name: 'Cost Management', href: 'Costs', icon: DollarSign },
-  { name: 'Observability', href: 'Observability', icon: Activity },
-  { name: 'Policies', href: 'Policies', icon: Shield },
-  { name: 'Users', href: 'Users', icon: UsersIcon },
-  { name: 'Audit Log', href: 'AuditLog', icon: Activity },
-  { name: 'Documentation', href: 'Documentation', icon: BookOpen },
+  { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },
+  { name: "Architectures", href: "Architectures", icon: GitBranch },
+  { name: "AI Agents", href: "Agents", icon: Bot },
+  { name: "Compliance", href: "Compliance", icon: Shield },
+  { name: "Cost Management", href: "Costs", icon: DollarSign },
+  { name: "Observability", href: "Observability", icon: Activity },
+  { name: "Policies", href: "Policies", icon: Shield },
+  { name: "Users", href: "Users", icon: UsersIcon },
+  { name: "Audit Log", href: "AuditLog", icon: Activity },
+  { name: "Documentation", href: "Documentation", icon: BookOpen },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -66,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
       const userData = await base44.auth.me();
       setUser(userData);
     } catch (e) {
-      console.log('User not logged in');
+      console.log("User not logged in");
     }
   };
 
@@ -85,9 +81,10 @@ export default function Layout({ children, currentPageName }) {
             onClick={() => mobile && setSidebarOpen(false)}
             className={`
               flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-              ${isActive 
-                ? 'bg-slate-900 text-white shadow-sm' 
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              ${
+                isActive
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }
             `}
           >
@@ -131,7 +128,9 @@ export default function Layout({ children, currentPageName }) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{user.full_name || 'User'}</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">
+                    {user.full_name || "User"}
+                  </p>
                   <p className="text-xs text-slate-500 truncate">{user.email}</p>
                 </div>
               </div>
@@ -280,7 +279,7 @@ export default function Layout({ children, currentPageName }) {
                       {user.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">{user.full_name || 'User'}</span>
+                  <span className="text-sm font-medium">{user.full_name || "User"}</span>
                   <ChevronDown className="w-4 h-4 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
@@ -316,9 +315,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="lg:pl-64 pt-16 lg:pt-[73px]">
-        <div className="min-h-[calc(100vh-73px)]">
-          {children}
-        </div>
+        <div className="min-h-[calc(100vh-73px)]">{children}</div>
       </main>
     </div>
   );

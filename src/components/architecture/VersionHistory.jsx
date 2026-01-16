@@ -1,49 +1,45 @@
-import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import React from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { GitBranch, Clock, CheckCircle, Copy } from 'lucide-react';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '../../utils';
+import { GitBranch, Clock, CheckCircle, Copy } from "lucide-react";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "../../utils";
 
 export default function VersionHistory({ architecture, open, onClose }) {
   const [showCreateVersion, setShowCreateVersion] = React.useState(false);
-  const [versionNotes, setVersionNotes] = React.useState('');
+  const [versionNotes, setVersionNotes] = React.useState("");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const { data: versions = [] } = useQuery({
-    queryKey: ['architecture-versions', architecture?.name],
-    queryFn: () => base44.entities.Architecture.filter({ 
-      name: architecture.name,
-      organization_id: architecture.organization_id 
-    }),
+    queryKey: ["architecture-versions", architecture?.name],
+    queryFn: () =>
+      base44.entities.Architecture.filter({
+        name: architecture.name,
+        organization_id: architecture.organization_id,
+      }),
     enabled: !!architecture,
-    select: (data) => data.sort((a, b) => b.version - a.version)
+    select: (data) => data.sort((a, b) => b.version - a.version),
   });
 
   const createVersionMutation = useMutation({
     mutationFn: async () => {
       // Get current architecture data
-      const services = await base44.entities.Service.filter({ 
-        architecture_id: architecture.id 
+      const services = await base44.entities.Service.filter({
+        architecture_id: architecture.id,
       });
-      const connections = await base44.entities.ServiceConnection.filter({ 
-        architecture_id: architecture.id 
+      const connections = await base44.entities.ServiceConnection.filter({
+        architecture_id: architecture.id,
       });
 
       // Mark current as not latest
-      await base44.entities.Architecture.update(architecture.id, { 
-        is_latest: false 
+      await base44.entities.Architecture.update(architecture.id, {
+        is_latest: false,
       });
 
       // Create new version
@@ -54,7 +50,7 @@ export default function VersionHistory({ architecture, open, onClose }) {
         parent_version_id: architecture.id,
         version_notes: versionNotes,
         is_latest: true,
-        status: 'draft'
+        status: "draft",
       });
 
       // Copy services and connections
@@ -63,7 +59,7 @@ export default function VersionHistory({ architecture, open, onClose }) {
         const { id: oldId, created_date, updated_date, created_by, ...svcData } = service;
         const newService = await base44.entities.Service.create({
           ...svcData,
-          architecture_id: newArch.id
+          architecture_id: newArch.id,
         });
         serviceIdMap.set(oldId, newService.id);
       }
@@ -74,25 +70,25 @@ export default function VersionHistory({ architecture, open, onClose }) {
           ...connData,
           architecture_id: newArch.id,
           source_service_id: serviceIdMap.get(conn.source_service_id),
-          target_service_id: serviceIdMap.get(conn.target_service_id)
+          target_service_id: serviceIdMap.get(conn.target_service_id),
         });
       }
 
       return newArch;
     },
     onSuccess: (newArch) => {
-      queryClient.invalidateQueries({ queryKey: ['architecture-versions'] });
-      queryClient.invalidateQueries({ queryKey: ['architectures'] });
+      queryClient.invalidateQueries({ queryKey: ["architecture-versions"] });
+      queryClient.invalidateQueries({ queryKey: ["architectures"] });
       setShowCreateVersion(false);
-      setVersionNotes('');
+      setVersionNotes("");
       navigate(createPageUrl(`ArchitectureDesigner?id=${newArch.id}`));
-    }
+    },
   });
 
   const switchToVersionMutation = useMutation({
     mutationFn: (versionId) => {
       navigate(createPageUrl(`ArchitectureDesigner?id=${versionId}`));
-    }
+    },
   });
 
   return (
@@ -102,19 +98,16 @@ export default function VersionHistory({ architecture, open, onClose }) {
           <DialogHeader>
             <DialogTitle>Version History</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
-            <Button 
-              onClick={() => setShowCreateVersion(true)}
-              className="w-full"
-            >
+            <Button onClick={() => setShowCreateVersion(true)} className="w-full">
               <GitBranch className="w-4 h-4 mr-2" />
               Create New Version
             </Button>
 
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {versions.map((version) => (
-                <div 
+                <div
                   key={version.id}
                   className="border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-colors"
                 >
@@ -127,9 +120,7 @@ export default function VersionHistory({ architecture, open, onClose }) {
                           Latest
                         </Badge>
                       )}
-                      {version.id === architecture?.id && (
-                        <Badge variant="outline">Current</Badge>
-                      )}
+                      {version.id === architecture?.id && <Badge variant="outline">Current</Badge>}
                     </div>
                     <Badge className="capitalize" variant="outline">
                       {version.status}
@@ -137,15 +128,13 @@ export default function VersionHistory({ architecture, open, onClose }) {
                   </div>
 
                   {version.version_notes && (
-                    <p className="text-sm text-slate-600 mb-3">
-                      {version.version_notes}
-                    </p>
+                    <p className="text-sm text-slate-600 mb-3">{version.version_notes}</p>
                   )}
 
                   <div className="flex items-center gap-4 text-xs text-slate-500 mb-3">
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {format(new Date(version.created_date), 'MMM d, yyyy HH:mm')}
+                      {format(new Date(version.created_date), "MMM d, yyyy HH:mm")}
                     </div>
                     <div>{version.services_count || 0} services</div>
                   </div>
@@ -172,7 +161,7 @@ export default function VersionHistory({ architecture, open, onClose }) {
           <DialogHeader>
             <DialogTitle>Create New Version</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
               Creating v{architecture?.version + 1} from v{architecture?.version}
@@ -190,14 +179,14 @@ export default function VersionHistory({ architecture, open, onClose }) {
           </div>
 
           <div className="flex gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowCreateVersion(false)}
               className="flex-1"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => createVersionMutation.mutate()}
               disabled={createVersionMutation.isPending}
               className="flex-1"

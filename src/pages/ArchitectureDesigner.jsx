@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
-import { createPageUrl } from '../utils';
+import React, { useState, useEffect, useRef } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
+import { createPageUrl } from "../utils";
 import {
   ArrowLeft,
   Plus,
@@ -19,8 +19,8 @@ import {
   GitBranch,
   Network,
   Workflow,
-  Link2
-} from 'lucide-react';
+  Link2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,39 +31,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import ServiceCard from '../components/architecture/ServiceCard';
-import ServicePropertiesPanel from '../components/architecture/ServicePropertiesPanel';
-import CodeGenerationDialog from '../components/architecture/CodeGenerationDialog';
-import DependencyGraph from '../components/architecture/DependencyGraph';
-import SequenceDiagram from '../components/architecture/SequenceDiagram';
-import VersionHistory from '../components/architecture/VersionHistory';
-import PermissionGate from '../components/rbac/PermissionGate';
+import ServiceCard from "../components/architecture/ServiceCard";
+import ServicePropertiesPanel from "../components/architecture/ServicePropertiesPanel";
+import CodeGenerationDialog from "../components/architecture/CodeGenerationDialog";
+import DependencyGraph from "../components/architecture/DependencyGraph";
+import SequenceDiagram from "../components/architecture/SequenceDiagram";
+import VersionHistory from "../components/architecture/VersionHistory";
+import PermissionGate from "../components/rbac/PermissionGate";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const servicePalette = [
-  { type: 'api', label: 'API Service', icon: Server, color: 'bg-blue-500' },
-  { type: 'database', label: 'Database', icon: Database, color: 'bg-green-500' },
-  { type: 'queue', label: 'Message Queue', icon: MessageSquare, color: 'bg-yellow-500' },
+  { type: "api", label: "API Service", icon: Server, color: "bg-blue-500" },
+  { type: "database", label: "Database", icon: Database, color: "bg-green-500" },
+  { type: "queue", label: "Message Queue", icon: MessageSquare, color: "bg-yellow-500" },
 ];
 
 export default function ArchitectureDesigner() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const canvasRef = useRef(null);
-  
+
   const [architectureId, setArchitectureId] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newArchitecture, setNewArchitecture] = useState({
-    name: '',
-    description: '',
-    template_type: 'blank'
+    name: "",
+    description: "",
+    template_type: "blank",
   });
   const [selectedService, setSelectedService] = useState(null);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
@@ -76,7 +71,7 @@ export default function ArchitectureDesigner() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    const id = urlParams.get("id");
     if (id) {
       setArchitectureId(id);
     } else {
@@ -85,24 +80,24 @@ export default function ArchitectureDesigner() {
   }, []);
 
   const { data: architecture, isLoading: archLoading } = useQuery({
-    queryKey: ['architecture', architectureId],
+    queryKey: ["architecture", architectureId],
     queryFn: () => base44.entities.Architecture.filter({ id: architectureId }),
     enabled: !!architectureId,
-    select: (data) => data[0]
+    select: (data) => data[0],
   });
 
   const { data: services = [], isLoading: servicesLoading } = useQuery({
-    queryKey: ['services', architectureId],
+    queryKey: ["services", architectureId],
     queryFn: () => base44.entities.Service.filter({ architecture_id: architectureId }),
     enabled: !!architectureId,
-    initialData: []
+    initialData: [],
   });
 
   const { data: connections = [] } = useQuery({
-    queryKey: ['connections', architectureId],
+    queryKey: ["connections", architectureId],
     queryFn: () => base44.entities.ServiceConnection.filter({ architecture_id: architectureId }),
     enabled: !!architectureId,
-    initialData: []
+    initialData: [],
   });
 
   const createArchitectureMutation = useMutation({
@@ -110,57 +105,57 @@ export default function ArchitectureDesigner() {
     onSuccess: (data) => {
       setArchitectureId(data.id);
       setShowCreateDialog(false);
-      window.history.replaceState(null, '', createPageUrl(`ArchitectureDesigner?id=${data.id}`));
-      queryClient.invalidateQueries({ queryKey: ['architectures'] });
-    }
+      window.history.replaceState(null, "", createPageUrl(`ArchitectureDesigner?id=${data.id}`));
+      queryClient.invalidateQueries({ queryKey: ["architectures"] });
+    },
   });
 
   const updateArchitectureMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Architecture.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['architecture', architectureId] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["architecture", architectureId] });
+    },
   });
 
   const createServiceMutation = useMutation({
     mutationFn: (data) => base44.entities.Service.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services', architectureId] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["services", architectureId] });
+    },
   });
 
   const updateServiceMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Service.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services', architectureId] });
+      queryClient.invalidateQueries({ queryKey: ["services", architectureId] });
       setShowPropertiesPanel(false);
       setSelectedService(null);
-    }
+    },
   });
 
   const deleteServiceMutation = useMutation({
     mutationFn: (id) => base44.entities.Service.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services', architectureId] });
+      queryClient.invalidateQueries({ queryKey: ["services", architectureId] });
       setSelectedService(null);
       setShowPropertiesPanel(false);
-    }
+    },
   });
 
   const createConnectionMutation = useMutation({
     mutationFn: (data) => base44.entities.ServiceConnection.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['connections', architectureId] });
+      queryClient.invalidateQueries({ queryKey: ["connections", architectureId] });
       setSelectedConnection({ source: null, target: null });
-    }
+    },
   });
 
   const handleCreateArchitecture = () => {
     if (!newArchitecture.name.trim()) return;
     createArchitectureMutation.mutate({
       ...newArchitecture,
-      status: 'draft',
-      canvas_data: { nodes: [], edges: [] }
+      status: "draft",
+      canvas_data: { nodes: [], edges: [] },
     });
   };
 
@@ -168,15 +163,15 @@ export default function ArchitectureDesigner() {
     const newService = {
       architecture_id: architectureId,
       name: `Service ${services.length + 1}`,
-      language: 'nodejs',
-      framework: 'Express',
-      database_type: 'none',
+      language: "nodejs",
+      framework: "Express",
+      database_type: "none",
       has_api: true,
-      api_type: 'rest',
+      api_type: "rest",
       port: 8080 + services.length,
-      health_status: 'unknown',
-      canvas_position_x: 150 + (services.length * 50) % 400,
-      canvas_position_y: 100 + Math.floor(services.length / 3) * 200
+      health_status: "unknown",
+      canvas_position_x: 150 + ((services.length * 50) % 400),
+      canvas_position_y: 100 + Math.floor(services.length / 3) * 200,
     };
     createServiceMutation.mutate(newService);
   };
@@ -191,10 +186,10 @@ export default function ArchitectureDesigner() {
           architecture_id: architectureId,
           source_service_id: selectedConnection.source.id,
           target_service_id: service.id,
-          connection_type: 'sync',
-          protocol: 'http',
+          connection_type: "sync",
+          protocol: "http",
           is_authenticated: true,
-          auth_method: 'jwt'
+          auth_method: "jwt",
         });
       }
     } else {
@@ -207,17 +202,17 @@ export default function ArchitectureDesigner() {
   const handleServiceDragEnd = (service, e) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const rect = canvas.getBoundingClientRect();
     const x = Math.max(0, e.clientX - rect.left - 100);
     const y = Math.max(0, e.clientY - rect.top - 65);
-    
+
     updateServiceMutation.mutate({
       id: service.id,
       data: {
         canvas_position_x: x,
-        canvas_position_y: y
-      }
+        canvas_position_y: y,
+      },
     });
   };
 
@@ -225,12 +220,12 @@ export default function ArchitectureDesigner() {
     if (serviceData.id) {
       updateServiceMutation.mutate({
         id: serviceData.id,
-        data: serviceData
+        data: serviceData,
       });
     } else {
       createServiceMutation.mutate({
         ...serviceData,
-        architecture_id: architectureId
+        architecture_id: architectureId,
       });
     }
   };
@@ -239,10 +234,10 @@ export default function ArchitectureDesigner() {
     setIsSaving(true);
     await updateArchitectureMutation.mutateAsync({
       id: architectureId,
-      data: { 
-        status: 'validated',
-        services_count: services.length
-      }
+      data: {
+        status: "validated",
+        services_count: services.length,
+      },
     });
     setIsSaving(false);
   };
@@ -251,7 +246,7 @@ export default function ArchitectureDesigner() {
     setIsSaving(true);
     await updateArchitectureMutation.mutateAsync({
       id: architectureId,
-      data: { status: 'generated' }
+      data: { status: "generated" },
     });
     setIsSaving(false);
     setShowCodeDialog(true);
@@ -270,57 +265,54 @@ export default function ArchitectureDesigner() {
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to={createPageUrl('Architectures')}>
+          <Link to={createPageUrl("Architectures")}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
             <h1 className="text-lg font-semibold text-slate-900">
-              {architecture?.name || 'New Architecture'}
+              {architecture?.name || "New Architecture"}
             </h1>
             <p className="text-sm text-slate-500">
-              {architecture?.description || 'Design your microservices architecture'}
+              {architecture?.description || "Design your microservices architecture"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowVersionHistory(true)}
-          >
-            <GitBranch className="w-4 h-4 mr-2" />
-            v{architecture?.version || 1}
+          <Button variant="outline" onClick={() => setShowVersionHistory(true)}>
+            <GitBranch className="w-4 h-4 mr-2" />v{architecture?.version || 1}
           </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowPanel(!showPanel)}
-          >
+          <Button variant="outline" onClick={() => setShowPanel(!showPanel)}>
             <Network className="w-4 h-4 mr-2" />
-            {showPanel ? 'Hide' : 'Show'} Panel
+            {showPanel ? "Hide" : "Show"} Panel
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleValidate}
             disabled={isSaving || services.length === 0}
           >
-            {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <CheckCircle className="w-4 h-4 mr-2" />
+            )}
             Validate
           </Button>
           <PermissionGate permission="architecture.generate_code">
-            <Button 
+            <Button
               variant="outline"
               onClick={handleGenerate}
-              disabled={isSaving || architecture?.status === 'draft'}
+              disabled={isSaving || architecture?.status === "draft"}
             >
               <Code className="w-4 h-4 mr-2" />
               Generate Code
             </Button>
           </PermissionGate>
           <PermissionGate permission="architecture.deploy">
-            <Button 
+            <Button
               className="bg-slate-900 hover:bg-slate-800"
-              disabled={architecture?.status !== 'generated'}
+              disabled={architecture?.status !== "generated"}
             >
               <Rocket className="w-4 h-4 mr-2" />
               Deploy
@@ -339,11 +331,21 @@ export default function ArchitectureDesigner() {
               className="absolute -right-6 top-4 bg-white border border-slate-200 rounded-r-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
               title="Hide panel"
             >
-              <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-4 h-4 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
-            
+
             <Tabs defaultValue="palette" className="flex-1 flex flex-col">
               <TabsList className="w-full grid grid-cols-3 m-4 mb-0">
                 <TabsTrigger value="palette">
@@ -388,29 +390,25 @@ export default function ArchitectureDesigner() {
                     Tools
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="icon"
-                      onClick={() => setZoom(prev => Math.min(prev + 0.1, 2))}
+                      onClick={() => setZoom((prev) => Math.min(prev + 0.1, 2))}
                     >
                       <ZoomIn className="w-4 h-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="icon"
-                      onClick={() => setZoom(prev => Math.max(prev - 0.1, 0.5))}
+                      onClick={() => setZoom((prev) => Math.max(prev - 0.1, 0.5))}
                     >
                       <ZoomOut className="w-4 h-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setZoom(1)}
-                    >
+                    <Button variant="outline" size="icon" onClick={() => setZoom(1)}>
                       <Maximize className="w-4 h-4" />
                     </Button>
                   </div>
-                  
+
                   {selectedConnection.source && (
                     <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
                       <div className="flex items-center gap-1 mb-1">
@@ -440,7 +438,9 @@ export default function ArchitectureDesigner() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-500">Status</span>
-                          <span className="font-medium capitalize">{architecture?.status || 'draft'}</span>
+                          <span className="font-medium capitalize">
+                            {architecture?.status || "draft"}
+                          </span>
                         </div>
                       </div>
                     </CardContent>
@@ -466,37 +466,45 @@ export default function ArchitectureDesigner() {
             className="fixed left-0 top-32 bg-white border border-slate-200 rounded-r-lg p-2 hover:bg-slate-50 transition-colors shadow-sm z-10"
             title="Show panel"
           >
-            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 text-slate-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         )}
 
-            {/* Canvas */}
-        <div 
+        {/* Canvas */}
+        <div
           ref={canvasRef}
           className="flex-1 bg-slate-100 relative overflow-auto"
           style={{
             backgroundImage: `
               radial-gradient(circle, #d1d5db 1px, transparent 1px)
             `,
-            backgroundSize: '24px 24px'
+            backgroundSize: "24px 24px",
           }}
         >
-          <div 
+          <div
             className="min-h-full min-w-full relative"
             style={{
               transform: `scale(${zoom})`,
-              transformOrigin: 'top left',
-              minWidth: '2000px',
-              minHeight: '1500px'
+              transformOrigin: "top left",
+              minWidth: "2000px",
+              minHeight: "1500px",
             }}
           >
             {/* Draw connections */}
-            <svg className="absolute inset-0 pointer-events-none" style={{ width: '2000px', height: '1500px' }}>
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              style={{ width: "2000px", height: "1500px" }}
+            >
               {connections.map((conn) => {
-                const source = services.find(s => s.id === conn.source_service_id);
-                const target = services.find(s => s.id === conn.target_service_id);
+                const source = services.find((s) => s.id === conn.source_service_id);
+                const target = services.find((s) => s.id === conn.target_service_id);
                 if (!source || !target) return null;
 
                 const x1 = source.canvas_position_x + 100;
@@ -504,8 +512,12 @@ export default function ArchitectureDesigner() {
                 const x2 = target.canvas_position_x + 100;
                 const y2 = target.canvas_position_y + 65;
 
-                const color = conn.connection_type === 'sync' ? '#3b82f6' : 
-                             conn.connection_type === 'async' ? '#a855f7' : '#10b981';
+                const color =
+                  conn.connection_type === "sync"
+                    ? "#3b82f6"
+                    : conn.connection_type === "async"
+                      ? "#a855f7"
+                      : "#10b981";
 
                 return (
                   <g key={conn.id}>
@@ -516,7 +528,7 @@ export default function ArchitectureDesigner() {
                       y2={y2}
                       stroke={color}
                       strokeWidth="2"
-                      strokeDasharray={conn.connection_type === 'async' ? '5,5' : '0'}
+                      strokeDasharray={conn.connection_type === "async" ? "5,5" : "0"}
                       markerEnd="url(#arrowhead)"
                     />
                   </g>
@@ -540,7 +552,9 @@ export default function ArchitectureDesigner() {
               <ServiceCard
                 key={service.id}
                 service={service}
-                isSelected={selectedService?.id === service.id || selectedConnection.source?.id === service.id}
+                isSelected={
+                  selectedService?.id === service.id || selectedConnection.source?.id === service.id
+                }
                 onClick={(e) => handleServiceClick(service, e)}
                 onDragEnd={(e) => handleServiceDragEnd(service, e)}
               />
@@ -553,7 +567,9 @@ export default function ArchitectureDesigner() {
                     <Plus className="w-8 h-8 text-slate-400" />
                   </div>
                   <h3 className="text-lg font-medium text-slate-700 mb-2">No services yet</h3>
-                  <p className="text-slate-500 mb-4">Click on a service type to add it to your architecture</p>
+                  <p className="text-slate-500 mb-4">
+                    Click on a service type to add it to your architecture
+                  </p>
                   <Button onClick={handleAddService}>
                     <Plus className="w-4 h-4 mr-2" />
                     Add First Service
@@ -565,13 +581,15 @@ export default function ArchitectureDesigner() {
             {services.length > 0 && (
               <div className="absolute top-4 left-4 bg-white rounded-lg shadow-sm p-3 text-xs text-slate-600 max-w-xs">
                 <div className="font-medium mb-1">💡 Quick Tip</div>
-                <div>Hold <kbd className="px-1 py-0.5 bg-slate-100 rounded">Ctrl</kbd> / <kbd className="px-1 py-0.5 bg-slate-100 rounded">⌘</kbd> and click services to create connections</div>
+                <div>
+                  Hold <kbd className="px-1 py-0.5 bg-slate-100 rounded">Ctrl</kbd> /{" "}
+                  <kbd className="px-1 py-0.5 bg-slate-100 rounded">⌘</kbd> and click services to
+                  create connections
+                </div>
               </div>
             )}
           </div>
         </div>
-
-
       </div>
 
       {/* Properties Panel */}
@@ -615,7 +633,7 @@ export default function ArchitectureDesigner() {
               <Input
                 placeholder="e.g., E-commerce Platform v2"
                 value={newArchitecture.name}
-                onChange={(e) => setNewArchitecture(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => setNewArchitecture((prev) => ({ ...prev, name: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -623,15 +641,19 @@ export default function ArchitectureDesigner() {
               <Textarea
                 placeholder="Describe your architecture..."
                 value={newArchitecture.description}
-                onChange={(e) => setNewArchitecture(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setNewArchitecture((prev) => ({ ...prev, description: e.target.value }))
+                }
                 rows={3}
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Template</label>
-              <Select 
-                value={newArchitecture.template_type} 
-                onValueChange={(value) => setNewArchitecture(prev => ({ ...prev, template_type: value }))}
+              <Select
+                value={newArchitecture.template_type}
+                onValueChange={(value) =>
+                  setNewArchitecture((prev) => ({ ...prev, template_type: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -648,10 +670,14 @@ export default function ArchitectureDesigner() {
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate(createPageUrl('Architectures'))} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => navigate(createPageUrl("Architectures"))}
+              className="flex-1"
+            >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleCreateArchitecture}
               disabled={!newArchitecture.name.trim() || createArchitectureMutation.isPending}
               className="flex-1 bg-slate-900 hover:bg-slate-800"
@@ -659,7 +685,7 @@ export default function ArchitectureDesigner() {
               {createArchitectureMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                'Create'
+                "Create"
               )}
             </Button>
           </div>

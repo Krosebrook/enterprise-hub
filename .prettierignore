@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Build outputs
+dist
+dist-ssr
+build
+.vite
+
+# Testing
+coverage
+.vitest
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Editor directories
+.vscode
+.idea
+.DS_Store
+
+# Other
+*.min.js
+*.min.css

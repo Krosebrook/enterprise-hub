@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,84 +15,85 @@ import {
   Clock,
   ExternalLink,
   Search,
-  Bot
-} from 'lucide-react';
-import PermissionGate from '../components/rbac/PermissionGate';
+  Bot,
+} from "lucide-react";
+import PermissionGate from "../components/rbac/PermissionGate";
 
 const docs = [
   {
-    title: 'Documentation Policy',
-    path: 'docs/DOC_POLICY.md',
+    title: "Documentation Policy",
+    path: "docs/DOC_POLICY.md",
     icon: BookOpen,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-    description: 'Documentation governance, provenance rules, and authority model',
-    status: 'active'
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    description: "Documentation governance, provenance rules, and authority model",
+    status: "active",
   },
   {
-    title: 'Documentation Authority Agent',
-    path: 'docs/AGENTS_DOCUMENTATION_AUTHORITY.md',
+    title: "Documentation Authority Agent",
+    path: "docs/AGENTS_DOCUMENTATION_AUTHORITY.md",
     icon: Bot,
-    color: 'text-purple-600',
-    bg: 'bg-purple-50',
-    description: 'System prompt for automated documentation maintenance',
-    status: 'active'
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+    description: "System prompt for automated documentation maintenance",
+    status: "active",
   },
   {
-    title: 'Security Architecture',
-    path: 'docs/SECURITY.md',
+    title: "Security Architecture",
+    path: "docs/SECURITY.md",
     icon: Shield,
-    color: 'text-red-600',
-    bg: 'bg-red-50',
-    description: 'Security architecture, threat model, RBAC, incident response',
-    status: 'active'
+    color: "text-red-600",
+    bg: "bg-red-50",
+    description: "Security architecture, threat model, RBAC, incident response",
+    status: "active",
   },
   {
-    title: 'System Architecture',
-    path: 'docs/ARCHITECTURE.md',
+    title: "System Architecture",
+    path: "docs/ARCHITECTURE.md",
     icon: GitBranch,
-    color: 'text-green-600',
-    bg: 'bg-green-50',
-    description: 'System architecture, modules, data flows, trust boundaries',
-    status: 'active'
+    color: "text-green-600",
+    bg: "bg-green-50",
+    description: "System architecture, modules, data flows, trust boundaries",
+    status: "active",
   },
   {
-    title: 'Technology Framework',
-    path: 'docs/FRAMEWORK.md',
+    title: "Technology Framework",
+    path: "docs/FRAMEWORK.md",
     icon: Layers,
-    color: 'text-orange-600',
-    bg: 'bg-orange-50',
-    description: 'Technology stack, LLM models, tooling, integrations',
-    status: 'active'
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+    description: "Technology stack, LLM models, tooling, integrations",
+    status: "active",
   },
   {
-    title: 'Changelog',
-    path: 'docs/CHANGELOG.md',
+    title: "Changelog",
+    path: "docs/CHANGELOG.md",
     icon: FileCode,
-    color: 'text-slate-600',
-    bg: 'bg-slate-50',
-    description: 'Version history following SemVer',
-    status: 'active'
-  }
+    color: "text-slate-600",
+    bg: "bg-slate-50",
+    description: "Version history following SemVer",
+    status: "active",
+  },
 ];
 
 const statusConfig = {
-  active: { label: 'Active', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-  review: { label: 'Under Review', color: 'bg-yellow-100 text-yellow-700', icon: Clock },
-  outdated: { label: 'Needs Update', color: 'bg-red-100 text-red-700', icon: AlertCircle }
+  active: { label: "Active", color: "bg-green-100 text-green-700", icon: CheckCircle },
+  review: { label: "Under Review", color: "bg-yellow-100 text-yellow-700", icon: Clock },
+  outdated: { label: "Needs Update", color: "bg-red-100 text-red-700", icon: AlertCircle },
 };
 
 export default function Documentation() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredDocs = docs.filter(doc =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doc.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredDocs = docs.filter(
+    (doc) =>
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleOpenDoc = (path) => {
     // In a real implementation, this would open the doc from GitHub
-    window.open(`https://github.com/YOUR_ORG/YOUR_REPO/blob/main/${path}`, '_blank');
+    window.open(`https://github.com/YOUR_ORG/YOUR_REPO/blob/main/${path}`, "_blank");
   };
 
   return (
@@ -117,8 +118,8 @@ export default function Documentation() {
               <div className="text-sm text-blue-900">
                 <p className="font-medium mb-1">Documentation Governance Active</p>
                 <p className="text-blue-700">
-                  All documentation follows evidence-bound writing with provenance tracking. 
-                  The Documentation Authority Agent maintains accuracy and traceability.
+                  All documentation follows evidence-bound writing with provenance tracking. The
+                  Documentation Authority Agent maintains accuracy and traceability.
                 </p>
               </div>
             </div>
@@ -144,7 +145,10 @@ export default function Documentation() {
         {filteredDocs.map((doc) => {
           const StatusIcon = statusConfig[doc.status].icon;
           return (
-            <Card key={doc.path} className="hover:shadow-lg transition-all duration-200 group cursor-pointer">
+            <Card
+              key={doc.path}
+              className="hover:shadow-lg transition-all duration-200 group cursor-pointer"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between mb-3">
                   <div className={`${doc.bg} p-3 rounded-lg`}>
@@ -183,7 +187,9 @@ export default function Documentation() {
               </div>
               <div>
                 <CardTitle>Documentation Authority Agent</CardTitle>
-                <p className="text-sm text-slate-500">Automated documentation maintenance with evidence-bound writing</p>
+                <p className="text-sm text-slate-500">
+                  Automated documentation maintenance with evidence-bound writing
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -193,33 +199,50 @@ export default function Documentation() {
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Provenance Tracking</p>
-                  <p className="text-sm text-slate-600">Every claim includes source, locator, confidence level, and verification date</p>
+                  <p className="text-sm text-slate-600">
+                    Every claim includes source, locator, confidence level, and verification date
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Fail-Closed Design</p>
-                  <p className="text-sm text-slate-600">Marks information as UNKNOWN when unverifiable, never invents content</p>
+                  <p className="text-sm text-slate-600">
+                    Marks information as UNKNOWN when unverifiable, never invents content
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">Incremental Updates</p>
-                  <p className="text-sm text-slate-600">Makes minimal changes unless full rewrite explicitly approved</p>
+                  <p className="text-sm text-slate-600">
+                    Makes minimal changes unless full rewrite explicitly approved
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-sm">ADR Supremacy</p>
-                  <p className="text-sm text-slate-600">Architecture Decision Records are immutable and take precedence</p>
+                  <p className="text-sm text-slate-600">
+                    Architecture Decision Records are immutable and take precedence
+                  </p>
                 </div>
               </div>
             </div>
             <div className="mt-6 pt-6 border-t">
-              <Button variant="outline" className="w-full" onClick={() => window.open(base44.agents.getWhatsAppConnectURL('documentation_authority'), '_blank')}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() =>
+                  window.open(
+                    base44.agents.getWhatsAppConnectURL("documentation_authority"),
+                    "_blank"
+                  )
+                }
+              >
                 <Bot className="w-4 h-4 mr-2" />
                 Connect via WhatsApp
               </Button>
@@ -248,7 +271,9 @@ export default function Documentation() {
                 </div>
                 <div className="flex items-start gap-2">
                   <Badge className="bg-red-100 text-red-700">LOW</Badge>
-                  <span className="text-slate-600">Single source, unverified, or &gt;90 days old</span>
+                  <span className="text-slate-600">
+                    Single source, unverified, or &gt;90 days old
+                  </span>
                 </div>
               </div>
             </div>

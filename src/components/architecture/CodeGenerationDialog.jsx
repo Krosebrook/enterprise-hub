@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
 import {
   Dialog,
   DialogContent,
@@ -31,102 +31,110 @@ import {
   Network,
   Server,
   FileCode,
-  Sparkles
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Sparkles,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const cloudProviders = [
-  { id: 'aws', name: 'Amazon Web Services (AWS)', icon: Cloud, color: 'text-orange-600' },
-  { id: 'gcp', name: 'Google Cloud Platform (GCP)', icon: Cloud, color: 'text-blue-600' },
-  { id: 'azure', name: 'Microsoft Azure', icon: Cloud, color: 'text-sky-600' }
+  { id: "aws", name: "Amazon Web Services (AWS)", icon: Cloud, color: "text-orange-600" },
+  { id: "gcp", name: "Google Cloud Platform (GCP)", icon: Cloud, color: "text-blue-600" },
+  { id: "azure", name: "Microsoft Azure", icon: Cloud, color: "text-sky-600" },
 ];
 
 const infrastructureComponents = {
   networking: {
-    label: 'Networking',
+    label: "Networking",
     icon: Network,
     options: [
-      { id: 'vpc', label: 'VPC/Virtual Network', description: 'Private network with subnets' },
-      { id: 'load_balancer', label: 'Load Balancer', description: 'Application load balancer' },
-      { id: 'nat_gateway', label: 'NAT Gateway', description: 'Outbound internet access' },
-      { id: 'security_groups', label: 'Security Groups', description: 'Firewall rules' }
-    ]
+      { id: "vpc", label: "VPC/Virtual Network", description: "Private network with subnets" },
+      { id: "load_balancer", label: "Load Balancer", description: "Application load balancer" },
+      { id: "nat_gateway", label: "NAT Gateway", description: "Outbound internet access" },
+      { id: "security_groups", label: "Security Groups", description: "Firewall rules" },
+    ],
   },
   compute: {
-    label: 'Compute',
+    label: "Compute",
     icon: Server,
     options: [
-      { id: 'kubernetes', label: 'Kubernetes Cluster', description: 'EKS / GKE / AKS' },
-      { id: 'node_pools', label: 'Node Pools', description: 'Worker node groups' },
-      { id: 'autoscaling', label: 'Auto-scaling', description: 'Horizontal pod autoscaler' }
-    ]
+      { id: "kubernetes", label: "Kubernetes Cluster", description: "EKS / GKE / AKS" },
+      { id: "node_pools", label: "Node Pools", description: "Worker node groups" },
+      { id: "autoscaling", label: "Auto-scaling", description: "Horizontal pod autoscaler" },
+    ],
   },
   database: {
-    label: 'Database',
+    label: "Database",
     icon: Database,
     options: [
-      { id: 'relational_db', label: 'Relational Database', description: 'RDS / Cloud SQL / Azure SQL' },
-      { id: 'redis', label: 'Redis Cache', description: 'ElastiCache / Memorystore / Azure Cache' },
-      { id: 'backup', label: 'Automated Backups', description: 'Point-in-time recovery' }
-    ]
+      {
+        id: "relational_db",
+        label: "Relational Database",
+        description: "RDS / Cloud SQL / Azure SQL",
+      },
+      { id: "redis", label: "Redis Cache", description: "ElastiCache / Memorystore / Azure Cache" },
+      { id: "backup", label: "Automated Backups", description: "Point-in-time recovery" },
+    ],
   },
   monitoring: {
-    label: 'Monitoring',
+    label: "Monitoring",
     icon: FileCode,
     options: [
-      { id: 'logging', label: 'Centralized Logging', description: 'CloudWatch / Cloud Logging / Log Analytics' },
-      { id: 'metrics', label: 'Metrics & Monitoring', description: 'Prometheus, Grafana' },
-      { id: 'alerts', label: 'Alerting', description: 'SNS / Pub/Sub / Action Groups' }
-    ]
-  }
+      {
+        id: "logging",
+        label: "Centralized Logging",
+        description: "CloudWatch / Cloud Logging / Log Analytics",
+      },
+      { id: "metrics", label: "Metrics & Monitoring", description: "Prometheus, Grafana" },
+      { id: "alerts", label: "Alerting", description: "SNS / Pub/Sub / Action Groups" },
+    ],
+  },
 };
 
 export default function CodeGenerationDialog({ open, onClose, architecture, services }) {
-  const [cloudProvider, setCloudProvider] = useState('aws');
+  const [cloudProvider, setCloudProvider] = useState("aws");
   const [selectedComponents, setSelectedComponents] = useState({
     vpc: true,
     kubernetes: true,
     relational_db: true,
     security_groups: true,
     node_pools: true,
-    logging: true
+    logging: true,
   });
-  const [region, setRegion] = useState('us-east-1');
-  const [environment, setEnvironment] = useState('production');
+  const [region, setRegion] = useState("us-east-1");
+  const [environment, setEnvironment] = useState("production");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCode, setGeneratedCode] = useState(null);
   const [copied, setCopied] = useState({});
 
   const regions = {
-    aws: ['us-east-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1'],
-    gcp: ['us-central1', 'us-east1', 'europe-west1', 'asia-southeast1'],
-    azure: ['eastus', 'westus2', 'westeurope', 'southeastasia']
+    aws: ["us-east-1", "us-west-2", "eu-west-1", "ap-southeast-1"],
+    gcp: ["us-central1", "us-east1", "europe-west1", "asia-southeast1"],
+    azure: ["eastus", "westus2", "westeurope", "southeastasia"],
   };
 
   const handleComponentToggle = (componentId) => {
-    setSelectedComponents(prev => ({
+    setSelectedComponents((prev) => ({
       ...prev,
-      [componentId]: !prev[componentId]
+      [componentId]: !prev[componentId],
     }));
   };
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      const response = await base44.functions.invoke('generateTerraform', {
+      const response = await base44.functions.invoke("generateTerraform", {
         architecture_id: architecture.id,
         architecture_name: architecture.name,
         services: services,
         cloud_provider: cloudProvider,
         region: region,
         environment: environment,
-        components: selectedComponents
+        components: selectedComponents,
       });
 
       setGeneratedCode(response.data);
-      toast.success('Infrastructure code generated successfully!');
+      toast.success("Infrastructure code generated successfully!");
     } catch (error) {
-      toast.error('Failed to generate code: ' + error.message);
+      toast.error("Failed to generate code: " + error.message);
     } finally {
       setIsGenerating(false);
     }
@@ -143,9 +151,9 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
     if (!generatedCode) return;
 
     Object.entries(generatedCode.files).forEach(([fileName, content]) => {
-      const blob = new Blob([content], { type: 'text/plain' });
+      const blob = new Blob([content], { type: "text/plain" });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = fileName;
       document.body.appendChild(a);
@@ -154,7 +162,7 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
       a.remove();
     });
 
-    toast.success('All files downloaded');
+    toast.success("All files downloaded");
   };
 
   return (
@@ -186,14 +194,16 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
                       key={provider.id}
                       className={`cursor-pointer transition-all ${
                         cloudProvider === provider.id
-                          ? 'border-2 border-slate-900 shadow-md'
-                          : 'border-2 border-transparent hover:border-slate-300'
+                          ? "border-2 border-slate-900 shadow-md"
+                          : "border-2 border-transparent hover:border-slate-300"
                       }`}
                       onClick={() => setCloudProvider(provider.id)}
                     >
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center gap-3">
-                          <div className={`w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center`}>
+                          <div
+                            className={`w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center`}
+                          >
                             <provider.icon className={`w-8 h-8 ${provider.color}`} />
                           </div>
                           <h3 className="font-semibold">{provider.name}</h3>
@@ -210,8 +220,9 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
                       <div>
                         <p className="font-medium text-blue-900">Terraform Configuration</p>
                         <p className="text-sm text-blue-700 mt-1">
-                          We'll generate production-ready Terraform code with modules, variables, and outputs.
-                          Includes best practices for security, networking, and scalability.
+                          We'll generate production-ready Terraform code with modules, variables,
+                          and outputs. Includes best practices for security, networking, and
+                          scalability.
                         </p>
                       </div>
                     </div>
@@ -247,9 +258,7 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
                             >
                               {option.label}
                             </label>
-                            <p className="text-xs text-slate-500 mt-0.5">
-                              {option.description}
-                            </p>
+                            <p className="text-xs text-slate-500 mt-0.5">{option.description}</p>
                           </div>
                         </div>
                       ))}
@@ -303,7 +312,7 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
                       <div className="flex justify-between">
                         <span className="text-slate-600">Cloud Provider:</span>
                         <span className="font-medium">
-                          {cloudProviders.find(p => p.id === cloudProvider)?.name}
+                          {cloudProviders.find((p) => p.id === cloudProvider)?.name}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -376,21 +385,22 @@ export default function CodeGenerationDialog({ open, onClose, architecture, serv
               </div>
             </div>
 
-            <Tabs defaultValue={Object.keys(generatedCode.files)[0]} className="flex-1 flex flex-col min-h-0">
+            <Tabs
+              defaultValue={Object.keys(generatedCode.files)[0]}
+              className="flex-1 flex flex-col min-h-0"
+            >
               <TabsList className="grid w-full grid-cols-4">
-                {Object.keys(generatedCode.files).slice(0, 4).map((fileName) => (
-                  <TabsTrigger key={fileName} value={fileName} className="text-xs">
-                    {fileName}
-                  </TabsTrigger>
-                ))}
+                {Object.keys(generatedCode.files)
+                  .slice(0, 4)
+                  .map((fileName) => (
+                    <TabsTrigger key={fileName} value={fileName} className="text-xs">
+                      {fileName}
+                    </TabsTrigger>
+                  ))}
               </TabsList>
 
               {Object.entries(generatedCode.files).map(([fileName, content]) => (
-                <TabsContent
-                  key={fileName}
-                  value={fileName}
-                  className="flex-1 mt-4 min-h-0"
-                >
+                <TabsContent key={fileName} value={fileName} className="flex-1 mt-4 min-h-0">
                   <Card className="h-full flex flex-col">
                     <CardHeader className="pb-3 flex flex-row items-center justify-between">
                       <CardTitle className="text-sm font-mono">{fileName}</CardTitle>

@@ -1,95 +1,90 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
-import { createPageUrl } from '../utils';
-import {
-  ArrowLeft,
-  Send,
-  RotateCcw,
-  MessageSquare,
-  Sparkles,
-  Clock,
-  Loader2
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
+import { createPageUrl } from "../utils";
+import { ArrowLeft, Send, RotateCcw, MessageSquare, Sparkles, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 export default function AgentPlayground() {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const [agentId, setAgentId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [testSettings, setTestSettings] = useState({
     temperature: 0.7,
     max_tokens: 1000,
-    model_override: ''
+    model_override: "",
   });
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    const id = urlParams.get("id");
     if (id) {
       setAgentId(id);
     } else {
-      navigate(createPageUrl('Agents'));
+      navigate(createPageUrl("Agents"));
     }
   }, []);
 
   const { data: agent, isLoading } = useQuery({
-    queryKey: ['agent', agentId],
+    queryKey: ["agent", agentId],
     queryFn: () => base44.entities.Agent.filter({ id: agentId }),
     enabled: !!agentId,
-    select: (data) => data[0]
+    select: (data) => data[0],
   });
 
   const sendMessageMutation = useMutation({
     mutationFn: async (message) => {
       // Simulate agent response using InvokeLLM
-      const systemPrompt = agent.system_prompt || 'You are a helpful assistant.';
-      const roleContext = agent.role ? `Your role is: ${agent.role}. ` : '';
-      const personaContext = agent.persona ? 
-        `Communication style: ${agent.persona.communication_style || 'balanced'}, 
-         Tone: ${agent.persona.tone || 'professional'}, 
-         Expertise: ${agent.persona.expertise_level || 'intermediate'}. ` : '';
+      const systemPrompt = agent.system_prompt || "You are a helpful assistant.";
+      const roleContext = agent.role ? `Your role is: ${agent.role}. ` : "";
+      const personaContext = agent.persona
+        ? `Communication style: ${agent.persona.communication_style || "balanced"}, 
+         Tone: ${agent.persona.tone || "professional"}, 
+         Expertise: ${agent.persona.expertise_level || "intermediate"}. `
+        : "";
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: message,
         add_context_from_internet: false,
-        response_json_schema: null
+        response_json_schema: null,
       });
 
       return response;
     },
     onSuccess: (response) => {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: response,
-        timestamp: new Date()
-      }]);
-    }
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: response,
+          timestamp: new Date(),
+        },
+      ]);
+    },
   });
 
   const handleSend = () => {
     if (!input.trim() || sendMessageMutation.isPending) return;
 
     const userMessage = {
-      role: 'user',
+      role: "user",
       content: input,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     sendMessageMutation.mutate(input);
-    setInput('');
+    setInput("");
   };
 
   const handleReset = () => {
@@ -97,7 +92,7 @@ export default function AgentPlayground() {
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   if (isLoading) {
@@ -113,7 +108,7 @@ export default function AgentPlayground() {
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to={createPageUrl('Agents')}>
+          <Link to={createPageUrl("Agents")}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>
@@ -123,13 +118,11 @@ export default function AgentPlayground() {
               <Sparkles className="w-5 h-5 text-purple-600" />
               Agent Playground
             </h1>
-            <p className="text-sm text-slate-500">{agent?.name || 'Testing Agent'}</p>
+            <p className="text-sm text-slate-500">{agent?.name || "Testing Agent"}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className="bg-purple-100 text-purple-700">
-            {agent?.role || 'assistant'}
-          </Badge>
+          <Badge className="bg-purple-100 text-purple-700">{agent?.role || "assistant"}</Badge>
           <Button variant="outline" onClick={handleReset}>
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
@@ -152,7 +145,8 @@ export default function AgentPlayground() {
                     Start Testing Your Agent
                   </h3>
                   <p className="text-slate-500 max-w-sm">
-                    Send messages to test your agent's responses and refine its behavior before deployment
+                    Send messages to test your agent's responses and refine its behavior before
+                    deployment
                   </p>
                 </div>
               </div>
@@ -160,16 +154,16 @@ export default function AgentPlayground() {
               messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-[70%] rounded-lg p-4 ${
-                      msg.role === 'user'
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-white border border-slate-200'
+                      msg.role === "user"
+                        ? "bg-slate-900 text-white"
+                        : "bg-white border border-slate-200"
                     }`}
                   >
-                    {msg.role === 'assistant' ? (
+                    {msg.role === "assistant" ? (
                       <ReactMarkdown className="prose prose-sm max-w-none">
                         {msg.content}
                       </ReactMarkdown>
@@ -178,7 +172,7 @@ export default function AgentPlayground() {
                     )}
                     <div
                       className={`flex items-center gap-1 mt-2 text-xs ${
-                        msg.role === 'user' ? 'text-slate-400' : 'text-slate-500'
+                        msg.role === "user" ? "text-slate-400" : "text-slate-500"
                       }`}
                     >
                       <Clock className="w-3 h-3" />
@@ -206,7 +200,7 @@ export default function AgentPlayground() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSend();
                   }
@@ -223,7 +217,7 @@ export default function AgentPlayground() {
               </Button>
             </div>
             <div className="text-xs text-slate-500 mt-2">
-              Press <kbd className="px-1 py-0.5 bg-slate-100 rounded">Enter</kbd> to send,{' '}
+              Press <kbd className="px-1 py-0.5 bg-slate-100 rounded">Enter</kbd> to send,{" "}
               <kbd className="px-1 py-0.5 bg-slate-100 rounded">Shift+Enter</kbd> for new line
             </div>
           </div>
@@ -245,7 +239,7 @@ export default function AgentPlayground() {
                 <CardContent className="space-y-3 text-sm">
                   <div>
                     <span className="text-slate-500">Model:</span>
-                    <p className="font-medium">{agent?.model_name || 'gpt-4-turbo'}</p>
+                    <p className="font-medium">{agent?.model_name || "gpt-4-turbo"}</p>
                   </div>
                   <div>
                     <span className="text-slate-500">Temperature:</span>
@@ -253,7 +247,7 @@ export default function AgentPlayground() {
                   </div>
                   <div>
                     <span className="text-slate-500">Role:</span>
-                    <p className="font-medium capitalize">{agent?.role || 'assistant'}</p>
+                    <p className="font-medium capitalize">{agent?.role || "assistant"}</p>
                   </div>
                   {agent?.persona && (
                     <>
@@ -278,7 +272,7 @@ export default function AgentPlayground() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-slate-600 whitespace-pre-wrap">
-                    {agent?.system_prompt || 'No system prompt defined'}
+                    {agent?.system_prompt || "No system prompt defined"}
                   </p>
                 </CardContent>
               </Card>
@@ -291,9 +285,7 @@ export default function AgentPlayground() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Temperature Override
-                    </label>
+                    <label className="text-sm font-medium mb-2 block">Temperature Override</label>
                     <Slider
                       value={[testSettings.temperature]}
                       onValueChange={([value]) =>
@@ -310,9 +302,7 @@ export default function AgentPlayground() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Max Tokens
-                    </label>
+                    <label className="text-sm font-medium mb-2 block">Max Tokens</label>
                     <Slider
                       value={[testSettings.max_tokens]}
                       onValueChange={([value]) =>
@@ -323,9 +313,7 @@ export default function AgentPlayground() {
                       step={100}
                       className="mb-2"
                     />
-                    <div className="text-xs text-slate-500">
-                      Current: {testSettings.max_tokens}
-                    </div>
+                    <div className="text-xs text-slate-500">Current: {testSettings.max_tokens}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -342,13 +330,13 @@ export default function AgentPlayground() {
                   <div className="flex justify-between">
                     <span className="text-slate-500">User:</span>
                     <span className="font-medium">
-                      {messages.filter(m => m.role === 'user').length}
+                      {messages.filter((m) => m.role === "user").length}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Agent:</span>
                     <span className="font-medium">
-                      {messages.filter(m => m.role === 'assistant').length}
+                      {messages.filter((m) => m.role === "assistant").length}
                     </span>
                   </div>
                 </CardContent>
