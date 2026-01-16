@@ -70,6 +70,7 @@ export default function ArchitectureDesigner() {
   const [showCodeDialog, setShowCodeDialog] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(true);
+  const [showLeftPanel, setShowLeftPanel] = useState(true);
   const [selectedConnection, setSelectedConnection] = useState({ source: null, target: null });
   const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
@@ -332,7 +333,8 @@ export default function ArchitectureDesigner() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Palette */}
-        <div className="w-56 bg-white border-r border-slate-200 p-4 flex flex-col gap-6">
+        {showLeftPanel && (
+          <div className="w-56 bg-white border-r border-slate-200 p-4 flex flex-col gap-6 relative">
           {/* Services Palette */}
           <div>
             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
@@ -417,10 +419,33 @@ export default function ArchitectureDesigner() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+            </div>
+            <button
+            onClick={() => setShowLeftPanel(false)}
+            className="absolute -right-6 top-4 bg-white border border-slate-200 rounded-r-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
+            title="Hide palette"
+            >
+            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            </button>
+            </div>
+            )}
 
-        {/* Canvas */}
+            {/* Expand Palette Button */}
+            {!showLeftPanel && (
+            <button
+            onClick={() => setShowLeftPanel(true)}
+            className="fixed left-0 top-32 bg-white border border-slate-200 rounded-r-lg p-2 hover:bg-slate-50 transition-colors shadow-sm z-10"
+            title="Show palette"
+            >
+            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            </button>
+            )}
+
+            {/* Canvas */}
         <div 
           ref={canvasRef}
           className="flex-1 bg-slate-100 relative overflow-auto"
