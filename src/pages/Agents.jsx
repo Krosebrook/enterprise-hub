@@ -14,7 +14,9 @@ import {
   Settings,
   Trash2,
   BarChart3,
-  Loader2
+  Loader2,
+  Sparkles,
+  Rocket
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +47,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import PermissionGate from '../components/rbac/PermissionGate';
+import DeploymentWorkflow from '../components/agent/DeploymentWorkflow';
 
 const statusConfig = {
   draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700', icon: null },
