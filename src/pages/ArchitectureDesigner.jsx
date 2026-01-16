@@ -521,7 +521,16 @@ export default function ArchitectureDesigner() {
 
         {/* Right Panel - Analysis */}
         {showRightPanel && (
-          <div className="w-80 bg-white border-l border-slate-200 flex flex-col">
+          <div className="w-80 bg-white border-l border-slate-200 flex flex-col relative">
+            <button
+              onClick={() => setShowRightPanel(false)}
+              className="absolute -left-6 top-4 bg-white border border-slate-200 rounded-l-lg p-1.5 hover:bg-slate-50 transition-colors z-10"
+              title="Hide panel"
+            >
+              <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
             <Tabs defaultValue="dependencies" className="flex-1 flex flex-col">
               <TabsList className="w-full grid grid-cols-2 m-4 mb-0">
                 <TabsTrigger value="dependencies">
@@ -533,16 +542,29 @@ export default function ArchitectureDesigner() {
                   Flows
                 </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="dependencies" className="flex-1 m-4 mt-4">
                 <DependencyGraph services={services} connections={connections} />
               </TabsContent>
-              
+
               <TabsContent value="sequence" className="flex-1 m-4 mt-4">
                 <SequenceDiagram services={services} connections={connections} />
               </TabsContent>
             </Tabs>
           </div>
+        )}
+
+        {/* Expand Panel Button */}
+        {!showRightPanel && (
+          <button
+            onClick={() => setShowRightPanel(true)}
+            className="fixed right-0 top-32 bg-white border border-slate-200 rounded-l-lg p-2 hover:bg-slate-50 transition-colors shadow-sm"
+            title="Show analysis panel"
+          >
+            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
         )}
       </div>
 
