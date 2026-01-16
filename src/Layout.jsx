@@ -19,6 +19,7 @@ import {
   User,
   Users as UsersIcon,
   BookOpen,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +46,7 @@ const navigation = [
   { name: "Users", href: "Users", icon: UsersIcon },
   { name: "Audit Log", href: "AuditLog", icon: Activity },
   { name: "Documentation", href: "Documentation", icon: BookOpen },
+  { name: "PRD Generator", href: "PRDGenerator", icon: FileText },
 ];
 
 export default function Layout({ children, currentPageName }) {
