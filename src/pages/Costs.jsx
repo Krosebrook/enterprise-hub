@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import {
   DollarSign,
   TrendingUp,
@@ -9,8 +9,8 @@ import {
   Download,
   Calendar,
   BarChart3,
-  PieChart
-} from 'lucide-react';
+  PieChart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,102 +36,102 @@ import {
   Cell,
   Legend,
   Area,
-  AreaChart
-} from 'recharts';
-import { format, subDays } from 'date-fns';
-import PermissionGate from '../components/rbac/PermissionGate';
+  AreaChart,
+} from "recharts";
+import { format, subDays } from "date-fns";
+import PermissionGate from "../components/rbac/PermissionGate";
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#06b6d4'];
+const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f97316", "#22c55e", "#06b6d4"];
 
 const providerColors = {
-  aws: '#FF9900',
-  gcp: '#4285F4',
-  azure: '#00A4EF',
-  openai: '#10A37F',
-  anthropic: '#D97706',
-  google_ai: '#EA4335',
-  other: '#6B7280'
+  aws: "#FF9900",
+  gcp: "#4285F4",
+  azure: "#00A4EF",
+  openai: "#10A37F",
+  anthropic: "#D97706",
+  google_ai: "#EA4335",
+  other: "#6B7280",
 };
 
 export default function Costs() {
-  const [timeRange, setTimeRange] = useState('30d');
-  const [groupBy, setGroupBy] = useState('provider');
+  const [timeRange, setTimeRange] = useState("30d");
+  const [groupBy, setGroupBy] = useState("provider");
 
   const { data: costRecords = [], isLoading } = useQuery({
-    queryKey: ['cost-records'],
-    queryFn: () => base44.entities.CostRecord.list('-date', 500),
-    initialData: []
+    queryKey: ["cost-records"],
+    queryFn: () => base44.entities.CostRecord.list("-date", 500),
+    initialData: [],
   });
 
   const { data: budgets = [] } = useQuery({
-    queryKey: ['budgets'],
+    queryKey: ["budgets"],
     queryFn: () => base44.entities.Budget.list(),
-    initialData: []
+    initialData: [],
   });
 
   // Calculate totals
   const totalSpent = costRecords.reduce((sum, r) => sum + (r.cost_usd || 0), 0);
-  const monthlyBudget = budgets.find(b => b.budget_type === 'organization')?.amount_usd || 10000;
+  const monthlyBudget = budgets.find((b) => b.budget_type === "organization")?.amount_usd || 10000;
   const budgetUsed = (totalSpent / monthlyBudget) * 100;
-  
+
   // Group by provider
   const costByProvider = costRecords.reduce((acc, record) => {
-    const provider = record.provider || 'other';
+    const provider = record.provider || "other";
     acc[provider] = (acc[provider] || 0) + (record.cost_usd || 0);
     return acc;
   }, {});
 
   const providerData = Object.entries(costByProvider)
-    .map(([name, value]) => ({ 
-      name: name.toUpperCase(), 
+    .map(([name, value]) => ({
+      name: name.toUpperCase(),
       value: Math.round(value * 100) / 100,
-      color: providerColors[name] || providerColors.other
+      color: providerColors[name] || providerColors.other,
     }))
     .sort((a, b) => b.value - a.value);
 
   // Group by category
   const costByCategory = costRecords.reduce((acc, record) => {
-    const category = record.service_category || 'other';
+    const category = record.service_category || "other";
     acc[category] = (acc[category] || 0) + (record.cost_usd || 0);
     return acc;
   }, {});
 
   const categoryData = Object.entries(costByCategory)
-    .map(([name, value]) => ({ 
-      name: name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), 
-      value: Math.round(value * 100) / 100 
+    .map(([name, value]) => ({
+      name: name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+      value: Math.round(value * 100) / 100,
     }))
     .sort((a, b) => b.value - a.value);
 
   // Daily trend data (mock for visualization)
   const dailyData = Array.from({ length: 30 }, (_, i) => {
     const date = subDays(new Date(), 29 - i);
-    const dayRecords = costRecords.filter(r => {
+    const dayRecords = costRecords.filter((r) => {
       if (!r.date) return false;
       const recordDate = new Date(r.date);
       return recordDate.toDateString() === date.toDateString();
     });
     const total = dayRecords.reduce((sum, r) => sum + (r.cost_usd || 0), 0);
     return {
-      date: format(date, 'MMM d'),
-      cost: total || Math.random() * 500 + 100 // Fallback to mock data if empty
+      date: format(date, "MMM d"),
+      cost: total || Math.random() * 500 + 100, // Fallback to mock data if empty
     };
   });
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
   const getBudgetColor = () => {
-    if (budgetUsed >= 100) return 'bg-red-500';
-    if (budgetUsed >= 80) return 'bg-orange-500';
-    if (budgetUsed >= 50) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (budgetUsed >= 100) return "bg-red-500";
+    if (budgetUsed >= 80) return "bg-orange-500";
+    if (budgetUsed >= 50) return "bg-yellow-500";
+    return "bg-green-500";
   };
 
   return (
@@ -208,12 +208,14 @@ export default function Costs() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-500">Budget Used</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">
-                  {budgetUsed.toFixed(0)}%
-                </p>
+                <p className="text-3xl font-bold text-slate-900 mt-1">{budgetUsed.toFixed(0)}%</p>
               </div>
-              <div className={`w-12 h-12 ${budgetUsed >= 80 ? 'bg-orange-100' : 'bg-green-100'} rounded-xl flex items-center justify-center`}>
-                <BarChart3 className={`w-6 h-6 ${budgetUsed >= 80 ? 'text-orange-600' : 'text-green-600'}`} />
+              <div
+                className={`w-12 h-12 ${budgetUsed >= 80 ? "bg-orange-100" : "bg-green-100"} rounded-xl flex items-center justify-center`}
+              >
+                <BarChart3
+                  className={`w-6 h-6 ${budgetUsed >= 80 ? "text-orange-600" : "text-green-600"}`}
+                />
               </div>
             </div>
             <div className="mt-3">
@@ -228,7 +230,7 @@ export default function Costs() {
               <div>
                 <p className="text-sm text-slate-500">Top Spend</p>
                 <p className="text-3xl font-bold text-slate-900 mt-1">
-                  {providerData[0]?.name || 'N/A'}
+                  {providerData[0]?.name || "N/A"}
                 </p>
               </div>
               <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
@@ -252,10 +254,15 @@ export default function Costs() {
             <div className="flex-1">
               <p className="font-medium text-orange-800">Budget Alert</p>
               <p className="text-sm text-orange-700">
-                You've used {budgetUsed.toFixed(0)}% of your monthly budget ({formatCurrency(totalSpent)} / {formatCurrency(monthlyBudget)})
+                You've used {budgetUsed.toFixed(0)}% of your monthly budget (
+                {formatCurrency(totalSpent)} / {formatCurrency(monthlyBudget)})
               </p>
             </div>
-            <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-100">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-orange-300 text-orange-700 hover:bg-orange-100"
+            >
               Adjust Budget
             </Button>
           </CardContent>
@@ -282,23 +289,23 @@ export default function Costs() {
                   <AreaChart data={dailyData}>
                     <defs>
                       <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
                     <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${v}`} />
-                    <Tooltip 
-                      formatter={(value) => [formatCurrency(value), 'Cost']}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                    <Tooltip
+                      formatter={(value) => [formatCurrency(value), "Cost"]}
+                      contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0" }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="cost" 
-                      stroke="#3b82f6" 
+                    <Area
+                      type="monotone"
+                      dataKey="cost"
+                      stroke="#3b82f6"
                       strokeWidth={2}
-                      fill="url(#colorCost)" 
+                      fill="url(#colorCost)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -347,8 +354,19 @@ export default function Costs() {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={categoryData.slice(0, 6)} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                      <XAxis type="number" stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${v}`} />
-                      <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={100} />
+                      <XAxis
+                        type="number"
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        tickFormatter={(v) => `$${v}`}
+                      />
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        width={100}
+                      />
                       <Tooltip formatter={(value) => formatCurrency(value)} />
                       <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} />
                     </BarChart>
@@ -372,7 +390,7 @@ export default function Costs() {
                   <div key={provider.name} className="p-4 bg-slate-50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div 
+                        <div
                           className="w-4 h-4 rounded"
                           style={{ backgroundColor: provider.color }}
                         />
@@ -380,10 +398,7 @@ export default function Costs() {
                       </div>
                       <span className="font-semibold">{formatCurrency(provider.value)}</span>
                     </div>
-                    <Progress 
-                      value={(provider.value / totalSpent) * 100} 
-                      className="h-2"
-                    />
+                    <Progress value={(provider.value / totalSpent) * 100} className="h-2" />
                     <p className="text-sm text-slate-500 mt-1">
                       {((provider.value / totalSpent) * 100).toFixed(1)}% of total
                     </p>
@@ -415,7 +430,7 @@ export default function Costs() {
                 const spent = budget.spent_usd || 0;
                 const amount = budget.amount_usd || 0;
                 const percentage = amount > 0 ? (spent / amount) * 100 : 0;
-                
+
                 return (
                   <Card key={budget.id}>
                     <CardHeader>
@@ -431,11 +446,15 @@ export default function Costs() {
                             <p className="text-3xl font-bold">{formatCurrency(spent)}</p>
                             <p className="text-sm text-slate-500">of {formatCurrency(amount)}</p>
                           </div>
-                          <p className={`text-lg font-semibold ${
-                            percentage >= 100 ? 'text-red-600' : 
-                            percentage >= 80 ? 'text-orange-600' : 
-                            'text-green-600'
-                          }`}>
+                          <p
+                            className={`text-lg font-semibold ${
+                              percentage >= 100
+                                ? "text-red-600"
+                                : percentage >= 80
+                                  ? "text-orange-600"
+                                  : "text-green-600"
+                            }`}
+                          >
                             {percentage.toFixed(0)}%
                           </p>
                         </div>

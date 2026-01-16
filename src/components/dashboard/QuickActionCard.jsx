@@ -1,26 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../../utils';
-import { ChevronRight } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "../../utils";
+import { ChevronRight } from "lucide-react";
 
-export default function QuickActionCard({ 
-  title, 
-  description, 
-  icon: Icon, 
-  href, 
-  color = 'blue' 
-}) {
+export default function QuickActionCard({ title, description, icon: Icon, href, color = "blue" }) {
   const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600 group-hover:bg-blue-100',
-    green: 'bg-green-50 text-green-600 group-hover:bg-green-100',
-    purple: 'bg-purple-50 text-purple-600 group-hover:bg-purple-100',
-    yellow: 'bg-yellow-50 text-yellow-600 group-hover:bg-yellow-100',
-    red: 'bg-red-50 text-red-600 group-hover:bg-red-100',
-    slate: 'bg-slate-50 text-slate-600 group-hover:bg-slate-100'
+    blue: "bg-blue-50 text-blue-600 group-hover:bg-blue-100",
+    green: "bg-green-50 text-green-600 group-hover:bg-green-100",
+    purple: "bg-purple-50 text-purple-600 group-hover:bg-purple-100",
+    yellow: "bg-yellow-50 text-yellow-600 group-hover:bg-yellow-100",
+    red: "bg-red-50 text-red-600 group-hover:bg-red-100",
+    slate: "bg-slate-50 text-slate-600 group-hover:bg-slate-100",
   };
 
   return (
-    <Link 
+    <Link
       data-b44-sync="true"
       to={createPageUrl(href)}
       className="group block p-5 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200"

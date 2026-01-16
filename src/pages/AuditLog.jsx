@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
-import {
-  Search,
-  Download
-} from 'lucide-react';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { Search, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,46 +21,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import PermissionGate from '../components/rbac/PermissionGate';
-import { format } from 'date-fns';
+import PermissionGate from "../components/rbac/PermissionGate";
+import { format } from "date-fns";
 
 const actionColors = {
-  create: 'bg-green-100 text-green-700',
-  read: 'bg-blue-100 text-blue-700',
-  update: 'bg-yellow-100 text-yellow-700',
-  delete: 'bg-red-100 text-red-700',
-  login: 'bg-purple-100 text-purple-700',
-  logout: 'bg-slate-100 text-slate-700',
-  deploy: 'bg-indigo-100 text-indigo-700',
-  generate: 'bg-cyan-100 text-cyan-700',
-  train: 'bg-pink-100 text-pink-700',
-  export: 'bg-orange-100 text-orange-700'
+  create: "bg-green-100 text-green-700",
+  read: "bg-blue-100 text-blue-700",
+  update: "bg-yellow-100 text-yellow-700",
+  delete: "bg-red-100 text-red-700",
+  login: "bg-purple-100 text-purple-700",
+  logout: "bg-slate-100 text-slate-700",
+  deploy: "bg-indigo-100 text-indigo-700",
+  generate: "bg-cyan-100 text-cyan-700",
+  train: "bg-pink-100 text-pink-700",
+  export: "bg-orange-100 text-orange-700",
 };
 
 const statusColors = {
-  success: 'bg-green-100 text-green-700',
-  failure: 'bg-red-100 text-red-700',
-  pending: 'bg-yellow-100 text-yellow-700'
+  success: "bg-green-100 text-green-700",
+  failure: "bg-red-100 text-red-700",
+  pending: "bg-yellow-100 text-yellow-700",
 };
 
 export default function AuditLog() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [actionFilter, setActionFilter] = useState('all');
-  const [resourceFilter, setResourceFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [actionFilter, setActionFilter] = useState("all");
+  const [resourceFilter, setResourceFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const { data: auditLogs = [], isLoading } = useQuery({
-    queryKey: ['audit-logs'],
-    queryFn: () => base44.entities.AuditLog.list('-created_date', 100),
-    initialData: []
+    queryKey: ["audit-logs"],
+    queryFn: () => base44.entities.AuditLog.list("-created_date", 100),
+    initialData: [],
   });
 
-  const filteredLogs = auditLogs.filter(log => {
-    const matchesSearch = log.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         log.resource_name?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesAction = actionFilter === 'all' || log.action === actionFilter;
-    const matchesResource = resourceFilter === 'all' || log.resource_type === resourceFilter;
-    const matchesStatus = statusFilter === 'all' || log.status === statusFilter;
+  const filteredLogs = auditLogs.filter((log) => {
+    const matchesSearch =
+      log.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.resource_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesAction = actionFilter === "all" || log.action === actionFilter;
+    const matchesResource = resourceFilter === "all" || log.resource_type === resourceFilter;
+    const matchesStatus = statusFilter === "all" || log.status === statusFilter;
     return matchesSearch && matchesAction && matchesResource && matchesStatus;
   });
 
@@ -155,25 +153,26 @@ export default function AuditLog() {
                   filteredLogs.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell>
-                        {log.created_date 
-                          ? format(new Date(log.created_date), 'MMM d, yyyy HH:mm:ss')
-                          : '—'
-                        }
+                        {log.created_date
+                          ? format(new Date(log.created_date), "MMM d, yyyy HH:mm:ss")
+                          : "—"}
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-slate-900">{log.user_name || 'System'}</p>
+                          <p className="font-medium text-slate-900">{log.user_name || "System"}</p>
                           <p className="text-xs text-slate-500">{log.user_email}</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={actionColors[log.action] || 'bg-slate-100 text-slate-700'}>
+                        <Badge
+                          className={actionColors[log.action] || "bg-slate-100 text-slate-700"}
+                        >
                           {log.action}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="text-sm font-medium">{log.resource_name || '—'}</p>
+                          <p className="text-sm font-medium">{log.resource_name || "—"}</p>
                           <p className="text-xs text-slate-500 capitalize">{log.resource_type}</p>
                         </div>
                       </TableCell>
@@ -184,7 +183,7 @@ export default function AuditLog() {
                       </TableCell>
                       <TableCell>
                         <span className="text-sm font-mono text-slate-600">
-                          {log.ip_address || '—'}
+                          {log.ip_address || "—"}
                         </span>
                       </TableCell>
                     </TableRow>

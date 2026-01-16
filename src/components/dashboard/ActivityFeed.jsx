@@ -1,16 +1,16 @@
-import React from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { 
-  GitBranch, 
-  Bot, 
-  Shield, 
-  DollarSign, 
-  Rocket, 
+import React from "react";
+import { formatDistanceToNow } from "date-fns";
+import {
+  GitBranch,
+  Bot,
+  Shield,
+  DollarSign,
+  Rocket,
   CheckCircle,
   AlertCircle,
   UserPlus,
-  Code
-} from 'lucide-react';
+  Code,
+} from "lucide-react";
 
 const activityIcons = {
   architecture_created: GitBranch,
@@ -23,16 +23,16 @@ const activityIcons = {
   compliance_resolved: Shield,
   budget_alert: DollarSign,
   user_joined: UserPlus,
-  code_generated: Code
+  code_generated: Code,
 };
 
 const activityColors = {
-  blue: 'bg-blue-100 text-blue-600',
-  green: 'bg-green-100 text-green-600',
-  yellow: 'bg-yellow-100 text-yellow-600',
-  red: 'bg-red-100 text-red-600',
-  purple: 'bg-purple-100 text-purple-600',
-  gray: 'bg-slate-100 text-slate-600'
+  blue: "bg-blue-100 text-blue-600",
+  green: "bg-green-100 text-green-600",
+  yellow: "bg-yellow-100 text-yellow-600",
+  red: "bg-red-100 text-red-600",
+  purple: "bg-purple-100 text-purple-600",
+  gray: "bg-slate-100 text-slate-600",
 };
 
 export default function ActivityFeed({ activities = [], maxItems = 5 }) {
@@ -47,16 +47,13 @@ export default function ActivityFeed({ activities = [], maxItems = 5 }) {
   }
 
   return (
-    <div 
-      className="space-y-1"
-      data-b44-sync="component-activity-feed"
-    >
+    <div className="space-y-1" data-b44-sync="component-activity-feed">
       {displayActivities.map((activity, index) => {
         const Icon = activityIcons[activity.activity_type] || GitBranch;
         const colorClass = activityColors[activity.color] || activityColors.blue;
-        
+
         return (
-          <div 
+          <div
             key={activity.id || index}
             className="flex items-start gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors"
           >
@@ -65,9 +62,7 @@ export default function ActivityFeed({ activities = [], maxItems = 5 }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-slate-900">
-                {activity.user_name && (
-                  <span className="font-medium">{activity.user_name} </span>
-                )}
+                {activity.user_name && <span className="font-medium">{activity.user_name} </span>}
                 {activity.title}
               </p>
               {activity.description && (
@@ -75,10 +70,9 @@ export default function ActivityFeed({ activities = [], maxItems = 5 }) {
               )}
             </div>
             <span className="text-xs text-slate-400 flex-shrink-0">
-              {activity.created_date 
+              {activity.created_date
                 ? formatDistanceToNow(new Date(activity.created_date), { addSuffix: true })
-                : 'Just now'
-              }
+                : "Just now"}
             </span>
           </div>
         );

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "../utils";
 import {
   Plus,
   Search,
@@ -15,8 +15,8 @@ import {
   Edit,
   History,
   AlertCircle,
-  Eye
-} from 'lucide-react';
+  Eye,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,83 +44,81 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PermissionGate from '../components/rbac/PermissionGate';
+import PermissionGate from "../components/rbac/PermissionGate";
 
 const categoryConfig = {
-  security: { label: 'Security', color: 'bg-red-100 text-red-700', icon: Shield },
-  cost: { label: 'Cost', color: 'bg-orange-100 text-orange-700', icon: DollarSign },
-  quality: { label: 'Quality', color: 'bg-blue-100 text-blue-700', icon: CheckCircle },
-  compliance: { label: 'Compliance', color: 'bg-green-100 text-green-700', icon: Shield }
+  security: { label: "Security", color: "bg-red-100 text-red-700", icon: Shield },
+  cost: { label: "Cost", color: "bg-orange-100 text-orange-700", icon: DollarSign },
+  quality: { label: "Quality", color: "bg-blue-100 text-blue-700", icon: CheckCircle },
+  compliance: { label: "Compliance", color: "bg-green-100 text-green-700", icon: Shield },
 };
 
 const severityConfig = {
-  critical: { label: 'Critical', color: 'bg-red-100 text-red-700' },
-  high: { label: 'High', color: 'bg-orange-100 text-orange-700' },
-  medium: { label: 'Medium', color: 'bg-yellow-100 text-yellow-700' },
-  low: { label: 'Low', color: 'bg-slate-100 text-slate-700' }
+  critical: { label: "Critical", color: "bg-red-100 text-red-700" },
+  high: { label: "High", color: "bg-orange-100 text-orange-700" },
+  medium: { label: "Medium", color: "bg-yellow-100 text-yellow-700" },
+  low: { label: "Low", color: "bg-slate-100 text-slate-700" },
 };
 
 const enforcementConfig = {
-  block: { label: 'Block', color: 'bg-red-100 text-red-700', icon: AlertCircle },
-  warn: { label: 'Warn', color: 'bg-yellow-100 text-yellow-700', icon: AlertTriangle },
-  audit_only: { label: 'Audit Only', color: 'bg-blue-100 text-blue-700', icon: Eye }
+  block: { label: "Block", color: "bg-red-100 text-red-700", icon: AlertCircle },
+  warn: { label: "Warn", color: "bg-yellow-100 text-yellow-700", icon: AlertTriangle },
+  audit_only: { label: "Audit Only", color: "bg-blue-100 text-blue-700", icon: Eye },
 };
 
 export default function Policies() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [scopeFilter, setScopeFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [scopeFilter, setScopeFilter] = useState("all");
 
   const queryClient = useQueryClient();
 
   const { data: policies = [], isLoading } = useQuery({
-    queryKey: ['policies'],
-    queryFn: () => base44.entities.Policy.list('-created_date'),
-    initialData: []
+    queryKey: ["policies"],
+    queryFn: () => base44.entities.Policy.list("-created_date"),
+    initialData: [],
   });
 
   const { data: violations = [] } = useQuery({
-    queryKey: ['policy-violations'],
-    queryFn: () => base44.entities.PolicyViolation.filter({ status: 'open' }),
-    initialData: []
+    queryKey: ["policy-violations"],
+    queryFn: () => base44.entities.PolicyViolation.filter({ status: "open" }),
+    initialData: [],
   });
 
   const { data: exceptions = [] } = useQuery({
-    queryKey: ['policy-exceptions'],
-    queryFn: () => base44.entities.PolicyException.filter({ status: 'pending' }),
-    initialData: []
+    queryKey: ["policy-exceptions"],
+    queryFn: () => base44.entities.PolicyException.filter({ status: "pending" }),
+    initialData: [],
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Policy.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['policies'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["policies"] });
+    },
   });
 
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, is_active }) => base44.entities.Policy.update(id, { is_active }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['policies'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["policies"] });
+    },
   });
 
-  const filteredPolicies = policies.filter(policy => {
-    const matchesSearch = policy.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         policy.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || policy.category === categoryFilter;
-    const matchesScope = scopeFilter === 'all' || policy.scope === scopeFilter;
+  const filteredPolicies = policies.filter((policy) => {
+    const matchesSearch =
+      policy.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      policy.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || policy.category === categoryFilter;
+    const matchesScope = scopeFilter === "all" || policy.scope === scopeFilter;
     return matchesSearch && matchesCategory && matchesScope;
   });
 
-  const activePolicies = policies.filter(p => p.is_active).length;
-  const criticalViolations = violations.filter(v => v.severity === 'critical').length;
+  const activePolicies = policies.filter((p) => p.is_active).length;
+  const criticalViolations = violations.filter((v) => v.severity === "critical").length;
 
   return (
-    <div 
-      className="p-6 lg:p-8 max-w-7xl mx-auto"
-      data-b44-sync="page-policies"
-    >
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto" data-b44-sync="page-policies">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -128,7 +126,7 @@ export default function Policies() {
           <p className="text-slate-500 mt-1">Define and enforce organizational policies</p>
         </div>
         <PermissionGate permission="policy.create">
-          <Link to={createPageUrl('PolicyCreate')}>
+          <Link to={createPageUrl("PolicyCreate")}>
             <Button className="bg-slate-900 hover:bg-slate-800">
               <Plus className="w-4 h-4 mr-2" />
               New Policy
@@ -262,13 +260,15 @@ export default function Policies() {
                   {filteredPolicies.map((policy) => {
                     const CategoryIcon = categoryConfig[policy.category]?.icon;
                     const EnforcementIcon = enforcementConfig[policy.enforcement_level]?.icon;
-                    
+
                     return (
                       <TableRow key={policy.id}>
                         <TableCell>
                           <div>
                             <p className="font-medium text-slate-900">{policy.name}</p>
-                            <p className="text-sm text-slate-500 line-clamp-1">{policy.description}</p>
+                            <p className="text-sm text-slate-500 line-clamp-1">
+                              {policy.description}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -287,15 +287,18 @@ export default function Policies() {
                           <span className="text-sm capitalize">{policy.scope}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={policy.is_active ? 'default' : 'secondary'}>
-                            {policy.is_active ? 'Active' : 'Inactive'}
+                          <Badge variant={policy.is_active ? "default" : "secondary"}>
+                            {policy.is_active ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">v{policy.version}</span>
                         </TableCell>
                         <TableCell>
-                          <PermissionGate permissions={['policy.edit', 'policy.delete']} requireAll={false}>
+                          <PermissionGate
+                            permissions={["policy.edit", "policy.delete"]}
+                            requireAll={false}
+                          >
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
@@ -310,8 +313,15 @@ export default function Policies() {
                                       Edit
                                     </Link>
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => toggleActiveMutation.mutate({ id: policy.id, is_active: !policy.is_active })}>
-                                    {policy.is_active ? 'Deactivate' : 'Activate'}
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      toggleActiveMutation.mutate({
+                                        id: policy.id,
+                                        is_active: !policy.is_active,
+                                      })
+                                    }
+                                  >
+                                    {policy.is_active ? "Deactivate" : "Activate"}
                                   </DropdownMenuItem>
                                 </PermissionGate>
                                 <DropdownMenuItem>
@@ -320,7 +330,7 @@ export default function Policies() {
                                 </DropdownMenuItem>
                                 <PermissionGate permission="policy.delete">
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem 
+                                  <DropdownMenuItem
                                     onClick={() => deleteMutation.mutate(policy.id)}
                                     className="text-red-600"
                                   >

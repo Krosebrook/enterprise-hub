@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Database, Server, MessageSquare } from 'lucide-react';
+import { ArrowRight, Database, Server, MessageSquare } from "lucide-react";
 
 const getServiceIcon = (service) => {
-  if (service.database_type && service.database_type !== 'none') return Database;
+  if (service.database_type && service.database_type !== "none") return Database;
   if (service.has_api) return Server;
   return MessageSquare;
 };
@@ -12,15 +12,15 @@ const getServiceIcon = (service) => {
 export default function DependencyGraph({ services, connections }) {
   const dependencyMap = useMemo(() => {
     const map = new Map();
-    services.forEach(service => {
+    services.forEach((service) => {
       map.set(service.id, {
         service,
         outgoing: [],
-        incoming: []
+        incoming: [],
       });
     });
 
-    connections.forEach(conn => {
+    connections.forEach((conn) => {
       const source = map.get(conn.source_service_id);
       const target = map.get(conn.target_service_id);
       if (source && target) {
@@ -44,10 +44,14 @@ export default function DependencyGraph({ services, connections }) {
 
   const getConnectionColor = (type) => {
     switch (type) {
-      case 'sync': return 'bg-blue-500';
-      case 'async': return 'bg-purple-500';
-      case 'event': return 'bg-green-500';
-      default: return 'bg-slate-500';
+      case "sync":
+        return "bg-blue-500";
+      case "async":
+        return "bg-purple-500";
+      case "event":
+        return "bg-green-500";
+      default:
+        return "bg-slate-500";
     }
   };
 
@@ -76,7 +80,9 @@ export default function DependencyGraph({ services, connections }) {
                     <div key={idx} className="flex items-center gap-2 text-xs">
                       <ArrowRight className="w-3 h-3 text-slate-400" />
                       <span className="text-slate-700">{dep.target.name}</span>
-                      <Badge className={`${getConnectionColor(dep.connection.connection_type)} text-white text-xs`}>
+                      <Badge
+                        className={`${getConnectionColor(dep.connection.connection_type)} text-white text-xs`}
+                      >
                         {dep.connection.protocol}
                       </Badge>
                     </div>
@@ -100,15 +106,11 @@ export default function DependencyGraph({ services, connections }) {
         })}
 
         {services.length === 0 && (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            No services added yet
-          </div>
+          <div className="text-center py-8 text-slate-500 text-sm">No services added yet</div>
         )}
 
         {services.length > 0 && connections.length === 0 && (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            No connections defined yet
-          </div>
+          <div className="text-center py-8 text-slate-500 text-sm">No connections defined yet</div>
         )}
       </CardContent>
     </Card>

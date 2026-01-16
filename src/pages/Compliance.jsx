@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Shield,
   AlertCircle,
@@ -8,8 +8,8 @@ import {
   ChevronRight,
   Download,
   RefreshCw,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,89 +29,92 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from 'date-fns';
-import PermissionGate from '../components/rbac/PermissionGate';
+import { format } from "date-fns";
+import PermissionGate from "../components/rbac/PermissionGate";
 
 const frameworkInfo = {
-  'SOC2': { name: 'SOC 2 Type II', color: 'blue' },
-  'HIPAA': { name: 'HIPAA', color: 'green' },
-  'GDPR': { name: 'GDPR', color: 'purple' },
-  'PCI-DSS': { name: 'PCI-DSS', color: 'orange' }
+  SOC2: { name: "SOC 2 Type II", color: "blue" },
+  HIPAA: { name: "HIPAA", color: "green" },
+  GDPR: { name: "GDPR", color: "purple" },
+  "PCI-DSS": { name: "PCI-DSS", color: "orange" },
 };
 
 const severityConfig = {
-  critical: { label: 'Critical', color: 'bg-red-100 text-red-700 border-red-200' },
-  high: { label: 'High', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-  medium: { label: 'Medium', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-  low: { label: 'Low', color: 'bg-slate-100 text-slate-700 border-slate-200' }
+  critical: { label: "Critical", color: "bg-red-100 text-red-700 border-red-200" },
+  high: { label: "High", color: "bg-orange-100 text-orange-700 border-orange-200" },
+  medium: { label: "Medium", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
+  low: { label: "Low", color: "bg-slate-100 text-slate-700 border-slate-200" },
 };
 
 const statusConfig = {
-  open: { label: 'Open', color: 'bg-red-100 text-red-700' },
-  in_progress: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-  resolved: { label: 'Resolved', color: 'bg-green-100 text-green-700' },
-  snoozed: { label: 'Snoozed', color: 'bg-slate-100 text-slate-700' },
-  false_positive: { label: 'False Positive', color: 'bg-slate-100 text-slate-500' }
+  open: { label: "Open", color: "bg-red-100 text-red-700" },
+  in_progress: { label: "In Progress", color: "bg-blue-100 text-blue-700" },
+  resolved: { label: "Resolved", color: "bg-green-100 text-green-700" },
+  snoozed: { label: "Snoozed", color: "bg-slate-100 text-slate-700" },
+  false_positive: { label: "False Positive", color: "bg-slate-100 text-slate-500" },
 };
 
 export default function Compliance() {
-  const [selectedFramework, setSelectedFramework] = useState('all');
-  const [severityFilter, setSeverityFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedFramework, setSelectedFramework] = useState("all");
+  const [severityFilter, setSeverityFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const queryClient = useQueryClient();
 
   const { data: frameworks = [], isLoading: frameworksLoading } = useQuery({
-    queryKey: ['compliance-frameworks'],
+    queryKey: ["compliance-frameworks"],
     queryFn: () => base44.entities.ComplianceFramework.list(),
-    initialData: []
+    initialData: [],
   });
 
   const { data: violations = [], isLoading: violationsLoading } = useQuery({
-    queryKey: ['compliance-violations'],
-    queryFn: () => base44.entities.ComplianceViolation.list('-created_date'),
-    initialData: []
+    queryKey: ["compliance-violations"],
+    queryFn: () => base44.entities.ComplianceViolation.list("-created_date"),
+    initialData: [],
   });
 
   const updateViolationMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.ComplianceViolation.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['compliance-violations'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["compliance-violations"] });
+    },
   });
 
-  const enabledFrameworks = frameworks.filter(f => f.is_enabled);
-  const overallScore = enabledFrameworks.length > 0
-    ? Math.round(enabledFrameworks.reduce((sum, f) => sum + (f.compliance_score || 0), 0) / enabledFrameworks.length)
-    : 0;
+  const enabledFrameworks = frameworks.filter((f) => f.is_enabled);
+  const overallScore =
+    enabledFrameworks.length > 0
+      ? Math.round(
+          enabledFrameworks.reduce((sum, f) => sum + (f.compliance_score || 0), 0) /
+            enabledFrameworks.length
+        )
+      : 0;
 
-  const filteredViolations = violations.filter(v => {
-    const matchesFramework = selectedFramework === 'all' || v.framework_type === selectedFramework;
-    const matchesSeverity = severityFilter === 'all' || v.severity === severityFilter;
-    const matchesStatus = statusFilter === 'all' || v.status === statusFilter;
+  const filteredViolations = violations.filter((v) => {
+    const matchesFramework = selectedFramework === "all" || v.framework_type === selectedFramework;
+    const matchesSeverity = severityFilter === "all" || v.severity === severityFilter;
+    const matchesStatus = statusFilter === "all" || v.status === statusFilter;
     return matchesFramework && matchesSeverity && matchesStatus;
   });
 
-  const openViolations = violations.filter(v => v.status === 'open').length;
-  const criticalViolations = violations.filter(v => v.severity === 'critical' && v.status === 'open').length;
+  const openViolations = violations.filter((v) => v.status === "open").length;
+  const criticalViolations = violations.filter(
+    (v) => v.severity === "critical" && v.status === "open"
+  ).length;
 
   const getScoreColor = (score) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 90) return "text-green-600";
+    if (score >= 70) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getScoreBarColor = (score) => {
-    if (score >= 90) return 'bg-green-500';
-    if (score >= 70) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (score >= 90) return "bg-green-500";
+    if (score >= 70) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
-    <div 
-      className="p-6 lg:p-8 max-w-7xl mx-auto"
-      data-b44-sync="page-compliance"
-    >
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto" data-b44-sync="page-compliance">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -203,17 +206,17 @@ export default function Compliance() {
         <TabsContent value="frameworks">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(frameworkInfo).map(([key, info]) => {
-              const framework = frameworks.find(f => f.framework_type === key);
+              const framework = frameworks.find((f) => f.framework_type === key);
               const score = framework?.compliance_score || 0;
               const isEnabled = framework?.is_enabled;
-              
+
               return (
-                <Card key={key} className={!isEnabled ? 'opacity-60' : ''}>
+                <Card key={key} className={!isEnabled ? "opacity-60" : ""}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">{info.name}</CardTitle>
-                      <Badge variant={isEnabled ? 'default' : 'secondary'}>
-                        {isEnabled ? 'Active' : 'Disabled'}
+                      <Badge variant={isEnabled ? "default" : "secondary"}>
+                        {isEnabled ? "Active" : "Disabled"}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -225,14 +228,17 @@ export default function Compliance() {
                         </span>
                         {isEnabled && (
                           <div className="text-right text-sm text-slate-500">
-                            <div>{framework?.passing_controls || 0} / {framework?.total_controls || 0} controls</div>
+                            <div>
+                              {framework?.passing_controls || 0} / {framework?.total_controls || 0}{" "}
+                              controls
+                            </div>
                             <div>passing</div>
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className={`h-full transition-all ${getScoreBarColor(score)}`}
                           style={{ width: `${score}%` }}
                         />
@@ -240,8 +246,10 @@ export default function Compliance() {
 
                       {isEnabled && framework?.last_audit_date && (
                         <div className="flex items-center justify-between text-sm text-slate-500 pt-2 border-t">
-                          <span>Last audit: {format(new Date(framework.last_audit_date), 'MMM d, yyyy')}</span>
-                          {framework.certification_status === 'certified' && (
+                          <span>
+                            Last audit: {format(new Date(framework.last_audit_date), "MMM d, yyyy")}
+                          </span>
+                          {framework.certification_status === "certified" && (
                             <Badge className="bg-green-100 text-green-700">Certified</Badge>
                           )}
                         </div>
@@ -265,7 +273,9 @@ export default function Compliance() {
               <SelectContent>
                 <SelectItem value="all">All Frameworks</SelectItem>
                 {Object.entries(frameworkInfo).map(([key, info]) => (
-                  <SelectItem key={key} value={key}>{info.name}</SelectItem>
+                  <SelectItem key={key} value={key}>
+                    {info.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -334,7 +344,8 @@ export default function Compliance() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {frameworkInfo[violation.framework_type]?.name || violation.framework_type}
+                            {frameworkInfo[violation.framework_type]?.name ||
+                              violation.framework_type}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -345,10 +356,16 @@ export default function Compliance() {
                         <TableCell>
                           <Select
                             value={violation.status}
-                            onValueChange={(value) => updateViolationMutation.mutate({
-                              id: violation.id,
-                              data: { status: value, resolved_at: value === 'resolved' ? new Date().toISOString() : null }
-                            })}
+                            onValueChange={(value) =>
+                              updateViolationMutation.mutate({
+                                id: violation.id,
+                                data: {
+                                  status: value,
+                                  resolved_at:
+                                    value === "resolved" ? new Date().toISOString() : null,
+                                },
+                              })
+                            }
                           >
                             <SelectTrigger className="w-32 h-8">
                               <SelectValue />
@@ -363,10 +380,18 @@ export default function Compliance() {
                         </TableCell>
                         <TableCell>
                           {violation.due_date ? (
-                            <span className={new Date(violation.due_date) < new Date() ? 'text-red-600' : 'text-slate-600'}>
-                              {format(new Date(violation.due_date), 'MMM d, yyyy')}
+                            <span
+                              className={
+                                new Date(violation.due_date) < new Date()
+                                  ? "text-red-600"
+                                  : "text-slate-600"
+                              }
+                            >
+                              {format(new Date(violation.due_date), "MMM d, yyyy")}
                             </span>
-                          ) : '—'}
+                          ) : (
+                            "—"
+                          )}
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon">

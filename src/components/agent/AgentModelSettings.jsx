@@ -1,23 +1,29 @@
-import React from 'react';
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Available models per provider
 const modelProviders = {
-  openai: ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'],
-  anthropic: ['claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku'],
-  google: ['gemini-pro', 'gemini-pro-vision'],
-  meta: ['llama-3-70b', 'llama-3-8b']
+  openai: ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"],
+  anthropic: ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"],
+  google: ["gemini-pro", "gemini-pro-vision"],
+  meta: ["llama-3-70b", "llama-3-8b"],
 };
 
 export default function AgentModelSettings({ formData, onChange }) {
   // Handle provider change and auto-select first available model
   const handleProviderChange = (provider) => {
-    onChange('model_provider', provider);
-    onChange('model_name', modelProviders[provider][0]);
+    onChange("model_provider", provider);
+    onChange("model_name", modelProviders[provider][0]);
   };
 
   return (
@@ -31,10 +37,7 @@ export default function AgentModelSettings({ formData, onChange }) {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Provider</Label>
-            <Select 
-              value={formData.model_provider} 
-              onValueChange={handleProviderChange}
-            >
+            <Select value={formData.model_provider} onValueChange={handleProviderChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -48,16 +51,18 @@ export default function AgentModelSettings({ formData, onChange }) {
           </div>
           <div className="space-y-2">
             <Label>Model</Label>
-            <Select 
-              value={formData.model_name} 
-              onValueChange={(value) => onChange('model_name', value)}
+            <Select
+              value={formData.model_name}
+              onValueChange={(value) => onChange("model_name", value)}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(modelProviders[formData.model_provider] || []).map(model => (
-                  <SelectItem key={model} value={model}>{model}</SelectItem>
+                {(modelProviders[formData.model_provider] || []).map((model) => (
+                  <SelectItem key={model} value={model}>
+                    {model}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -72,15 +77,13 @@ export default function AgentModelSettings({ formData, onChange }) {
           </div>
           <Slider
             value={[formData.temperature]}
-            onValueChange={([value]) => onChange('temperature', value)}
+            onValueChange={([value]) => onChange("temperature", value)}
             min={0}
             max={2}
             step={0.1}
             className="w-full"
           />
-          <p className="text-xs text-slate-500">
-            Lower = more focused, Higher = more creative
-          </p>
+          <p className="text-xs text-slate-500">Lower = more focused, Higher = more creative</p>
         </div>
 
         {/* Max Tokens */}
@@ -90,13 +93,11 @@ export default function AgentModelSettings({ formData, onChange }) {
             id="max_tokens"
             type="number"
             value={formData.max_tokens}
-            onChange={(e) => onChange('max_tokens', parseInt(e.target.value))}
+            onChange={(e) => onChange("max_tokens", parseInt(e.target.value))}
             min={100}
             max={32000}
           />
-          <p className="text-xs text-slate-500">
-            Maximum length of the response
-          </p>
+          <p className="text-xs text-slate-500">Maximum length of the response</p>
         </div>
       </CardContent>
     </Card>

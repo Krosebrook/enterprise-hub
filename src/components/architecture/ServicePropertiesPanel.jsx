@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,91 +21,88 @@ import {
 
 export default function ServicePropertiesPanel({ service, onSave, onClose }) {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    language: 'nodejs',
-    framework: '',
-    database_type: 'none',
-    database_name: '',
+    name: "",
+    description: "",
+    language: "nodejs",
+    framework: "",
+    database_type: "none",
+    database_name: "",
     has_api: true,
-    api_type: 'rest',
+    api_type: "rest",
     port: 8080,
-    health_check_path: '/health',
-    auth_method: 'jwt',
+    health_check_path: "/health",
+    auth_method: "jwt",
     auto_scaling: false,
     min_instances: 1,
-    max_instances: 3
+    max_instances: 3,
   });
 
   useEffect(() => {
     if (service) {
       setFormData({
-        name: service.name || '',
-        description: service.description || '',
-        language: service.language || 'nodejs',
-        framework: service.framework || '',
-        database_type: service.database_type || 'none',
-        database_name: service.database_name || '',
+        name: service.name || "",
+        description: service.description || "",
+        language: service.language || "nodejs",
+        framework: service.framework || "",
+        database_type: service.database_type || "none",
+        database_name: service.database_name || "",
         has_api: service.has_api ?? true,
-        api_type: service.api_type || 'rest',
+        api_type: service.api_type || "rest",
         port: service.port || 8080,
-        health_check_path: service.health_check_path || '/health',
-        auth_method: service.auth_method || 'jwt',
+        health_check_path: service.health_check_path || "/health",
+        auth_method: service.auth_method || "jwt",
         auto_scaling: service.auto_scaling || false,
         min_instances: service.min_instances || 1,
-        max_instances: service.max_instances || 3
+        max_instances: service.max_instances || 3,
       });
     }
   }, [service]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
       ...service,
-      ...formData
+      ...formData,
     });
   };
 
   const frameworkOptions = {
-    go: ['Gin', 'Echo', 'Fiber', 'Chi'],
-    nodejs: ['Express', 'Fastify', 'NestJS', 'Koa'],
-    python: ['FastAPI', 'Django', 'Flask', 'Starlette'],
-    java: ['Spring Boot', 'Micronaut', 'Quarkus', 'Vert.x'],
-    rust: ['Actix', 'Rocket', 'Axum', 'Warp'],
-    csharp: ['.NET Core', 'ASP.NET', 'ServiceStack']
+    go: ["Gin", "Echo", "Fiber", "Chi"],
+    nodejs: ["Express", "Fastify", "NestJS", "Koa"],
+    python: ["FastAPI", "Django", "Flask", "Starlette"],
+    java: ["Spring Boot", "Micronaut", "Quarkus", "Vert.x"],
+    rust: ["Actix", "Rocket", "Axum", "Warp"],
+    csharp: [".NET Core", "ASP.NET", "ServiceStack"],
   };
 
   return (
-    <div 
+    <div
       data-b44-sync="true"
-      className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto">
+      className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl z-50 overflow-y-auto"
+    >
       <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
-          {service?.id ? 'Edit Service' : 'New Service'}
-        </h2>
+        <h2 className="text-lg font-semibold">{service?.id ? "Edit Service" : "New Service"}</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="w-5 h-5" />
         </Button>
       </div>
 
       <form onSubmit={handleSubmit} className="p-6">
-        <Accordion type="multiple" defaultValue={['basic', 'tech', 'api']} className="space-y-4">
+        <Accordion type="multiple" defaultValue={["basic", "tech", "api"]} className="space-y-4">
           {/* Basic Info */}
           <AccordionItem value="basic" className="border rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              Basic Information
-            </AccordionTrigger>
+            <AccordionTrigger className="hover:no-underline">Basic Information</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Service Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  onChange={(e) => handleChange("name", e.target.value)}
                   placeholder="e.g., User Service"
                   required
                 />
@@ -115,7 +112,7 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
+                  onChange={(e) => handleChange("description", e.target.value)}
                   placeholder="What does this service do?"
                   rows={3}
                 />
@@ -125,17 +122,15 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
           {/* Technology Stack */}
           <AccordionItem value="tech" className="border rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              Technology Stack
-            </AccordionTrigger>
+            <AccordionTrigger className="hover:no-underline">Technology Stack</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label>Language</Label>
-                <Select 
-                  value={formData.language} 
+                <Select
+                  value={formData.language}
                   onValueChange={(value) => {
-                    handleChange('language', value);
-                    handleChange('framework', '');
+                    handleChange("language", value);
+                    handleChange("framework", "");
                   }}
                 >
                   <SelectTrigger>
@@ -154,16 +149,18 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
               <div className="space-y-2">
                 <Label>Framework</Label>
-                <Select 
-                  value={formData.framework} 
-                  onValueChange={(value) => handleChange('framework', value)}
+                <Select
+                  value={formData.framework}
+                  onValueChange={(value) => handleChange("framework", value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select framework" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(frameworkOptions[formData.language] || []).map(fw => (
-                      <SelectItem key={fw} value={fw}>{fw}</SelectItem>
+                    {(frameworkOptions[formData.language] || []).map((fw) => (
+                      <SelectItem key={fw} value={fw}>
+                        {fw}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -171,9 +168,9 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
               <div className="space-y-2">
                 <Label>Database</Label>
-                <Select 
-                  value={formData.database_type} 
-                  onValueChange={(value) => handleChange('database_type', value)}
+                <Select
+                  value={formData.database_type}
+                  onValueChange={(value) => handleChange("database_type", value)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -189,13 +186,13 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                 </Select>
               </div>
 
-              {formData.database_type !== 'none' && (
+              {formData.database_type !== "none" && (
                 <div className="space-y-2">
                   <Label htmlFor="database_name">Database Name</Label>
                   <Input
                     id="database_name"
                     value={formData.database_name}
-                    onChange={(e) => handleChange('database_name', e.target.value)}
+                    onChange={(e) => handleChange("database_name", e.target.value)}
                     placeholder="e.g., users_db"
                   />
                 </div>
@@ -205,16 +202,14 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
           {/* API Configuration */}
           <AccordionItem value="api" className="border rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              API Configuration
-            </AccordionTrigger>
+            <AccordionTrigger className="hover:no-underline">API Configuration</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="has_api">Expose API</Label>
                 <Switch
                   id="has_api"
                   checked={formData.has_api}
-                  onCheckedChange={(checked) => handleChange('has_api', checked)}
+                  onCheckedChange={(checked) => handleChange("has_api", checked)}
                 />
               </div>
 
@@ -222,9 +217,9 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                 <>
                   <div className="space-y-2">
                     <Label>API Type</Label>
-                    <Select 
-                      value={formData.api_type} 
-                      onValueChange={(value) => handleChange('api_type', value)}
+                    <Select
+                      value={formData.api_type}
+                      onValueChange={(value) => handleChange("api_type", value)}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -245,7 +240,7 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                         id="port"
                         type="number"
                         value={formData.port}
-                        onChange={(e) => handleChange('port', parseInt(e.target.value))}
+                        onChange={(e) => handleChange("port", parseInt(e.target.value))}
                         min={1}
                         max={65535}
                       />
@@ -255,7 +250,7 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                       <Input
                         id="health_check_path"
                         value={formData.health_check_path}
-                        onChange={(e) => handleChange('health_check_path', e.target.value)}
+                        onChange={(e) => handleChange("health_check_path", e.target.value)}
                       />
                     </div>
                   </div>
@@ -266,15 +261,13 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
           {/* Security */}
           <AccordionItem value="security" className="border rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              Security
-            </AccordionTrigger>
+            <AccordionTrigger className="hover:no-underline">Security</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label>Authentication Method</Label>
-                <Select 
-                  value={formData.auth_method} 
-                  onValueChange={(value) => handleChange('auth_method', value)}
+                <Select
+                  value={formData.auth_method}
+                  onValueChange={(value) => handleChange("auth_method", value)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -293,16 +286,14 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
 
           {/* Advanced */}
           <AccordionItem value="advanced" className="border rounded-lg px-4">
-            <AccordionTrigger className="hover:no-underline">
-              Advanced
-            </AccordionTrigger>
+            <AccordionTrigger className="hover:no-underline">Advanced</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="auto_scaling">Auto-scaling</Label>
                 <Switch
                   id="auto_scaling"
                   checked={formData.auto_scaling}
-                  onCheckedChange={(checked) => handleChange('auto_scaling', checked)}
+                  onCheckedChange={(checked) => handleChange("auto_scaling", checked)}
                 />
               </div>
 
@@ -314,7 +305,7 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                       id="min_instances"
                       type="number"
                       value={formData.min_instances}
-                      onChange={(e) => handleChange('min_instances', parseInt(e.target.value))}
+                      onChange={(e) => handleChange("min_instances", parseInt(e.target.value))}
                       min={1}
                       max={100}
                     />
@@ -325,7 +316,7 @@ export default function ServicePropertiesPanel({ service, onSave, onClose }) {
                       id="max_instances"
                       type="number"
                       value={formData.max_instances}
-                      onChange={(e) => handleChange('max_instances', parseInt(e.target.value))}
+                      onChange={(e) => handleChange("max_instances", parseInt(e.target.value))}
                       min={1}
                       max={100}
                     />

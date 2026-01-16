@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  UserPlus,
-  Search,
-  Mail
-} from 'lucide-react';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { UserPlus, Search, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,30 +22,30 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import PermissionGate from '../components/rbac/PermissionGate';
-import { getRoleName, getRoleDescription, getRoleColor } from '../components/rbac/rbacUtils';
-import { format } from 'date-fns';
+import PermissionGate from "../components/rbac/PermissionGate";
+import { getRoleName, getRoleDescription, getRoleColor } from "../components/rbac/rbacUtils";
+import { format } from "date-fns";
 
 export default function Users() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [showInviteDialog, setShowInviteDialog] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState('viewer');
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("viewer");
 
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list('-created_date'),
-    initialData: []
+    queryKey: ["users"],
+    queryFn: () => base44.entities.User.list("-created_date"),
+    initialData: [],
   });
 
   const updateRoleMutation = useMutation({
     mutationFn: ({ id, role }) => base44.entities.User.update(id, { role }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
   });
 
   const inviteUserMutation = useMutation({
@@ -58,15 +54,16 @@ export default function Users() {
     },
     onSuccess: () => {
       setShowInviteDialog(false);
-      setInviteEmail('');
-      setInviteRole('viewer');
-    }
+      setInviteEmail("");
+      setInviteRole("viewer");
+    },
   });
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
 
@@ -77,12 +74,12 @@ export default function Users() {
   };
 
   const roleStats = {
-    admin: users.filter(u => u.role === 'admin').length,
-    architect: users.filter(u => u.role === 'architect').length,
-    agent_operator: users.filter(u => u.role === 'agent_operator').length,
-    compliance_officer: users.filter(u => u.role === 'compliance_officer').length,
-    cost_controller: users.filter(u => u.role === 'cost_controller').length,
-    viewer: users.filter(u => u.role === 'viewer').length
+    admin: users.filter((u) => u.role === "admin").length,
+    architect: users.filter((u) => u.role === "architect").length,
+    agent_operator: users.filter((u) => u.role === "agent_operator").length,
+    compliance_officer: users.filter((u) => u.role === "compliance_officer").length,
+    cost_controller: users.filter((u) => u.role === "cost_controller").length,
+    viewer: users.filter((u) => u.role === "viewer").length,
   };
 
   return (
@@ -95,7 +92,7 @@ export default function Users() {
             <p className="text-slate-500 mt-1">Manage user roles and permissions</p>
           </div>
           <PermissionGate permission="user.manage">
-            <Button 
+            <Button
               onClick={() => setShowInviteDialog(true)}
               className="bg-slate-900 hover:bg-slate-800"
             >
@@ -161,7 +158,7 @@ export default function Users() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-slate-900">{user.full_name || 'User'}</p>
+                        <p className="font-semibold text-slate-900">{user.full_name || "User"}</p>
                         {!user.is_active && (
                           <Badge variant="secondary" className="bg-slate-100 text-slate-500">
                             Inactive
@@ -171,7 +168,7 @@ export default function Users() {
                       <p className="text-sm text-slate-500">{user.email}</p>
                       {user.last_login && (
                         <p className="text-xs text-slate-400 mt-1">
-                          Last login: {format(new Date(user.last_login), 'MMM d, yyyy HH:mm')}
+                          Last login: {format(new Date(user.last_login), "MMM d, yyyy HH:mm")}
                         </p>
                       )}
                     </div>
@@ -181,7 +178,9 @@ export default function Users() {
                     <PermissionGate permission="user.manage">
                       <Select
                         value={user.role}
-                        onValueChange={(value) => updateRoleMutation.mutate({ id: user.id, role: value })}
+                        onValueChange={(value) =>
+                          updateRoleMutation.mutate({ id: user.id, role: value })
+                        }
                       >
                         <SelectTrigger className="w-48">
                           <SelectValue />
@@ -197,26 +196,20 @@ export default function Users() {
                       </Select>
                     </PermissionGate>
 
-                    <PermissionGate 
-                      permission="user.manage" 
+                    <PermissionGate
+                      permission="user.manage"
                       fallback={
-                        <Badge className={getRoleColor(user.role)}>
-                          {getRoleName(user.role)}
-                        </Badge>
+                        <Badge className={getRoleColor(user.role)}>{getRoleName(user.role)}</Badge>
                       }
                     >
-                      <Badge className={getRoleColor(user.role)}>
-                        {getRoleName(user.role)}
-                      </Badge>
+                      <Badge className={getRoleColor(user.role)}>{getRoleName(user.role)}</Badge>
                     </PermissionGate>
                   </div>
                 </div>
 
                 {/* Role Description */}
                 <div className="mt-4 pt-4 border-t border-slate-100">
-                  <p className="text-sm text-slate-600">
-                    {getRoleDescription(user.role)}
-                  </p>
+                  <p className="text-sm text-slate-600">{getRoleDescription(user.role)}</p>
                 </div>
               </CardContent>
             </Card>
@@ -228,9 +221,7 @@ export default function Users() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Invite User</DialogTitle>
-              <DialogDescription>
-                Send an invitation email to a new user
-              </DialogDescription>
+              <DialogDescription>Send an invitation email to a new user</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
@@ -258,16 +249,18 @@ export default function Users() {
                     <SelectItem value="admin">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-slate-500 mt-1">
-                  {getRoleDescription(inviteRole)}
-                </p>
+                <p className="text-xs text-slate-500 mt-1">{getRoleDescription(inviteRole)}</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowInviteDialog(false)} className="flex-1">
+              <Button
+                variant="outline"
+                onClick={() => setShowInviteDialog(false)}
+                className="flex-1"
+              >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleInvite}
                 disabled={!inviteEmail || inviteUserMutation.isPending}
                 className="flex-1 bg-slate-900 hover:bg-slate-800"

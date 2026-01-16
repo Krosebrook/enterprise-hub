@@ -1,18 +1,9 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
-import { 
-  Plus, 
-  Search, 
-  MoreVertical, 
-  GitBranch,
-  Trash2,
-  Edit,
-  Copy,
-  Eye
-} from 'lucide-react';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "../utils";
+import { Plus, Search, MoreVertical, GitBranch, Trash2, Edit, Copy, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,48 +32,48 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { format } from 'date-fns';
-import PermissionGate from '../components/rbac/PermissionGate';
+import { format } from "date-fns";
+import PermissionGate from "../components/rbac/PermissionGate";
 
 const statusConfig = {
-  draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700' },
-  validated: { label: 'Validated', color: 'bg-blue-100 text-blue-700' },
-  generated: { label: 'Generated', color: 'bg-purple-100 text-purple-700' },
-  deployed: { label: 'Deployed', color: 'bg-green-100 text-green-700' },
-  archived: { label: 'Archived', color: 'bg-slate-100 text-slate-500' }
+  draft: { label: "Draft", color: "bg-slate-100 text-slate-700" },
+  validated: { label: "Validated", color: "bg-blue-100 text-blue-700" },
+  generated: { label: "Generated", color: "bg-purple-100 text-purple-700" },
+  deployed: { label: "Deployed", color: "bg-green-100 text-green-700" },
+  archived: { label: "Archived", color: "bg-slate-100 text-slate-500" },
 };
 
 const templateConfig = {
-  blank: { label: 'Blank', color: 'bg-slate-100 text-slate-600' },
-  'e-commerce': { label: 'E-commerce', color: 'bg-orange-100 text-orange-700' },
-  saas: { label: 'SaaS', color: 'bg-blue-100 text-blue-700' },
-  iot: { label: 'IoT', color: 'bg-green-100 text-green-700' },
-  healthcare: { label: 'Healthcare', color: 'bg-red-100 text-red-700' },
-  fintech: { label: 'Fintech', color: 'bg-purple-100 text-purple-700' }
+  blank: { label: "Blank", color: "bg-slate-100 text-slate-600" },
+  "e-commerce": { label: "E-commerce", color: "bg-orange-100 text-orange-700" },
+  saas: { label: "SaaS", color: "bg-blue-100 text-blue-700" },
+  iot: { label: "IoT", color: "bg-green-100 text-green-700" },
+  healthcare: { label: "Healthcare", color: "bg-red-100 text-red-700" },
+  fintech: { label: "Fintech", color: "bg-purple-100 text-purple-700" },
 };
 
 export default function Architectures() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [templateFilter, setTemplateFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [templateFilter, setTemplateFilter] = useState("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [architectureToDelete, setArchitectureToDelete] = useState(null);
 
   const queryClient = useQueryClient();
 
   const { data: architectures = [], isLoading } = useQuery({
-    queryKey: ['architectures'],
-    queryFn: () => base44.entities.Architecture.list('-created_date'),
-    initialData: []
+    queryKey: ["architectures"],
+    queryFn: () => base44.entities.Architecture.list("-created_date"),
+    initialData: [],
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Architecture.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['architectures'] });
+      queryClient.invalidateQueries({ queryKey: ["architectures"] });
       setDeleteDialogOpen(false);
       setArchitectureToDelete(null);
-    }
+    },
   });
 
   const duplicateMutation = useMutation({
@@ -91,19 +82,20 @@ export default function Architectures() {
       return base44.entities.Architecture.create({
         ...data,
         name: `${data.name} (Copy)`,
-        status: 'draft'
+        status: "draft",
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['architectures'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["architectures"] });
+    },
   });
 
-  const filteredArchitectures = architectures.filter(arch => {
-    const matchesSearch = arch.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         arch.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || arch.status === statusFilter;
-    const matchesTemplate = templateFilter === 'all' || arch.template_type === templateFilter;
+  const filteredArchitectures = architectures.filter((arch) => {
+    const matchesSearch =
+      arch.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      arch.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || arch.status === statusFilter;
+    const matchesTemplate = templateFilter === "all" || arch.template_type === templateFilter;
     return matchesSearch && matchesStatus && matchesTemplate;
   });
 
@@ -119,10 +111,7 @@ export default function Architectures() {
   };
 
   return (
-    <div 
-      className="p-6 lg:p-8 max-w-7xl mx-auto"
-      data-b44-sync="page-architectures"
-    >
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto" data-b44-sync="page-architectures">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -130,7 +119,7 @@ export default function Architectures() {
           <p className="text-slate-500 mt-1">Design and manage your microservices architectures</p>
         </div>
         <PermissionGate permission="architecture.create">
-          <Link to={createPageUrl('ArchitectureDesigner')}>
+          <Link to={createPageUrl("ArchitectureDesigner")}>
             <Button className="bg-slate-900 hover:bg-slate-800">
               <Plus className="w-4 h-4 mr-2" />
               New Architecture
@@ -202,12 +191,12 @@ export default function Architectures() {
             </div>
             <h3 className="text-lg font-medium text-slate-900 mb-2">No architectures found</h3>
             <p className="text-slate-500 text-center max-w-md mb-6">
-              {searchQuery || statusFilter !== 'all' || templateFilter !== 'all'
-                ? 'Try adjusting your filters or search query'
-                : 'Get started by creating your first microservices architecture'}
+              {searchQuery || statusFilter !== "all" || templateFilter !== "all"
+                ? "Try adjusting your filters or search query"
+                : "Get started by creating your first microservices architecture"}
             </p>
-            {!searchQuery && statusFilter === 'all' && templateFilter === 'all' && (
-              <Link to={createPageUrl('ArchitectureDesigner')}>
+            {!searchQuery && statusFilter === "all" && templateFilter === "all" && (
+              <Link to={createPageUrl("ArchitectureDesigner")}>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Create Architecture
@@ -223,19 +212,23 @@ export default function Architectures() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 min-w-0">
-                    <Link 
+                    <Link
                       to={createPageUrl(`ArchitectureDesigner?id=${arch.id}`)}
                       className="text-lg font-semibold text-slate-900 hover:text-blue-600 transition-colors block truncate"
                     >
                       {arch.name}
                     </Link>
                     <p className="text-sm text-slate-500 mt-1 line-clamp-2">
-                      {arch.description || 'No description'}
+                      {arch.description || "No description"}
                     </p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
                         <MoreVertical className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -260,7 +253,7 @@ export default function Architectures() {
                       </PermissionGate>
                       <PermissionGate permission="architecture.delete">
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => handleDelete(arch)}
                           className="text-red-600"
                         >
@@ -276,8 +269,12 @@ export default function Architectures() {
                   <Badge className={statusConfig[arch.status]?.color || statusConfig.draft.color}>
                     {statusConfig[arch.status]?.label || arch.status}
                   </Badge>
-                  {arch.template_type && arch.template_type !== 'blank' && (
-                    <Badge className={templateConfig[arch.template_type]?.color || templateConfig.blank.color}>
+                  {arch.template_type && arch.template_type !== "blank" && (
+                    <Badge
+                      className={
+                        templateConfig[arch.template_type]?.color || templateConfig.blank.color
+                      }
+                    >
                       {templateConfig[arch.template_type]?.label || arch.template_type}
                     </Badge>
                   )}
@@ -286,10 +283,9 @@ export default function Architectures() {
                 <div className="flex items-center justify-between text-sm text-slate-500">
                   <span>{arch.services_count || 0} services</span>
                   <span>
-                    {arch.created_date 
-                      ? format(new Date(arch.created_date), 'MMM d, yyyy')
-                      : 'Recently'
-                    }
+                    {arch.created_date
+                      ? format(new Date(arch.created_date), "MMM d, yyyy")
+                      : "Recently"}
                   </span>
                 </div>
               </CardContent>
@@ -304,15 +300,13 @@ export default function Architectures() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Architecture</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{architectureToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{architectureToDelete?.name}"? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

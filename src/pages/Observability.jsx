@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import {
   Server,
   AlertTriangle,
@@ -9,8 +9,8 @@ import {
   Cpu,
   HardDrive,
   Wifi,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,37 +32,68 @@ import {
   Tooltip,
   ResponsiveContainer,
   AreaChart,
-  Area
-} from 'recharts';
-import { format, subMinutes } from 'date-fns';
+  Area,
+} from "recharts";
+import { format, subMinutes } from "date-fns";
 
 // Mock real-time data
 const generateTimeSeriesData = (points = 30, baseValue = 50, variance = 20) => {
   return Array.from({ length: points }, (_, i) => ({
-    time: format(subMinutes(new Date(), points - 1 - i), 'HH:mm'),
-    value: Math.max(0, baseValue + (Math.random() - 0.5) * variance)
+    time: format(subMinutes(new Date(), points - 1 - i), "HH:mm"),
+    value: Math.max(0, baseValue + (Math.random() - 0.5) * variance),
   }));
 };
 
 const healthyServices = [
-  { name: 'User Service', status: 'healthy', cpu: 23, memory: 45, requests: 1247, latency: 45 },
-  { name: 'Order Service', status: 'healthy', cpu: 67, memory: 72, requests: 892, latency: 123 },
-  { name: 'Payment Gateway', status: 'degraded', cpu: 89, memory: 85, requests: 456, latency: 890 },
-  { name: 'Notification Service', status: 'healthy', cpu: 12, memory: 34, requests: 2341, latency: 23 },
-  { name: 'Analytics Service', status: 'healthy', cpu: 45, memory: 56, requests: 678, latency: 67 },
-  { name: 'Search Service', status: 'unhealthy', cpu: 95, memory: 92, requests: 0, latency: 0 }
+  { name: "User Service", status: "healthy", cpu: 23, memory: 45, requests: 1247, latency: 45 },
+  { name: "Order Service", status: "healthy", cpu: 67, memory: 72, requests: 892, latency: 123 },
+  { name: "Payment Gateway", status: "degraded", cpu: 89, memory: 85, requests: 456, latency: 890 },
+  {
+    name: "Notification Service",
+    status: "healthy",
+    cpu: 12,
+    memory: 34,
+    requests: 2341,
+    latency: 23,
+  },
+  { name: "Analytics Service", status: "healthy", cpu: 45, memory: 56, requests: 678, latency: 67 },
+  { name: "Search Service", status: "unhealthy", cpu: 95, memory: 92, requests: 0, latency: 0 },
 ];
 
 const recentAlerts = [
-  { id: 1, severity: 'critical', message: 'Search Service is down', time: '2 min ago', service: 'Search Service' },
-  { id: 2, severity: 'warning', message: 'Payment Gateway latency > 500ms', time: '15 min ago', service: 'Payment Gateway' },
-  { id: 3, severity: 'info', message: 'Deployment completed successfully', time: '1 hour ago', service: 'User Service' },
-  { id: 4, severity: 'warning', message: 'Memory usage > 80%', time: '2 hours ago', service: 'Order Service' }
+  {
+    id: 1,
+    severity: "critical",
+    message: "Search Service is down",
+    time: "2 min ago",
+    service: "Search Service",
+  },
+  {
+    id: 2,
+    severity: "warning",
+    message: "Payment Gateway latency > 500ms",
+    time: "15 min ago",
+    service: "Payment Gateway",
+  },
+  {
+    id: 3,
+    severity: "info",
+    message: "Deployment completed successfully",
+    time: "1 hour ago",
+    service: "User Service",
+  },
+  {
+    id: 4,
+    severity: "warning",
+    message: "Memory usage > 80%",
+    time: "2 hours ago",
+    service: "Order Service",
+  },
 ];
 
 export default function Observability() {
-  const [timeRange, setTimeRange] = useState('1h');
-  const [selectedService, setSelectedService] = useState('all');
+  const [timeRange, setTimeRange] = useState("1h");
+  const [selectedService, setSelectedService] = useState("all");
 
   const cpuData = generateTimeSeriesData(30, 45, 30);
   const memoryData = generateTimeSeriesData(30, 60, 25);
@@ -70,41 +101,53 @@ export default function Observability() {
   const latencyData = generateTimeSeriesData(30, 100, 80);
 
   const { data: services = [] } = useQuery({
-    queryKey: ['services-health'],
+    queryKey: ["services-health"],
     queryFn: () => base44.entities.Service.list(),
-    initialData: []
+    initialData: [],
   });
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'healthy': return 'bg-green-500';
-      case 'degraded': return 'bg-yellow-500';
-      case 'unhealthy': return 'bg-red-500';
-      default: return 'bg-slate-400';
+      case "healthy":
+        return "bg-green-500";
+      case "degraded":
+        return "bg-yellow-500";
+      case "unhealthy":
+        return "bg-red-500";
+      default:
+        return "bg-slate-400";
     }
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'healthy': return 'bg-green-100 text-green-700';
-      case 'degraded': return 'bg-yellow-100 text-yellow-700';
-      case 'unhealthy': return 'bg-red-100 text-red-700';
-      default: return 'bg-slate-100 text-slate-700';
+      case "healthy":
+        return "bg-green-100 text-green-700";
+      case "degraded":
+        return "bg-yellow-100 text-yellow-700";
+      case "unhealthy":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-slate-100 text-slate-700";
     }
   };
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-700 border-red-200';
-      case 'warning': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'info': return 'bg-blue-100 text-blue-700 border-blue-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case "critical":
+        return "bg-red-100 text-red-700 border-red-200";
+      case "warning":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+      case "info":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      default:
+        return "bg-slate-100 text-slate-700 border-slate-200";
     }
   };
 
-  const healthyCount = healthyServices.filter(s => s.status === 'healthy').length;
-  const degradedCount = healthyServices.filter(s => s.status === 'degraded').length;
-  const unhealthyCount = healthyServices.filter(s => s.status === 'unhealthy').length;
+  const healthyCount = healthyServices.filter((s) => s.status === "healthy").length;
+  const degradedCount = healthyServices.filter((s) => s.status === "degraded").length;
+  const unhealthyCount = healthyServices.filter((s) => s.status === "unhealthy").length;
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
@@ -197,7 +240,9 @@ export default function Observability() {
         <TabsList className="bg-white border">
           <TabsTrigger value="services">Services</TabsTrigger>
           <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          <TabsTrigger value="alerts">Alerts ({recentAlerts.filter(a => a.severity !== 'info').length})</TabsTrigger>
+          <TabsTrigger value="alerts">
+            Alerts ({recentAlerts.filter((a) => a.severity !== "info").length})
+          </TabsTrigger>
         </TabsList>
 
         {/* Services Tab */}
@@ -211,9 +256,7 @@ export default function Observability() {
                       <div className={`w-3 h-3 rounded-full ${getStatusColor(service.status)}`} />
                       <CardTitle className="text-base">{service.name}</CardTitle>
                     </div>
-                    <Badge className={getStatusBadge(service.status)}>
-                      {service.status}
-                    </Badge>
+                    <Badge className={getStatusBadge(service.status)}>{service.status}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -272,15 +315,25 @@ export default function Observability() {
                     <AreaChart data={cpuData}>
                       <defs>
                         <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
-                      <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                      <Tooltip formatter={(value) => [`${value.toFixed(1)}%`, 'CPU']} />
-                      <Area type="monotone" dataKey="value" stroke="#3b82f6" fill="url(#colorCpu)" />
+                      <YAxis
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        domain={[0, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <Tooltip formatter={(value) => [`${value.toFixed(1)}%`, "CPU"]} />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#3b82f6"
+                        fill="url(#colorCpu)"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -301,15 +354,25 @@ export default function Observability() {
                     <AreaChart data={memoryData}>
                       <defs>
                         <linearGradient id="colorMemory" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
-                      <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                      <Tooltip formatter={(value) => [`${value.toFixed(1)}%`, 'Memory']} />
-                      <Area type="monotone" dataKey="value" stroke="#8b5cf6" fill="url(#colorMemory)" />
+                      <YAxis
+                        stroke="#94a3b8"
+                        fontSize={12}
+                        domain={[0, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <Tooltip formatter={(value) => [`${value.toFixed(1)}%`, "Memory"]} />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#8b5cf6"
+                        fill="url(#colorMemory)"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -331,8 +394,14 @@ export default function Observability() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
                       <YAxis stroke="#94a3b8" fontSize={12} />
-                      <Tooltip formatter={(value) => [`${value.toFixed(0)}`, 'req/min']} />
-                      <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={false} />
+                      <Tooltip formatter={(value) => [`${value.toFixed(0)}`, "req/min"]} />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#22c55e"
+                        strokeWidth={2}
+                        dot={false}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -354,8 +423,14 @@ export default function Observability() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                       <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} />
                       <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `${v}ms`} />
-                      <Tooltip formatter={(value) => [`${value.toFixed(0)}ms`, 'Latency']} />
-                      <Line type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2} dot={false} />
+                      <Tooltip formatter={(value) => [`${value.toFixed(0)}ms`, "Latency"]} />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#f97316"
+                        strokeWidth={2}
+                        dot={false}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -374,7 +449,7 @@ export default function Observability() {
             <CardContent>
               <div className="space-y-4">
                 {recentAlerts.map((alert) => (
-                  <div 
+                  <div
                     key={alert.id}
                     className={`p-4 rounded-lg border ${getSeverityColor(alert.severity)}`}
                   >

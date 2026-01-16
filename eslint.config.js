@@ -3,6 +3,8 @@ import pluginJs from "@eslint/js";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginUnusedImports from "eslint-plugin-unused-imports";
+import pluginPrettier from "eslint-plugin-prettier";
+import configPrettier from "eslint-config-prettier";
 
 export default [
   {
@@ -14,6 +16,7 @@ export default [
     ignores: ["src/lib/**/*", "src/components/ui/**/*"],
     ...pluginJs.configs.recommended,
     ...pluginReact.configs.flat.recommended,
+    ...configPrettier,
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
@@ -33,6 +36,7 @@ export default [
       react: pluginReact,
       "react-hooks": pluginReactHooks,
       "unused-imports": pluginUnusedImports,
+      prettier: pluginPrettier,
     },
     rules: {
       "no-unused-vars": "off",
@@ -50,11 +54,9 @@ export default [
       ],
       "react/prop-types": "off",
       "react/react-in-jsx-scope": "off",
-      "react/no-unknown-property": [
-        "error",
-        { ignore: ["cmdk-input-wrapper", "toast-close"] },
-      ],
+      "react/no-unknown-property": ["error", { ignore: ["cmdk-input-wrapper", "toast-close"] }],
       "react-hooks/rules-of-hooks": "error",
+      "prettier/prettier": "warn",
     },
   },
 ];
