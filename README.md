@@ -31,34 +31,40 @@ Enterprise Hub is a comprehensive platform for managing AI agents, cloud archite
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Krosebrook/enterprise-hub.git
 cd enterprise-hub
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Configure environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 Edit `.env.local` with your Base44 credentials:
+
 ```
 VITE_BASE44_APP_ID=your_app_id
 VITE_BASE44_APP_BASE_URL=your_backend_url
 ```
 
 Example:
+
 ```
 VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
 VITE_BASE44_APP_BASE_URL=https://my-enterprise-hub-81bfaad7.base44.app
 ```
 
 4. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -68,6 +74,7 @@ The application will be available at `http://localhost:5173`
 ## Technology Stack
 
 ### Frontend
+
 - **React** 18.2.0 - UI framework
 - **Vite** 6.1.0 - Build tool and dev server
 - **Tailwind CSS** 3.4.17 - Utility-first CSS
@@ -79,6 +86,7 @@ The application will be available at `http://localhost:5173`
 - **Zod** 3.24.2 - Schema validation
 
 ### Backend
+
 - **Base44 SDK** 0.8.3 - Serverless platform integration
 - **Deno** - Serverless function runtime
 - **TypeScript** 5.8.2 - Type safety for functions
@@ -125,7 +133,43 @@ npm run test:coverage # Run tests with coverage report
 # Code Quality
 npm run lint         # Run ESLint (with --quiet flag)
 npm run lint:fix     # Auto-fix ESLint issues
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
 npm run typecheck    # TypeScript type checking
+```
+
+## Pre-commit Hooks
+
+This project uses **Husky** to automatically run code quality checks before each commit:
+
+- **ESLint**: Automatically fixes linting errors and blocks commits if unfixable errors exist
+- **Prettier**: Automatically formats code to maintain consistent style
+
+### What Happens on Commit?
+
+When you run `git commit`, the pre-commit hook will:
+
+1. Run ESLint on staged `.js` and `.jsx` files with `--fix`
+2. Run Prettier on all staged files to format them
+3. Block the commit if ESLint finds unfixable errors
+4. Auto-stage fixed files
+
+If the commit is blocked due to linting errors:
+
+1. Fix the reported errors manually
+2. Stage the fixed files with `git add`
+3. Try committing again
+
+### Manual Formatting
+
+You can also format code manually:
+
+```bash
+# Format all files
+npm run format
+
+# Check if files need formatting (without changing them)
+npm run format:check
 ```
 
 ## Documentation
@@ -160,24 +204,28 @@ Comprehensive documentation is available:
 ## Key Features Detail
 
 ### Agent Management
+
 - Create and manage AI agents (GPT-4, Claude, etc.)
 - Track deployment status and lifecycle
 - Monitor agent costs per request
 - Compliance status tracking
 
 ### Architecture Designer
+
 - Visual drag-and-drop architecture design
 - Support for AWS, GCP, and Azure
 - Terraform code generation with one click
 - Component library (VPC, Kubernetes, RDS, etc.)
 
 ### Compliance Tracking
+
 - SOC2, HIPAA, GDPR, ISO 27001, PCI DSS frameworks
 - Automated compliance score calculation
 - Requirements tracking with evidence
 - Certification management
 
 ### Cost Management
+
 - Multi-cloud cost aggregation
 - Agent usage cost tracking
 - Cost trends and forecasting
@@ -186,6 +234,7 @@ Comprehensive documentation is available:
 ## Development Guidelines
 
 ### Code Style
+
 - Follow existing patterns in the codebase
 - Use functional components with hooks
 - Leverage Tailwind CSS for styling
@@ -193,6 +242,7 @@ Comprehensive documentation is available:
 - Add PropTypes or TypeScript types
 
 ### Component Development
+
 1. Check existing components in `src/components/ui/` first
 2. Follow the composition pattern
 3. Use React Query for data fetching
@@ -200,6 +250,7 @@ Comprehensive documentation is available:
 5. Make components responsive (mobile-first)
 
 ### Best Practices
+
 - Use `useQuery` for data fetching
 - Use `useMutation` for data updates
 - Implement optimistic updates where appropriate
@@ -242,21 +293,21 @@ src/
 #### Example Component Test
 
 ```javascript
-import { describe, it, expect } from 'vitest'
-import { render, screen, userEvent } from '@/test-utils'
-import { Button } from './button'
+import { describe, it, expect } from "vitest";
+import { render, screen, userEvent } from "@/test-utils";
+import { Button } from "./button";
 
-describe('Button', () => {
-  it('should call onClick when clicked', async () => {
-    const handleClick = vi.fn()
-    const user = userEvent.setup()
-    
-    render(<Button onClick={handleClick}>Click me</Button>)
-    await user.click(screen.getByRole('button'))
-    
-    expect(handleClick).toHaveBeenCalledOnce()
-  })
-})
+describe("Button", () => {
+  it("should call onClick when clicked", async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Button onClick={handleClick}>Click me</Button>);
+    await user.click(screen.getByRole("button"));
+
+    expect(handleClick).toHaveBeenCalledOnce();
+  });
+});
 ```
 
 ### Test Utilities
@@ -270,19 +321,19 @@ The project includes test utilities for common testing patterns:
 #### Custom Render with Providers
 
 ```javascript
-import { renderWithProviders } from '@/test-utils'
-import MyComponent from './MyComponent'
+import { renderWithProviders } from "@/test-utils";
+import MyComponent from "./MyComponent";
 
-const { getByText } = renderWithProviders(<MyComponent />)
+const { getByText } = renderWithProviders(<MyComponent />);
 ```
 
 #### Mock Data Factories
 
 ```javascript
-import { createMockAgent, createMockUser } from '@/test-factories'
+import { createMockAgent, createMockUser } from "@/test-factories";
 
-const mockAgent = createMockAgent({ name: 'Test Agent' })
-const mockUsers = createMany(createMockUser, 5)
+const mockAgent = createMockAgent({ name: "Test Agent" });
+const mockUsers = createMany(createMockUser, 5);
 ```
 
 ### Coverage Reports
@@ -290,10 +341,12 @@ const mockUsers = createMany(createMockUser, 5)
 Coverage reports are generated in the `coverage/` directory (excluded from git).
 
 Current coverage:
+
 - **UI Components**: 100% coverage on tested components (12/49 components)
 - **Overall Project**: 54% (progressing toward 60% threshold)
 
 View coverage in your browser:
+
 ```bash
 npm run test:coverage
 open coverage/index.html
@@ -309,7 +362,9 @@ open coverage/index.html
 ## Known Issues & Security
 
 ### Security Vulnerabilities
+
 The project currently has **8 known vulnerabilities** in dependencies:
+
 - 1 Critical (jspdf)
 - 1 High (glob)
 - 6 Moderate (various)
@@ -317,14 +372,18 @@ The project currently has **8 known vulnerabilities** in dependencies:
 See [SECURITY.md](./SECURITY.md) for details and mitigation status.
 
 ### Code Quality
+
 - 54 ESLint warnings (mostly unused imports) - Run `npm run lint:fix` to fix
 - ✅ Testing infrastructure implemented with Vitest and React Testing Library (Phase 3)
+- ✅ Pre-commit hooks with Husky automatically run ESLint and Prettier on every commit
+- ✅ Prettier configured for consistent code formatting across the project
 
 ## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ### Development Workflow
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -332,6 +391,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 5. Open a Pull Request
 
 ### Pull Request Guidelines
+
 - Follow the [FEATURE_TO_PR_TEMPLATE.md](./.github/FEATURE_TO_PR_TEMPLATE.md)
 - Include tests for new features
 - Update documentation as needed
