@@ -43,6 +43,18 @@ export default function PipelineManager({ architectureId, services, open, onClos
     enabled: !!architectureId && open
   });
 
+  const { data: securityScans = [] } = useQuery({
+    queryKey: ['securityScans'],
+    queryFn: () => base44.entities.SecurityScan.list(),
+    enabled: !!architectureId && open
+  });
+
+  const { data: approvals = [] } = useQuery({
+    queryKey: ['deploymentApprovals'],
+    queryFn: () => base44.entities.DeploymentApproval.list(),
+    enabled: !!architectureId && open
+  });
+
   const createPipelineMutation = useMutation({
     mutationFn: (data) => base44.entities.Pipeline.create(data),
     onSuccess: () => {
