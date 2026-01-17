@@ -14,6 +14,7 @@ import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
 import Integrations from './pages/Integrations';
+import Monitoring from './pages/Monitoring';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +35,7 @@ export const PAGES = {
     "PolicyCreate": PolicyCreate,
     "Users": Users,
     "Integrations": Integrations,
+    "Monitoring": Monitoring,
 }
 
 export const pagesConfig = {
