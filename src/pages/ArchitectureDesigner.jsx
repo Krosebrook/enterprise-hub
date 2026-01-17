@@ -68,6 +68,8 @@ export default function ArchitectureDesigner() {
   const [selectedConnection, setSelectedConnection] = useState({ source: null, target: null });
   const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [highlightedConnections, setHighlightedConnections] = useState([]);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
