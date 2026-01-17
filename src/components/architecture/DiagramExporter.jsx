@@ -58,6 +58,78 @@ export async function exportAsPDF(canvasRef, filename = 'architecture-diagram.pd
   }
 }
 
+export function exportAsMermaid(services, connections, filename = 'architecture-diagram.mmd') {
+  try {
+    let mermaid = 'graph TD\n';
+    
+    services.forEach(service => {
+      const icon = service.has_api ? '🔌' : '📦';
+      mermaid += `  ${service.id}["${icon} ${service.name}<br/>(${service.language || 'unknown'})"]\n`;
+    });
+    
+    connections.forEach(conn => {
+      const source = services.find(s => s.id === conn.source_service_id);
+      const target = services.find(s => s.id === conn.target_service_id);
+      if (source && target) {
+        const style = conn.connection_type === 'async' ? '-.->|async|' : '-->';
+        mermaid += `  ${source.id}${style}${target.id}\n`;
+      }
+    });
+    
+    const blob = new Blob([mermaid], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Mermaid export failed:', error);
+    throw error;
+  }
+}
+
+export function exportAsPlantUML(services, connections, filename = 'architecture-diagram.puml') {
+  try {
+    let plantuml = '@startuml Architecture\n';
+    plantuml += 'skinparam backgroundColor #FEFEFE\n\n';
+    
+    services.forEach(service => {
+      const stereotype = service.database_type && service.database_type !== 'none' ? 'database' : 'component';
+      plantuml += `[${service.name}] <<${stereotype}>>\n`;
+    });
+    
+    plantuml += '\n';
+    
+    connections.forEach(conn => {
+      const source = services.find(s => s.id === conn.source_service_id);
+      const target = services.find(s => s.id === conn.target_service_id);
+      if (source && target) {
+        const arrow = conn.connection_type === 'async' ? '..>' : '-->';
+        const label = conn.protocol || 'HTTP';
+        plantuml += `[${source.name}] ${arrow} [${target.name}] : ${label}\n`;
+      }
+    });
+    
+    plantuml += '\n@enduml\n';
+    
+    const blob = new Blob([plantuml], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('PlantUML export failed:', error);
+    throw error;
+  }
+}
+
 function generateSVG(services, connections) {
   const width = 2000;
   const height = 1500;
