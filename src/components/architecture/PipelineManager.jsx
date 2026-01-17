@@ -6,7 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Play, Zap, CheckCircle2, XCircle, Clock, Plus, Settings, Loader2 } from 'lucide-react';
+import { Badge as BadgeUI } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Play, Zap, CheckCircle2, XCircle, Clock, Plus, Settings, Loader2, Shield, Badge } from 'lucide-react';
 
 const STAGE_DEFINITIONS = [
   { name: 'lint', label: 'Lint', description: 'Code quality and style checks', icon: '🔍' },
@@ -83,6 +85,29 @@ export default function PipelineManager({ architectureId, services, open, onClos
     }
   });
 
+  const runSecurityScanMutation = useMutation({
+    mutationFn: (runId) =>
+      base44.functions.invoke('runSecurityScan', {
+        pipeline_run_id: runId,
+        scan_types: ['sast', 'dependency']
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['securityScans'] });
+    }
+  });
+
+  const approveDeploymentMutation = useMutation({
+    mutationFn: ({ approvalId, status }) =>
+      base44.functions.invoke('approveDeployment', {
+        approval_id: approvalId,
+        status,
+        rejection_reason: status === 'rejected' ? 'Manual rejection' : null
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['deploymentApprovals'] });
+    }
+  });
+
   const handleCreatePipeline = () => {
     if (!newPipeline.name.trim() || newPipeline.stages.length === 0) {
       alert('Pipeline name and at least one stage required');
@@ -132,86 +157,144 @@ export default function PipelineManager({ architectureId, services, open, onClos
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-6">
-          {/* Pipelines */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold">Pipelines</h3>
+        <Tabs defaultValue="pipelines" className="w-full">
+          <TabsList>
+            <TabsTrigger value="pipelines">Pipelines</TabsTrigger>
+            <TabsTrigger value="security">Security Scans</TabsTrigger>
+            <TabsTrigger value="approvals">Approvals</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pipelines" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold">CI/CD Pipelines</h3>
               <Button size="sm" onClick={() => setShowCreateDialog(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 New
               </Button>
             </div>
-
-            <div className="space-y-2">
-              {pipelines.length === 0 ? (
-                <p className="text-sm text-slate-500">No pipelines. Create one to get started.</p>
-              ) : (
-                pipelines.map(pipeline => (
-                  <Card key={pipeline.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardContent className="p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{pipeline.name}</p>
-                          <p className="text-xs text-slate-500">
-                            {pipeline.stages.length} stages • {pipeline.trigger_event}
-                          </p>
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {pipeline.stages.slice(0, 3).map(stage => (
-                              <span key={stage.name} className="text-xs bg-slate-100 px-2 py-1 rounded">
-                                {stage.name}
-                              </span>
-                            ))}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-xs font-medium text-slate-600 mb-2">Pipelines</h4>
+                <div className="space-y-2">
+                  {pipelines.length === 0 ? (
+                    <p className="text-sm text-slate-500">No pipelines. Create one to get started.</p>
+                  ) : (
+                    pipelines.map(pipeline => (
+                      <Card key={pipeline.id}>
+                        <CardContent className="p-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{pipeline.name}</p>
+                              <p className="text-xs text-slate-500">{pipeline.stages.length} stages</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => executePipelineMutation.mutate(pipeline.id)}
+                              disabled={executePipelineMutation.isPending}
+                            >
+                              <Play className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xs font-medium text-slate-600 mb-2">Recent Runs</h4>
+                <div className="space-y-2">
+                  {runs.length === 0 ? (
+                    <p className="text-sm text-slate-500">No runs yet.</p>
+                  ) : (
+                    runs.slice(0, 5).map(run => (
+                      <button
+                        key={run.id}
+                        onClick={() => { setSelectedRun(run); setShowRunDetails(true); }}
+                        className="w-full text-left p-2 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-xs transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(run.status)}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium">{run.commit_message || 'Manual'}</p>
+                            <p className="text-slate-500">{run.total_duration_ms ? `${(run.total_duration_ms / 1000).toFixed(1)}s` : 'Running'}</p>
                           </div>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => executePipelineMutation.mutate(pipeline.id)}
-                          disabled={executePipelineMutation.isPending}
-                        >
-                          <Play className="w-4 h-4" />
-                        </Button>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-4">
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Security Scans (SAST/DAST)
+            </h3>
+            <div className="space-y-2">
+              {securityScans.length === 0 ? (
+                <p className="text-sm text-slate-500">No security scans yet</p>
+              ) : (
+                securityScans.slice(0, 5).map(scan => (
+                  <Card key={scan.id}>
+                    <CardContent className="p-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-sm uppercase">{scan.scan_type}</p>
+                          <p className="text-xs text-slate-600 mt-1">
+                            {scan.vulnerabilities_found} vulnerabilities ({scan.critical_count} critical, {scan.high_count} high)
+                          </p>
+                        </div>
+                        <BadgeUI variant={scan.critical_count > 0 ? 'destructive' : 'default'}>
+                          {scan.status}
+                        </BadgeUI>
                       </div>
                     </CardContent>
                   </Card>
                 ))
               )}
             </div>
-          </div>
+          </TabsContent>
 
-          {/* Recent Runs */}
-          <div>
-            <h3 className="text-sm font-semibold mb-4">Recent Runs</h3>
-            <div className="space-y-2">
-              {runs.length === 0 ? (
-                <p className="text-sm text-slate-500">No runs yet.</p>
+          <TabsContent value="approvals" className="space-y-4">
+            <h3 className="text-sm font-semibold">Production Deployment Approvals</h3>
+            <div className="space-y-3">
+              {approvals.filter(a => a.status === 'pending').length === 0 ? (
+                <p className="text-sm text-slate-500">No pending approvals</p>
               ) : (
-                runs.slice(0, 5).map(run => (
-                  <button
-                    key={run.id}
-                    onClick={() => {
-                      setSelectedRun(run);
-                      setShowRunDetails(true);
-                    }}
-                    className="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      {getStatusIcon(run.status)}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{run.commit_message || 'Manual trigger'}</p>
-                        <p className="text-xs text-slate-500 truncate">{run.commit_sha?.slice(0, 7)}</p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          {run.total_duration_ms ? `${(run.total_duration_ms / 1000).toFixed(1)}s` : 'Running...'}
-                        </p>
+                approvals.filter(a => a.status === 'pending').map(approval => (
+                  <Card key={approval.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-sm capitalize">{approval.environment} Deployment</p>
+                          <p className="text-xs text-slate-600">Requested by {approval.requested_by}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => approveDeploymentMutation.mutate({
+                            approvalId: approval.id,
+                            status: 'approved'
+                          })}>
+                            Approve
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => approveDeploymentMutation.mutate({
+                            approvalId: approval.id,
+                            status: 'rejected'
+                          })}>
+                            Reject
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </button>
+                    </CardContent>
+                  </Card>
                 ))
               )}
             </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Create Pipeline Dialog */}
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
