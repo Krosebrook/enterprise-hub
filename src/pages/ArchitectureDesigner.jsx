@@ -40,6 +40,7 @@ import ServicePropertiesPanel from "../components/architecture/ServiceProperties
 import CodeGenerationDialog from "../components/architecture/CodeGenerationDialog";
 import SimulationPanel from "../components/architecture/SimulationPanel";
 import AIGenerationPanel from "../components/architecture/AIGenerationPanel";
+import PipelineManager from "../components/architecture/PipelineManager";
 import DependencyGraph from "../components/architecture/DependencyGraph";
 import SequenceDiagram from "../components/architecture/SequenceDiagram";
 import VersionHistory from "../components/architecture/VersionHistory";
@@ -85,6 +86,7 @@ export default function ArchitectureDesigner() {
   const [isExporting, setIsExporting] = useState(false);
   const [showSimulation, setShowSimulation] = useState(false);
   const [showAIGeneration, setShowAIGeneration] = useState(false);
+  const [showPipelineManager, setShowPipelineManager] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -452,6 +454,15 @@ export default function ArchitectureDesigner() {
             <Sparkles className="w-4 h-4 mr-2" />
             AI Generate
           </Button>
+
+          {/* CI/CD Pipeline Button */}
+          <Button 
+            variant="outline"
+            onClick={() => setShowPipelineManager(true)}
+          >
+            <Network className="w-4 h-4 mr-2" />
+            CI/CD
+          </Button>
         </div>
       </div>
 
@@ -773,6 +784,14 @@ export default function ArchitectureDesigner() {
         architectureId={architectureId}
         open={showAIGeneration}
         onClose={() => setShowAIGeneration(false)}
+      />
+
+      {/* Pipeline Manager */}
+      <PipelineManager
+        architectureId={architectureId}
+        services={services}
+        open={showPipelineManager}
+        onClose={() => setShowPipelineManager(false)}
       />
 
       {/* Create Architecture Dialog */}
