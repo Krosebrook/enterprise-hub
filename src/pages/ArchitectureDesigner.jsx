@@ -47,7 +47,7 @@ import VersionHistory from "../components/architecture/VersionHistory";
 import PermissionGate from "../components/rbac/PermissionGate";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { forceDirectedLayout, hierarchicalLayout } from "../components/architecture/LayoutEngine";
-import { exportAsPNG, exportAsSVG, exportAsPDF } from "../components/architecture/DiagramExporter";
+import { exportAsPNG, exportAsSVG, exportAsPDF, exportAsMermaid, exportAsPlantUML } from "../components/architecture/DiagramExporter";
 import { Download, Layout as LayoutIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -266,6 +266,10 @@ export default function ArchitectureDesigner() {
         await exportAsSVG(services, connections, `${filename}.svg`);
       } else if (format === "pdf") {
         await exportAsPDF(canvasRef, `${filename}.pdf`);
+      } else if (format === "mermaid") {
+        exportAsMermaid(services, connections, `${filename}.mmd`);
+      } else if (format === "plantuml") {
+        exportAsPlantUML(services, connections, `${filename}.puml`);
       }
     } finally {
       setIsExporting(false);
@@ -433,6 +437,12 @@ export default function ArchitectureDesigner() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport("pdf")}>
                 Export as PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("mermaid")}>
+                Export as Mermaid
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("plantuml")}>
+                Export as PlantUML
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
