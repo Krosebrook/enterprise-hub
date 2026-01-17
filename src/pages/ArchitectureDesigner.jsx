@@ -47,7 +47,13 @@ import VersionHistory from "../components/architecture/VersionHistory";
 import PermissionGate from "../components/rbac/PermissionGate";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { forceDirectedLayout, hierarchicalLayout } from "../components/architecture/LayoutEngine";
-import { exportAsPNG, exportAsSVG, exportAsPDF, exportAsMermaid, exportAsPlantUML } from "../components/architecture/DiagramExporter";
+import { 
+  exportAsPNG, 
+  exportAsSVG, 
+  exportAsPDF, 
+  exportAsMermaid, 
+  exportAsPlantUML 
+} from "../components/architecture/DiagramExporter";
 import { Download, Layout as LayoutIcon } from "lucide-react";
 import {
   DropdownMenu,
