@@ -41,6 +41,15 @@ import SequenceDiagram from "../components/architecture/SequenceDiagram";
 import VersionHistory from "../components/architecture/VersionHistory";
 import PermissionGate from "../components/rbac/PermissionGate";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { forceDirectedLayout, hierarchicalLayout } from "../components/architecture/LayoutEngine";
+import { exportAsPNG, exportAsSVG, exportAsPDF } from "../components/architecture/DiagramExporter";
+import { Download, Layout as LayoutIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const servicePalette = [
   { type: "api", label: "API Service", icon: Server, color: "bg-blue-500" },
@@ -198,6 +207,60 @@ export default function ArchitectureDesigner() {
       setSelectedService(service);
       setShowPropertiesPanel(true);
       setSelectedConnection({ source: null, target: null });
+      // Highlight connected services
+      const connectedIds = new Set();
+      connections.forEach(conn => {
+        if (conn.source_service_id === service.id || conn.target_service_id === service.id) {
+          connectedIds.add(conn.id);
+        }
+      });
+      setHighlightedConnections(Array.from(connectedIds));
+    }
+  };
+
+  const handleServiceHover = (service) => {
+    const connectedIds = new Set();
+    connections.forEach(conn => {
+      if (conn.source_service_id === service.id || conn.target_service_id === service.id) {
+        connectedIds.add(conn.id);
+      }
+    });
+    setHighlightedConnections(Array.from(connectedIds));
+  };
+
+  const handleAutoLayout = async (algorithm) => {
+    setIsSaving(true);
+    const layoutPositions = algorithm === "force" 
+      ? forceDirectedLayout(services, connections)
+      : hierarchicalLayout(services, connections);
+
+    // Update all services with new positions
+    await Promise.all(layoutPositions.map(pos =>
+      base44.entities.Service.update(pos.id, {
+        canvas_position_x: pos.canvas_position_x,
+        canvas_position_y: pos.canvas_position_y
+      })
+    ));
+
+    queryClient.invalidateQueries({ queryKey: ["services", architectureId] });
+    setIsSaving(false);
+  };
+
+  const handleExport = async (format) => {
+    setIsExporting(true);
+    try {
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const filename = `${architecture?.name || "architecture"}-${timestamp}`;
+      
+      if (format === "png") {
+        await exportAsPNG(canvasRef, `${filename}.png`);
+      } else if (format === "svg") {
+        await exportAsSVG(services, connections, `${filename}.svg`);
+      } else if (format === "pdf") {
+        await exportAsPDF(canvasRef, `${filename}.pdf`);
+      }
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -320,6 +383,51 @@ export default function ArchitectureDesigner() {
               Deploy
             </Button>
           </PermissionGate>
+          
+          {/* Layout Button */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline"
+                disabled={isSaving || services.length === 0}
+              >
+                <LayoutIcon className="w-4 h-4 mr-2" />
+                Auto Layout
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleAutoLayout("force")}>
+                Force-Directed
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAutoLayout("hierarchical")}>
+                Hierarchical
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Export Button */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline"
+                disabled={isExporting || services.length === 0}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExport("png")}>
+                Export as PNG
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("svg")}>
+                Export as SVG
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("pdf")}>
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -521,15 +629,19 @@ export default function ArchitectureDesigner() {
                       ? "#a855f7"
                       : "#10b981";
 
+                const isHighlighted = highlightedConnections.includes(conn.id);
+                const strokeWidth = isHighlighted ? "3" : "2";
+                const opacity = highlightedConnections.length === 0 || isHighlighted ? "1" : "0.3";
+
                 return (
-                  <g key={conn.id}>
+                  <g key={conn.id} style={{ opacity }}>
                     <line
                       x1={x1}
                       y1={y1}
                       x2={x2}
                       y2={y2}
                       stroke={color}
-                      strokeWidth="2"
+                      strokeWidth={strokeWidth}
                       strokeDasharray={conn.connection_type === "async" ? "5,5" : "0"}
                       markerEnd="url(#arrowhead)"
                     />
@@ -559,6 +671,8 @@ export default function ArchitectureDesigner() {
                 }
                 onClick={(e) => handleServiceClick(service, e)}
                 onDragEnd={(e) => handleServiceDragEnd(service, e)}
+                onMouseEnter={() => handleServiceHover(service)}
+                onMouseLeave={() => setHighlightedConnections([])}
               />
             ))}
 
