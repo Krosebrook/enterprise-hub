@@ -13,6 +13,7 @@ import PRDGenerator from './pages/PRDGenerator';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
+import Integrations from './pages/Integrations';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +33,7 @@ export const PAGES = {
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
     "Users": Users,
+    "Integrations": Integrations,
 }
 
 export const pagesConfig = {
