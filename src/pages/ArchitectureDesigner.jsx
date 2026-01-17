@@ -20,6 +20,8 @@ import {
   Network,
   Workflow,
   Link2,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import ServiceCard from "../components/architecture/ServiceCard";
 import ServicePropertiesPanel from "../components/architecture/ServicePropertiesPanel";
 import CodeGenerationDialog from "../components/architecture/CodeGenerationDialog";
+import SimulationPanel from "../components/architecture/SimulationPanel";
+import AIGenerationPanel from "../components/architecture/AIGenerationPanel";
 import DependencyGraph from "../components/architecture/DependencyGraph";
 import SequenceDiagram from "../components/architecture/SequenceDiagram";
 import VersionHistory from "../components/architecture/VersionHistory";
@@ -79,6 +83,8 @@ export default function ArchitectureDesigner() {
   const [isSaving, setIsSaving] = useState(false);
   const [highlightedConnections, setHighlightedConnections] = useState([]);
   const [isExporting, setIsExporting] = useState(false);
+  const [showSimulation, setShowSimulation] = useState(false);
+  const [showAIGeneration, setShowAIGeneration] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -428,6 +434,24 @@ export default function ArchitectureDesigner() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Simulation Button */}
+          <Button 
+            variant="outline"
+            onClick={() => setShowSimulation(true)}
+          >
+            <Zap className="w-4 h-4 mr-2" />
+            Simulate
+          </Button>
+
+          {/* AI Generation Button */}
+          <Button 
+            variant="outline"
+            onClick={() => setShowAIGeneration(true)}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            AI Generate
+          </Button>
         </div>
       </div>
 
@@ -736,6 +760,20 @@ export default function ArchitectureDesigner() {
           onClose={() => setShowVersionHistory(false)}
         />
       )}
+
+      {/* Simulation Panel */}
+      <SimulationPanel
+        architectureId={architectureId}
+        open={showSimulation}
+        onClose={() => setShowSimulation(false)}
+      />
+
+      {/* AI Generation Panel */}
+      <AIGenerationPanel
+        architectureId={architectureId}
+        open={showAIGeneration}
+        onClose={() => setShowAIGeneration(false)}
+      />
 
       {/* Create Architecture Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
