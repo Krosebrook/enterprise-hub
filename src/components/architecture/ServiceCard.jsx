@@ -41,6 +41,8 @@ export default function ServiceCard({
   onClick,
   onDragStart,
   onDragEnd,
+  onMouseEnter,
+  onMouseLeave,
   style,
 }) {
   const DbIcon = databaseIcons[service.database_type];
@@ -61,6 +63,8 @@ export default function ServiceCard({
       }}
       draggable
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
