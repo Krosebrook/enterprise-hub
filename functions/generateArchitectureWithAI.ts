@@ -9,18 +9,32 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { domain_description, requirements, architecture_id } = await req.json();
+    const { domain_description, requirements, architecture_id, cost_optimization } = await req.json();
 
     if (!domain_description || !architecture_id) {
       return Response.json({ error: 'Missing required parameters' }, { status: 400 });
     }
+
+    const costConstraint = cost_optimization?.max_monthly_cost_usd 
+      ? `\nCOST CONSTRAINT: The architecture must not exceed $${cost_optimization.max_monthly_cost_usd}/month. Optimize for cost efficiency by:
+- Using smaller instance types where possible
+- Leveraging serverless for sporadic workloads
+- Minimizing data transfer costs
+- Using managed services when cost-effective
+- Implementing auto-scaling to reduce idle capacity`
+      : '';
+
+    const cloudProvider = cost_optimization?.target_cloud_provider || 'aws';
+    const cloudOptimization = `\nTARGET CLOUD PROVIDER: ${cloudProvider.toUpperCase()}
+Optimize for ${cloudProvider}-specific services and pricing. Use native services like:
+${cloudProvider === 'aws' ? '- Lambda, RDS, ElastiCache, SQS, SNS' : cloudProvider === 'gcp' ? '- Cloud Functions, Cloud SQL, Memorystore, Pub/Sub' : '- Azure Functions, Azure SQL, Azure Cache, Service Bus'}`;
 
     const prompt = `You are an expert microservices architect. Based on the following business domain and requirements, generate a detailed microservices architecture blueprint.
 
 Business Domain: ${domain_description}
 
 Requirements:
-${Array.isArray(requirements) ? requirements.map(r => `- ${r}`).join('\n') : '- Standard requirements'}
+${Array.isArray(requirements) ? requirements.map(r => `- ${r}`).join('\n') : '- Standard requirements'}${costConstraint}${cloudOptimization}
 
 Please provide a JSON response with the following structure:
 {
@@ -50,7 +64,11 @@ Please provide a JSON response with the following structure:
   ],
   "rationale": "Explain the architecture choices",
   "scaling_strategy": "How this architecture scales",
-  "security_approach": "Security measures implemented"
+  "security_approach": "Security measures implemented",
+  "cost_estimate": {
+    "monthly_total_usd": 0,
+    "breakdown": "Cost breakdown explanation"
+  }
 }`;
 
     const response = await base44.integrations.Core.InvokeLLM({
@@ -93,7 +111,14 @@ Please provide a JSON response with the following structure:
           },
           rationale: { type: 'string' },
           scaling_strategy: { type: 'string' },
-          security_approach: { type: 'string' }
+          security_approach: { type: 'string' },
+          cost_estimate: {
+            type: 'object',
+            properties: {
+              monthly_total_usd: { type: 'number' },
+              breakdown: { type: 'string' }
+            }
+          }
         }
       }
     });
@@ -147,7 +172,8 @@ Please provide a JSON response with the following structure:
         rationale: response.rationale,
         scaling_strategy: response.scaling_strategy,
         security_approach: response.security_approach
-      }
+      },
+      cost_estimate: response.cost_estimate
     });
   } catch (error) {
     console.error('AI generation error:', error);

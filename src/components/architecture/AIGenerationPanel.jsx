@@ -21,13 +21,19 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
   const [domainDescription, setDomainDescription] = useState('');
   const [selectedRequirements, setSelectedRequirements] = useState([]);
   const [customRequirements, setCustomRequirements] = useState('');
+  const [maxMonthlyCost, setMaxMonthlyCost] = useState('');
+  const [targetCloudProvider, setTargetCloudProvider] = useState('aws');
 
   const generateMutation = useMutation({
     mutationFn: () =>
       base44.functions.invoke('generateArchitectureWithAI', {
         architecture_id: architectureId,
         domain_description: domainDescription,
-        requirements: [...selectedRequirements, ...customRequirements.split('\n').filter(r => r.trim())]
+        requirements: [...selectedRequirements, ...customRequirements.split('\n').filter(r => r.trim())],
+        cost_optimization: {
+          max_monthly_cost_usd: maxMonthlyCost ? parseFloat(maxMonthlyCost) : null,
+          target_cloud_provider: targetCloudProvider
+        }
       }),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['services', architectureId] });
@@ -35,6 +41,8 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
       setDomainDescription('');
       setSelectedRequirements([]);
       setCustomRequirements('');
+      setMaxMonthlyCost('');
+      setTargetCloudProvider('aws');
       onClose();
     }
   });
@@ -117,6 +125,34 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
               rows={4}
               className="resize-none text-xs"
             />
+          </div>
+
+          {/* Cost Optimization */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-semibold mb-2 block">Max Monthly Cost (USD)</label>
+              <input
+                type="number"
+                placeholder="e.g., 5000"
+                value={maxMonthlyCost}
+                onChange={(e) => setMaxMonthlyCost(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+              />
+              <p className="text-xs text-slate-500 mt-1">AI will optimize for cost efficiency</p>
+            </div>
+            <div>
+              <label className="text-sm font-semibold mb-2 block">Target Cloud Provider</label>
+              <select
+                value={targetCloudProvider}
+                onChange={(e) => setTargetCloudProvider(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+              >
+                <option value="aws">Amazon AWS</option>
+                <option value="gcp">Google Cloud</option>
+                <option value="azure">Microsoft Azure</option>
+              </select>
+              <p className="text-xs text-slate-500 mt-1">Optimizes for provider-specific services</p>
+            </div>
           </div>
 
           {/* Generation Status */}
