@@ -8,10 +8,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Badge as BadgeUI } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Play, Zap, CheckCircle2, XCircle, Clock, Plus, Settings, Loader2, Shield, Badge } from 'lucide-react';
+import { Play, Zap, CheckCircle2, XCircle, Clock, Plus, Settings, Loader2, Shield, Badge, Code } from 'lucide-react';
+import CodeReviewPanel from './CodeReviewPanel';
 
 const STAGE_DEFINITIONS = [
   { name: 'lint', label: 'Lint', description: 'Code quality and style checks', icon: '🔍' },
+  { name: 'review', label: 'AI Code Review', description: 'AI-powered code analysis', icon: '🤖' },
   { name: 'test', label: 'Test', description: 'Unit and integration tests', icon: '✓' },
   { name: 'build', label: 'Build', description: 'Build Docker image', icon: '🔨' },
   { name: 'security_scan', label: 'Security Scan', description: 'OWASP & vulnerability scanning', icon: '🔒' },
@@ -23,7 +25,9 @@ export default function PipelineManager({ architectureId, services, open, onClos
   const queryClient = useQueryClient();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showRunDetails, setShowRunDetails] = useState(false);
+  const [showCodeReview, setShowCodeReview] = useState(false);
   const [selectedRun, setSelectedRun] = useState(null);
+  const [codeReviewResult, setCodeReviewResult] = useState(null);
   const [newPipeline, setNewPipeline] = useState({
     name: 'Deploy Service',
     trigger_event: 'push',
@@ -130,8 +134,10 @@ export default function PipelineManager({ architectureId, services, open, onClos
         service_name: data.service_name,
         file_path: data.file_path
       }),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['codeReviews'] });
+      setCodeReviewResult(response.data);
+      setShowCodeReview(true);
     }
   });
 
@@ -488,12 +494,19 @@ export default function PipelineManager({ architectureId, services, open, onClos
         </Dialog>
 
         {/* Run Details Dialog */}
+        {/* Code Review Panel */}
+        <CodeReviewPanel
+          review={codeReviewResult}
+          open={showCodeReview}
+          onClose={() => setShowCodeReview(false)}
+        />
+
         {selectedRun && (
-          <Dialog open={showRunDetails} onOpenChange={setShowRunDetails}>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Pipeline Execution Details</DialogTitle>
-              </DialogHeader>
+           <Dialog open={showRunDetails} onOpenChange={setShowRunDetails}>
+             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+               <DialogHeader>
+                 <DialogTitle>Pipeline Execution Details</DialogTitle>
+               </DialogHeader>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -507,25 +520,42 @@ export default function PipelineManager({ architectureId, services, open, onClos
                 </div>
 
                 {selectedRun.stages?.map((stage, idx) => (
-                  <Card key={idx}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          {getStatusIcon(stage.status)}
-                          {stage.name}
-                        </CardTitle>
-                        <span className="text-xs text-slate-500">
-                          {stage.duration_ms ? `${(stage.duration_ms / 1000).toFixed(1)}s` : '-'}
-                        </span>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <pre className="bg-slate-900 text-slate-100 p-3 rounded text-xs overflow-x-auto max-h-32 overflow-y-auto">
-                        {stage.logs || stage.error_message || 'No logs'}
-                      </pre>
-                    </CardContent>
-                  </Card>
-                ))}
+                   <Card key={idx}>
+                     <CardHeader className="pb-3">
+                       <div className="flex items-center justify-between">
+                         <CardTitle className="text-sm flex items-center gap-2">
+                           {getStatusIcon(stage.status)}
+                           {stage.name}
+                         </CardTitle>
+                         <div className="flex items-center gap-2">
+                           <span className="text-xs text-slate-500">
+                             {stage.duration_ms ? `${(stage.duration_ms / 1000).toFixed(1)}s` : '-'}
+                           </span>
+                           {stage.name === 'review' && (
+                             <Button
+                               size="sm"
+                               variant="outline"
+                               onClick={() => codeReviewMutation.mutate({
+                                 code_diff: stage.logs || 'sample diff',
+                                 language: 'typescript',
+                                 service_name: selectedRun.service_id || 'service'
+                               })}
+                               disabled={codeReviewMutation.isPending}
+                             >
+                               <Code className="w-3 h-3 mr-1" />
+                               Review
+                             </Button>
+                           )}
+                         </div>
+                       </div>
+                     </CardHeader>
+                     <CardContent>
+                       <pre className="bg-slate-900 text-slate-100 p-3 rounded text-xs overflow-x-auto max-h-32 overflow-y-auto">
+                         {stage.logs || stage.error_message || 'No logs'}
+                       </pre>
+                     </CardContent>
+                   </Card>
+                 ))}
 
                 <div className="text-xs text-slate-500 pt-4 border-t">
                   Total Duration: {selectedRun.total_duration_ms ? `${(selectedRun.total_duration_ms / 1000).toFixed(1)}s` : 'Running...'}
