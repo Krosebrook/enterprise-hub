@@ -13,7 +13,11 @@ const REQUIREMENT_PRESETS = [
   { label: 'Cost Efficiency', value: 'Optimize for minimal infrastructure costs' },
   { label: 'High Availability', value: 'Must maintain 99.99% uptime with disaster recovery' },
   { label: 'Security First', value: 'Zero-trust architecture with end-to-end encryption' },
-  { label: 'Real-time Processing', value: 'Process and respond to events in real-time' }
+  { label: 'Real-time Processing', value: 'Process and respond to events in real-time' },
+  { label: 'Fault Tolerance', value: 'System must gracefully handle failures with automatic recovery' },
+  { label: 'Disaster Recovery', value: 'Multi-region backup with RPO < 1hr and RTO < 4hrs' },
+  { label: 'Data Consistency', value: 'Ensure strong consistency across distributed components' },
+  { label: 'Auto-Scaling', value: 'Automatically scale based on traffic patterns and load' }
 ];
 
 export default function AIGenerationPanel({ architectureId, open, onClose }) {
@@ -23,6 +27,7 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
   const [customRequirements, setCustomRequirements] = useState('');
   const [maxMonthlyCost, setMaxMonthlyCost] = useState('');
   const [targetCloudProvider, setTargetCloudProvider] = useState('aws');
+  const [generateBoilerplate, setGenerateBoilerplate] = useState(false);
 
   const generateMutation = useMutation({
     mutationFn: () =>
@@ -33,7 +38,8 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
         cost_optimization: {
           max_monthly_cost_usd: maxMonthlyCost ? parseFloat(maxMonthlyCost) : null,
           target_cloud_provider: targetCloudProvider
-        }
+        },
+        generate_boilerplate: generateBoilerplate
       }),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ['services', architectureId] });
@@ -92,7 +98,7 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
 
           {/* Requirements */}
           <div>
-            <label className="text-sm font-semibold mb-3 block">Select Requirements</label>
+            <label className="text-sm font-semibold mb-3 block">Select Requirements (Functional & Non-Functional)</label>
             <div className="grid grid-cols-2 gap-2">
               {REQUIREMENT_PRESETS.map(preset => (
                 <button
@@ -152,6 +158,25 @@ export default function AIGenerationPanel({ architectureId, open, onClose }) {
                 <option value="azure">Microsoft Azure</option>
               </select>
               <p className="text-xs text-slate-500 mt-1">Optimizes for provider-specific services</p>
+            </div>
+          </div>
+
+          {/* Code Generation */}
+          <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <input
+              type="checkbox"
+              id="generateBoilerplate"
+              checked={generateBoilerplate}
+              onChange={(e) => setGenerateBoilerplate(e.target.checked)}
+              className="mt-1"
+            />
+            <div>
+              <label htmlFor="generateBoilerplate" className="text-sm font-medium cursor-pointer">
+                Generate boilerplate code for services
+              </label>
+              <p className="text-xs text-slate-500 mt-1">
+                AI will generate starter code, API endpoints, and basic CRUD operations
+              </p>
             </div>
           </div>
 

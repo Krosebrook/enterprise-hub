@@ -14,6 +14,7 @@ const STAGE_DEFINITIONS = [
   { name: 'lint', label: 'Lint', description: 'Code quality and style checks', icon: '🔍' },
   { name: 'test', label: 'Test', description: 'Unit and integration tests', icon: '✓' },
   { name: 'build', label: 'Build', description: 'Build Docker image', icon: '🔨' },
+  { name: 'security_scan', label: 'Security Scan', description: 'OWASP & vulnerability scanning', icon: '🔒' },
   { name: 'deploy_staging', label: 'Deploy to Staging', description: 'Deploy to staging environment', icon: '🚀' },
   { name: 'deploy_prod', label: 'Deploy to Production', description: 'Deploy to production', icon: '⭐' }
 ];
@@ -28,7 +29,22 @@ export default function PipelineManager({ architectureId, services, open, onClos
     trigger_event: 'push',
     trigger_branch: 'main',
     stages: [],
-    deploy_target: 'docker'
+    deploy_target: 'docker',
+    deployment_strategy: 'rolling',
+    blue_green_config: {
+      health_check_path: '/health',
+      traffic_shift_percentage: 10,
+      wait_minutes: 5
+    },
+    canary_config: {
+      initial_traffic_percent: 10,
+      increment_percent: 10,
+      interval_minutes: 10,
+      success_criteria: {
+        error_rate_threshold: 1,
+        latency_threshold_ms: 500
+      }
+    }
   });
 
   const { data: pipelines = [] } = useQuery({
@@ -342,6 +358,88 @@ export default function PipelineManager({ architectureId, services, open, onClos
                   <option value="manual">Manual trigger only</option>
                 </select>
               </div>
+
+              <div>
+                <label className="text-sm font-medium">Deployment Strategy</label>
+                <select
+                  value={newPipeline.deployment_strategy}
+                  onChange={(e) => setNewPipeline({...newPipeline, deployment_strategy: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                >
+                  <option value="rolling">Rolling Update</option>
+                  <option value="blue_green">Blue-Green Deployment</option>
+                  <option value="canary">Canary Release</option>
+                </select>
+                <p className="text-xs text-slate-500 mt-1">
+                  {newPipeline.deployment_strategy === 'rolling' && 'Gradually replace old instances'}
+                  {newPipeline.deployment_strategy === 'blue_green' && 'Switch traffic from blue to green environment'}
+                  {newPipeline.deployment_strategy === 'canary' && 'Gradually shift traffic with health monitoring'}
+                </p>
+              </div>
+
+              {newPipeline.deployment_strategy === 'blue_green' && (
+                <div className="p-3 bg-blue-50 rounded border border-blue-200 space-y-2">
+                  <p className="text-xs font-medium text-blue-900">Blue-Green Configuration</p>
+                  <Input
+                    placeholder="Health check path (e.g., /health)"
+                    value={newPipeline.blue_green_config.health_check_path}
+                    onChange={(e) => setNewPipeline({
+                      ...newPipeline,
+                      blue_green_config: {...newPipeline.blue_green_config, health_check_path: e.target.value}
+                    })}
+                    className="text-xs"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Wait time (minutes)"
+                    value={newPipeline.blue_green_config.wait_minutes}
+                    onChange={(e) => setNewPipeline({
+                      ...newPipeline,
+                      blue_green_config: {...newPipeline.blue_green_config, wait_minutes: parseInt(e.target.value)}
+                    })}
+                    className="text-xs"
+                  />
+                </div>
+              )}
+
+              {newPipeline.deployment_strategy === 'canary' && (
+                <div className="p-3 bg-yellow-50 rounded border border-yellow-200 space-y-2">
+                  <p className="text-xs font-medium text-yellow-900">Canary Configuration</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Initial %"
+                      value={newPipeline.canary_config.initial_traffic_percent}
+                      onChange={(e) => setNewPipeline({
+                        ...newPipeline,
+                        canary_config: {...newPipeline.canary_config, initial_traffic_percent: parseInt(e.target.value)}
+                      })}
+                      className="text-xs"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Increment %"
+                      value={newPipeline.canary_config.increment_percent}
+                      onChange={(e) => setNewPipeline({
+                        ...newPipeline,
+                        canary_config: {...newPipeline.canary_config, increment_percent: parseInt(e.target.value)}
+                      })}
+                      className="text-xs"
+                    />
+                  </div>
+                  <Input
+                    type="number"
+                    placeholder="Interval (minutes)"
+                    value={newPipeline.canary_config.interval_minutes}
+                    onChange={(e) => setNewPipeline({
+                      ...newPipeline,
+                      canary_config: {...newPipeline.canary_config, interval_minutes: parseInt(e.target.value)}
+                    })}
+                    className="text-xs"
+                  />
+                  <p className="text-xs text-yellow-700">Rollback if error rate {'>'}1% or latency {'>'} 500ms</p>
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setShowCreateDialog(false)} className="flex-1">

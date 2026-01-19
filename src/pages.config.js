@@ -8,13 +8,13 @@ import Compliance from './pages/Compliance';
 import Costs from './pages/Costs';
 import Dashboard from './pages/Dashboard';
 import Documentation from './pages/Documentation';
+import Integrations from './pages/Integrations';
+import Monitoring from './pages/Monitoring';
 import Observability from './pages/Observability';
 import PRDGenerator from './pages/PRDGenerator';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
-import Integrations from './pages/Integrations';
-import Monitoring from './pages/Monitoring';
 import __Layout from './Layout.jsx';
 
 
@@ -29,13 +29,13 @@ export const PAGES = {
     "Costs": Costs,
     "Dashboard": Dashboard,
     "Documentation": Documentation,
+    "Integrations": Integrations,
+    "Monitoring": Monitoring,
     "Observability": Observability,
     "PRDGenerator": PRDGenerator,
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
     "Users": Users,
-    "Integrations": Integrations,
-    "Monitoring": Monitoring,
 }
 
 export const pagesConfig = {

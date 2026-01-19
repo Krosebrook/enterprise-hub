@@ -9,6 +9,7 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 import { AlertCircle, TrendingUp, Activity, Clock, Zap, Plus } from 'lucide-react';
+import LogViewer from '../components/monitoring/LogViewer';
 
 export default function MonitoringPage() {
   const queryClient = useQueryClient();
@@ -282,22 +283,7 @@ export default function MonitoringPage() {
         </TabsContent>
 
         <TabsContent value="logs">
-          <Card>
-            <CardHeader>
-              <CardTitle>Backend Function Logs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="bg-slate-900 text-slate-100 p-4 rounded text-xs overflow-x-auto max-h-96">
-                {`[2026-01-17 14:23:45] INFO: Deployment started for architecture-123
-[2026-01-17 14:24:12] INFO: Linting passed (0 issues)
-[2026-01-17 14:24:45] INFO: Tests passed (487 passed, 0 failed)
-[2026-01-17 14:25:30] INFO: Docker build succeeded
-[2026-01-17 14:26:15] INFO: Staging deployment successful
-[2026-01-17 14:26:20] INFO: Security scan completed (2 critical, 5 high)
-[2026-01-17 14:26:21] WARN: Production approval pending`}
-              </pre>
-            </CardContent>
-          </Card>
+          <LogViewer services={services} />
         </TabsContent>
       </Tabs>
     </div>
