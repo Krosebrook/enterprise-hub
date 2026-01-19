@@ -9,7 +9,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { domain_description, requirements, architecture_id, cost_optimization } = await req.json();
+    const { domain_description, requirements, architecture_id, cost_optimization, generate_boilerplate } = await req.json();
+
+    // Load service catalog for reuse
+    const catalog = await base44.entities.ServiceCatalog.filter({ is_active: true });
 
     if (!domain_description || !architecture_id) {
       return Response.json({ error: 'Missing required parameters' }, { status: 400 });
@@ -29,12 +32,15 @@ Deno.serve(async (req) => {
 Optimize for ${cloudProvider}-specific services and pricing. Use native services like:
 ${cloudProvider === 'aws' ? '- Lambda, RDS, ElastiCache, SQS, SNS' : cloudProvider === 'gcp' ? '- Cloud Functions, Cloud SQL, Memorystore, Pub/Sub' : '- Azure Functions, Azure SQL, Azure Cache, Service Bus'}`;
 
+    const catalogContext = catalog.length > 0 ? `\n\nSERVICE CATALOG (prefer these when applicable):
+${catalog.map(item => `- ${item.name} (${item.category}): ${item.description} [Cost: ${item.cost_profile?.cost_tier}, Performance: ${item.performance_profile?.performance_tier}, Security: ${item.security_profile?.security_tier}]`).join('\n')}` : '';
+
     const prompt = `You are an expert microservices architect. Based on the following business domain and requirements, generate a detailed microservices architecture blueprint.
 
 Business Domain: ${domain_description}
 
 Requirements:
-${Array.isArray(requirements) ? requirements.map(r => `- ${r}`).join('\n') : '- Standard requirements'}${costConstraint}${cloudOptimization}
+${Array.isArray(requirements) ? requirements.map(r => `- ${r}`).join('\n') : '- Standard requirements'}${costConstraint}${cloudOptimization}${catalogContext}
 
 Please provide a JSON response with the following structure:
 {
@@ -125,7 +131,22 @@ Please provide a JSON response with the following structure:
 
     // Create services in the architecture
     const serviceMap = {};
+    const generatedCode = {};
+    
     for (const serviceData of response.services) {
+      // Check if this matches a catalog item
+      const catalogMatch = catalog.find(c => 
+        c.name.toLowerCase() === serviceData.name.toLowerCase() ||
+        (c.category === serviceData.name.toLowerCase().split(' ')[0])
+      );
+
+      if (catalogMatch) {
+        // Increment usage count
+        await base44.entities.ServiceCatalog.update(catalogMatch.id, {
+          usage_count: (catalogMatch.usage_count || 0) + 1
+        });
+      }
+
       const service = await base44.entities.Service.create({
         architecture_id,
         name: serviceData.name,
@@ -143,6 +164,17 @@ Please provide a JSON response with the following structure:
         canvas_position_y: Math.floor(Object.keys(serviceMap).length / 3) * 250
       });
       serviceMap[serviceData.name] = service;
+
+      // Generate code if requested
+      if (generate_boilerplate) {
+        const codeResponse = await base44.functions.invoke('generateServiceCode', {
+          service: {
+            ...service,
+            description: serviceData.description
+          }
+        });
+        generatedCode[service.id] = codeResponse.data;
+      }
     }
 
     // Create connections
@@ -173,7 +205,11 @@ Please provide a JSON response with the following structure:
         scaling_strategy: response.scaling_strategy,
         security_approach: response.security_approach
       },
-      cost_estimate: response.cost_estimate
+      cost_estimate: response.cost_estimate,
+      generated_code: generate_boilerplate ? generatedCode : null,
+      catalog_items_used: catalog.filter(c => 
+        response.services.some(s => c.name.toLowerCase() === s.name.toLowerCase())
+      ).length
     });
   } catch (error) {
     console.error('AI generation error:', error);

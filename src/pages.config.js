@@ -15,6 +15,7 @@ import PRDGenerator from './pages/PRDGenerator';
 import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import Users from './pages/Users';
+import ServiceCatalog from './pages/ServiceCatalog';
 import __Layout from './Layout.jsx';
 
 
@@ -36,6 +37,7 @@ export const PAGES = {
     "Policies": Policies,
     "PolicyCreate": PolicyCreate,
     "Users": Users,
+    "ServiceCatalog": ServiceCatalog,
 }
 
 export const pagesConfig = {

@@ -39,6 +39,7 @@ const navigation = [
   { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },
   { name: "Architectures", href: "Architectures", icon: GitBranch },
   { name: "AI Agents", href: "Agents", icon: Bot },
+  { name: "Service Catalog", href: "ServiceCatalog", icon: Building2 },
   { name: "Compliance", href: "Compliance", icon: Shield },
   { name: "Cost Management", href: "Costs", icon: DollarSign },
   { name: "Observability", href: "Observability", icon: Activity },
