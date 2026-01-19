@@ -122,6 +122,19 @@ export default function PipelineManager({ architectureId, services, open, onClos
     }
   });
 
+  const codeReviewMutation = useMutation({
+    mutationFn: (data) =>
+      base44.functions.invoke('performCodeReview', {
+        code_diff: data.code_diff,
+        language: data.language,
+        service_name: data.service_name,
+        file_path: data.file_path
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['codeReviews'] });
+    }
+  });
+
   const approveDeploymentMutation = useMutation({
     mutationFn: ({ approvalId, status }) =>
       base44.functions.invoke('approveDeployment', {

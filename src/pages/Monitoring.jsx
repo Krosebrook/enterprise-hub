@@ -11,6 +11,7 @@ import {
 import { AlertCircle, TrendingUp, Activity, Clock, Zap, Plus } from 'lucide-react';
 import LogViewer from '../components/monitoring/LogViewer';
 import CostAnalysis from '../components/monitoring/CostAnalysis';
+import TraceViewer from '../components/monitoring/TraceViewer';
 
 export default function MonitoringPage() {
   const queryClient = useQueryClient();
@@ -135,6 +136,7 @@ export default function MonitoringPage() {
           <TabsTrigger value="latency">Latency</TabsTrigger>
           <TabsTrigger value="alerts">Alert Rules</TabsTrigger>
           <TabsTrigger value="logs">Logs</TabsTrigger>
+          <TabsTrigger value="tracing">Tracing</TabsTrigger>
           <TabsTrigger value="costs">Cost Analysis</TabsTrigger>
         </TabsList>
 
@@ -286,6 +288,10 @@ export default function MonitoringPage() {
 
         <TabsContent value="logs">
           <LogViewer services={services} />
+        </TabsContent>
+
+        <TabsContent value="tracing">
+          <TraceViewer services={services} />
         </TabsContent>
 
         <TabsContent value="costs">
