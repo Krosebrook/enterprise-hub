@@ -112,6 +112,16 @@ export default function PipelineManager({ architectureId, services, open, onClos
     }
   });
 
+  const remediateMutation = useMutation({
+    mutationFn: (scanId) =>
+      base44.functions.invoke('remediateSecurityIssues', {
+        scan_id: scanId
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['securityScans'] });
+    }
+  });
+
   const approveDeploymentMutation = useMutation({
     mutationFn: ({ approvalId, status }) =>
       base44.functions.invoke('approveDeployment', {
@@ -258,11 +268,22 @@ export default function PipelineManager({ architectureId, services, open, onClos
                   <Card key={scan.id}>
                     <CardContent className="p-3">
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium text-sm uppercase">{scan.scan_type}</p>
                           <p className="text-xs text-slate-600 mt-1">
                             {scan.vulnerabilities_found} vulnerabilities ({scan.critical_count} critical, {scan.high_count} high)
                           </p>
+                          {(scan.medium_count > 0 || scan.low_count > 0) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="mt-2"
+                              onClick={() => remediateMutation.mutate(scan.id)}
+                              disabled={remediateMutation.isPending}
+                            >
+                              🤖 Auto-Fix ({scan.medium_count + scan.low_count})
+                            </Button>
+                          )}
                         </div>
                         <BadgeUI variant={scan.critical_count > 0 ? 'destructive' : 'default'}>
                           {scan.status}

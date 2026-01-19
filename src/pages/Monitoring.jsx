@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { AlertCircle, TrendingUp, Activity, Clock, Zap, Plus } from 'lucide-react';
 import LogViewer from '../components/monitoring/LogViewer';
+import CostAnalysis from '../components/monitoring/CostAnalysis';
 
 export default function MonitoringPage() {
   const queryClient = useQueryClient();
@@ -134,6 +135,7 @@ export default function MonitoringPage() {
           <TabsTrigger value="latency">Latency</TabsTrigger>
           <TabsTrigger value="alerts">Alert Rules</TabsTrigger>
           <TabsTrigger value="logs">Logs</TabsTrigger>
+          <TabsTrigger value="costs">Cost Analysis</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -284,6 +286,10 @@ export default function MonitoringPage() {
 
         <TabsContent value="logs">
           <LogViewer services={services} />
+        </TabsContent>
+
+        <TabsContent value="costs">
+          <CostAnalysis services={services} />
         </TabsContent>
       </Tabs>
     </div>

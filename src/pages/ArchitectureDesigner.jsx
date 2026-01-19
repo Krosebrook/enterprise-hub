@@ -41,6 +41,7 @@ import CodeGenerationDialog from "../components/architecture/CodeGenerationDialo
 import SimulationPanel from "../components/architecture/SimulationPanel";
 import AIGenerationPanel from "../components/architecture/AIGenerationPanel";
 import PipelineManager from "../components/architecture/PipelineManager";
+import CostSimulation from "../components/architecture/CostSimulation";
 import DependencyGraph from "../components/architecture/DependencyGraph";
 import SequenceDiagram from "../components/architecture/SequenceDiagram";
 import VersionHistory from "../components/architecture/VersionHistory";
@@ -93,6 +94,7 @@ export default function ArchitectureDesigner() {
   const [showSimulation, setShowSimulation] = useState(false);
   const [showAIGeneration, setShowAIGeneration] = useState(false);
   const [showPipelineManager, setShowPipelineManager] = useState(false);
+  const [showCostSimulation, setShowCostSimulation] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -479,6 +481,16 @@ export default function ArchitectureDesigner() {
             <Network className="w-4 h-4 mr-2" />
             CI/CD
           </Button>
+
+          {/* Cost Simulation Button */}
+          <Button 
+            variant="outline"
+            onClick={() => setShowCostSimulation(true)}
+            disabled={services.length === 0}
+          >
+            <DollarSign className="w-4 h-4 mr-2" />
+            Cost Simulation
+          </Button>
         </div>
       </div>
 
@@ -808,6 +820,14 @@ export default function ArchitectureDesigner() {
         services={services}
         open={showPipelineManager}
         onClose={() => setShowPipelineManager(false)}
+      />
+
+      {/* Cost Simulation */}
+      <CostSimulation
+        architecture={architecture}
+        services={services}
+        open={showCostSimulation}
+        onClose={() => setShowCostSimulation(false)}
       />
 
       {/* Create Architecture Dialog */}
