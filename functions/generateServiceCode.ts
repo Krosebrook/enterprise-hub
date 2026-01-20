@@ -29,12 +29,21 @@ Generate the following:
 1. **OpenAPI 3.0 Schema**: Complete API documentation
 2. **CRUD Operations**: Full CRUD implementation for the primary data model
 3. **Unit Tests**: Comprehensive test stubs with examples
+4. **Integration Tests**: Tests for service-to-service communication
+5. **Dockerfile**: Production-ready Dockerfile
+6. **Kubernetes Manifests**: Deployment and Service YAML
+7. **Client SDK**: TypeScript SDK for consuming the API
 
 Return JSON:
 {
   "openapi_schema": "<complete OpenAPI 3.0 YAML as string>",
   "crud_code": "<complete CRUD implementation code>",
-  "test_code": "<complete test file with test cases>",
+  "test_code": "<complete unit test file>",
+  "integration_test_code": "<complete integration test file>",
+  "dockerfile": "<complete Dockerfile>",
+  "kubernetes_deployment": "<complete K8s deployment YAML>",
+  "kubernetes_service": "<complete K8s service YAML>",
+  "client_sdk": "<complete TypeScript SDK code>",
   "setup_instructions": "<deployment and setup steps>",
   "data_model": {
     "name": "<model name>",
@@ -54,6 +63,11 @@ Make it production-ready with proper error handling, validation, and best practi
           openapi_schema: { type: 'string' },
           crud_code: { type: 'string' },
           test_code: { type: 'string' },
+          integration_test_code: { type: 'string' },
+          dockerfile: { type: 'string' },
+          kubernetes_deployment: { type: 'string' },
+          kubernetes_service: { type: 'string' },
+          client_sdk: { type: 'string' },
           setup_instructions: { type: 'string' },
           data_model: {
             type: 'object',

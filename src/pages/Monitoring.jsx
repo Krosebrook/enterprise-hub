@@ -12,10 +12,14 @@ import { AlertCircle, TrendingUp, Activity, Clock, Zap, Plus } from 'lucide-reac
 import LogViewer from '../components/monitoring/LogViewer';
 import CostAnalysis from '../components/monitoring/CostAnalysis';
 import TraceViewer from '../components/monitoring/TraceViewer';
+import ScalingRecommendations from '../components/monitoring/ScalingRecommendations';
+import IncidentAnalysis from '../components/monitoring/IncidentAnalysis';
 
 export default function MonitoringPage() {
   const queryClient = useQueryClient();
   const [selectedService, setSelectedService] = useState(null);
+  const [selectedAlert, setSelectedAlert] = useState(null);
+  const [showIncidentAnalysis, setShowIncidentAnalysis] = useState(false);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const { data: architectures = [] } = useQuery({
@@ -298,6 +302,15 @@ export default function MonitoringPage() {
           <CostAnalysis services={services} />
         </TabsContent>
       </Tabs>
+
+      {/* Incident Analysis Dialog */}
+      {selectedAlert && (
+        <IncidentAnalysis
+          alert={selectedAlert}
+          open={showIncidentAnalysis}
+          onClose={() => setShowIncidentAnalysis(false)}
+        />
+      )}
     </div>
   );
 }
