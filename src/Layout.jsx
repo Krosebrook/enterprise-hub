@@ -20,6 +20,7 @@ import {
   Users as UsersIcon,
   BookOpen,
   FileText,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,8 @@ const navigation = [
   { name: "Architectures", href: "Architectures", icon: GitBranch },
   { name: "AI Agents", href: "Agents", icon: Bot },
   { name: "Service Catalog", href: "ServiceCatalog", icon: Building2 },
+  { name: "Developer Hub", href: "DeveloperHub", icon: BookOpen },
+  { name: "Playbooks", href: "Playbooks", icon: Zap },
   { name: "Compliance", href: "Compliance", icon: Shield },
   { name: "Cost Management", href: "Costs", icon: DollarSign },
   { name: "Observability", href: "Observability", icon: Activity },

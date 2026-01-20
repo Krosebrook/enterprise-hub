@@ -143,11 +143,28 @@ Return JSON:
       }
     }
 
+    // Auto-execute playbook if recommended
+    let playbookExecution = null;
+    if (analysis.execute_playbook && analysis.playbook_id) {
+      const playbooks = await base44.asServiceRole.entities.Playbook.filter({ 
+        name: analysis.playbook_id,
+        is_active: true
+      });
+      
+      if (playbooks.length > 0) {
+        const playbookResult = await base44.functions.invoke('executePlaybook', {
+          playbook_id: playbooks[0].id,
+          alert_event_id: alert_event_id
+        });
+        playbookExecution = playbookResult.data;
+      }
+    }
+
     // Create activity
     await base44.entities.Activity.create({
       activity_type: 'compliance_violation',
       title: `Incident analyzed: ${alert.service_name}`,
-      description: `${analysis.root_cause}. Executed: ${executedActions.join(', ') || 'None (manual review required)'}`,
+      description: `${analysis.root_cause}. Executed: ${executedActions.join(', ') || 'None (manual review required)'}${playbookExecution ? `. Playbook executed: ${playbookExecution.status}` : ''}`,
       resource_type: 'service',
       resource_name: alert.service_name,
       icon: 'alert-circle',
@@ -158,7 +175,8 @@ Return JSON:
       ...analysis,
       executed_actions: executedActions,
       logs_analyzed: logs.length,
-      traces_analyzed: traces.length
+      traces_analyzed: traces.length,
+      playbook_execution: playbookExecution
     });
   } catch (error) {
     console.error('Incident analysis error:', error);

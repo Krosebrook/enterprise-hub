@@ -16,6 +16,8 @@ import Policies from './pages/Policies';
 import PolicyCreate from './pages/PolicyCreate';
 import ServiceCatalog from './pages/ServiceCatalog';
 import Users from './pages/Users';
+import DeveloperHub from './pages/DeveloperHub';
+import Playbooks from './pages/Playbooks';
 import __Layout from './Layout.jsx';
 
 
@@ -38,6 +40,8 @@ export const PAGES = {
     "PolicyCreate": PolicyCreate,
     "ServiceCatalog": ServiceCatalog,
     "Users": Users,
+    "DeveloperHub": DeveloperHub,
+    "Playbooks": Playbooks,
 }
 
 export const pagesConfig = {
