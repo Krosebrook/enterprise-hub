@@ -7,12 +7,10 @@ import {
   GitBranch,
   Bot,
   Shield,
-  DollarSign,
   Activity,
   Settings,
   Menu,
   Bell,
-  Search,
   ChevronDown,
   LogOut,
   Building2,
@@ -21,7 +19,11 @@ import {
   BookOpen,
   FileText,
   Zap,
+  HelpCircle,
+  Command,
 } from "lucide-react";
+import CommandPalette from "@/components/shell/CommandPalette";
+import KeyboardShortcuts from "@/components/shell/KeyboardShortcuts";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,31 +38,58 @@ import { Input } from "@/components/ui/input";
 import { getRoleName, getRoleColor } from "./components/rbac/rbacUtils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const navigation = [
-  { name: "Dashboard", href: "Dashboard", icon: LayoutDashboard },
-  { name: "Architectures", href: "Architectures", icon: GitBranch },
-  { name: "AI Agents", href: "Agents", icon: Bot },
-  { name: "Service Catalog", href: "ServiceCatalog", icon: Building2 },
-  { name: "Developer Hub", href: "DeveloperHub", icon: BookOpen },
-  { name: "Playbooks", href: "Playbooks", icon: Zap },
-  { name: "Compliance", href: "Compliance", icon: Shield },
-  { name: "Cost Management", href: "Costs", icon: DollarSign },
-  { name: "Observability", href: "Observability", icon: Activity },
-  { name: "Policies", href: "Policies", icon: Shield },
-  { name: "Users", href: "Users", icon: UsersIcon },
-  { name: "Audit Log", href: "AuditLog", icon: Activity },
-  { name: "Documentation", href: "Documentation", icon: BookOpen },
-  { name: "PRD Generator", href: "PRDGenerator", icon: FileText },
+const navigationGroups = [
+  {
+    label: "Create",
+    items: [
+      { name: "Architectures", href: "Architectures", icon: GitBranch },
+      { name: "AI Agents", href: "Agents", icon: Bot },
+      { name: "Service Catalog", href: "ServiceCatalog", icon: Building2 },
+    ]
+  },
+  {
+    label: "Operate",
+    items: [
+      { name: "Developer Hub", href: "DeveloperHub", icon: BookOpen },
+      { name: "Observability", href: "Observability", icon: Activity },
+      { name: "Playbooks", href: "Playbooks", icon: Zap },
+    ]
+  },
+  {
+    label: "Govern",
+    items: [
+      { name: "Policies", href: "Policies", icon: Shield },
+      { name: "Compliance", href: "Compliance", icon: Shield },
+      { name: "Users", href: "Users", icon: UsersIcon },
+      { name: "Audit Log", href: "AuditLog", icon: FileText },
+    ]
+  },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState(3);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     loadUser();
+    
+    const handleKeyDown = (e) => {
+      if (e.key === '?' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShortcutsOpen(true);
+      }
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCommandOpen(true);
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const loadUser = async () => {
@@ -77,28 +106,39 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const NavLinks = ({ mobile = false }) => (
-    <nav className={mobile ? "flex flex-col gap-1" : "flex flex-col gap-1 px-3"}>
-      {navigation.map((item) => {
-        const isActive = currentPageName === item.href;
-        return (
-          <Link
-            key={item.name}
-            to={createPageUrl(item.href)}
-            onClick={() => mobile && setSidebarOpen(false)}
-            className={`
-              flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-              ${
-                isActive
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }
-            `}
-          >
-            <item.icon className="w-5 h-5" />
-            {item.name}
-          </Link>
-        );
-      })}
+    <nav className={mobile ? "flex flex-col gap-6" : "flex flex-col gap-6 px-3"}>
+      {navigationGroups.map((group) => (
+        <div key={group.label}>
+          <div className="px-3 mb-2">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              {group.label}
+            </span>
+          </div>
+          <div className="space-y-1">
+            {group.items.map((item) => {
+              const isActive = currentPageName === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  to={createPageUrl(item.href)}
+                  onClick={() => mobile && setSidebarOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }
+                  `}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 
@@ -213,19 +253,27 @@ export default function Layout({ children, currentPageName }) {
       {/* Desktop Header */}
       <div className="hidden lg:fixed lg:top-0 lg:left-64 lg:right-0 lg:z-40 lg:flex lg:items-center lg:justify-between lg:px-8 lg:py-4 lg:bg-white lg:border-b lg:border-slate-200">
         {/* Search */}
-        <div className="relative w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            placeholder="Search architectures, agents, compliance..."
-            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white"
-          />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-xs text-slate-400 bg-slate-100 rounded border">
+        <button
+          onClick={() => setCommandOpen(true)}
+          className="relative w-96 h-9 flex items-center gap-2 px-3 bg-slate-50 border border-slate-200 rounded-md hover:bg-white transition-colors text-left"
+        >
+          <Command className="w-4 h-4 text-slate-400" />
+          <span className="text-sm text-slate-500">Search or jump to...</span>
+          <kbd className="absolute right-3 px-2 py-0.5 text-xs text-slate-400 bg-slate-100 rounded border">
             ⌘K
           </kbd>
-        </div>
+        </button>
 
         {/* Right side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShortcutsOpen(true)}
+            title="Keyboard shortcuts (?)"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </Button>
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -323,6 +371,12 @@ export default function Layout({ children, currentPageName }) {
       <main className="lg:pl-64 pt-16 lg:pt-[73px]">
         <div className="min-h-[calc(100vh-73px)]">{children}</div>
       </main>
+
+      {/* Command Palette */}
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+
+      {/* Keyboard Shortcuts Dialog */}
+      <KeyboardShortcuts open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
     </div>
   );
 }
