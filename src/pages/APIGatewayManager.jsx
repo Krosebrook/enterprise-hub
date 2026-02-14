@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import APIKeyManager from '@/components/gateway/APIKeyManager';
 import SecurityMonitor from '@/components/gateway/SecurityMonitor';
+import APICatalog from '@/components/gateway/APICatalog';
 
 export default function APIGatewayManager() {
   const [searchParams] = useSearchParams();
@@ -179,8 +180,12 @@ export default function APIGatewayManager() {
         )}
 
         {/* Tabs */}
-        <Tabs defaultValue="security">
+        <Tabs defaultValue="catalog">
           <TabsList>
+            <TabsTrigger value="catalog">
+              <Network className="w-4 h-4 mr-2" />
+              API Catalog
+            </TabsTrigger>
             <TabsTrigger value="security">
               <Shield className="w-4 h-4 mr-2" />
               Security Monitor
@@ -198,6 +203,10 @@ export default function APIGatewayManager() {
               AI Configuration
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="catalog">
+            <APICatalog gateway={gateway} />
+          </TabsContent>
 
           <TabsContent value="security">
             <SecurityMonitor
