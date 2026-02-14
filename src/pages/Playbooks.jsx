@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Play, Zap, TrendingUp, CheckCircle, Edit, Trash2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Play, Zap, TrendingUp, CheckCircle, Edit, Trash2, Sparkles } from 'lucide-react';
+import AIPlaybookSuggestions from '@/components/playbooks/AIPlaybookSuggestions';
 
 const ACTION_TYPES = ['restart_service', 'scale_up', 'scale_down', 'rollback', 'clear_cache', 'rate_limit', 'notify'];
 
@@ -92,7 +94,7 @@ export default function PlaybooksPage() {
             <Zap className="w-6 h-6" />
             Incident Response Playbooks
           </h1>
-          <p className="text-slate-600">Define automated responses to incidents</p>
+          <p className="text-slate-600">AI-powered automated incident response</p>
         </div>
         <Button onClick={() => setShowDialog(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -100,7 +102,26 @@ export default function PlaybooksPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <Tabs defaultValue="suggestions">
+        <TabsList>
+          <TabsTrigger value="suggestions">
+            <Sparkles className="w-4 h-4 mr-2" />
+            AI Suggestions
+          </TabsTrigger>
+          <TabsTrigger value="playbooks">
+            Playbooks ({playbooks.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="suggestions" className="mt-6">
+          <AIPlaybookSuggestions
+            organizationId={null}
+            onPlaybookExecute={() => queryClient.invalidateQueries({ queryKey: ['playbooks'] })}
+          />
+        </TabsContent>
+
+        <TabsContent value="playbooks" className="mt-6">
+          <div className="grid grid-cols-2 gap-4">
         {playbooks.map(playbook => (
           <Card key={playbook.id}>
             <CardHeader>
@@ -151,7 +172,9 @@ export default function PlaybooksPage() {
             </CardContent>
           </Card>
         ))}
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Create/Edit Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
