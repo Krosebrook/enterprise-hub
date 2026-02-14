@@ -18,6 +18,7 @@ import {
   Shield,
 } from 'lucide-react';
 import APIKeyManager from '@/components/gateway/APIKeyManager';
+import SecurityMonitor from '@/components/gateway/SecurityMonitor';
 
 export default function APIGatewayManager() {
   const [searchParams] = useSearchParams();
@@ -178,8 +179,12 @@ export default function APIGatewayManager() {
         )}
 
         {/* Tabs */}
-        <Tabs defaultValue="keys">
+        <Tabs defaultValue="security">
           <TabsList>
+            <TabsTrigger value="security">
+              <Shield className="w-4 h-4 mr-2" />
+              Security Monitor
+            </TabsTrigger>
             <TabsTrigger value="keys">
               <Key className="w-4 h-4 mr-2" />
               API Keys
@@ -193,6 +198,13 @@ export default function APIGatewayManager() {
               AI Configuration
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="security">
+            <SecurityMonitor
+              gateway={gateway}
+              onUpdate={() => queryClient.invalidateQueries(['api-gateway', gatewayId])}
+            />
+          </TabsContent>
 
           <TabsContent value="keys">
             <APIKeyManager
